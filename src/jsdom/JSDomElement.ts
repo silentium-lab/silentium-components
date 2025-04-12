@@ -5,7 +5,7 @@ import {
   SourceType,
   SourceWithPool,
   value,
-} from "patron-oop";
+} from "silentium";
 
 export class JSDomElement implements SourceObjectType<HTMLElement> {
   private source = new SourceWithPool<HTMLElement>();

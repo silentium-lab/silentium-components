@@ -1,4 +1,4 @@
-import { GuestSync } from "patron-oop";
+import { GuestSync } from "silentium";
 import { JSDomQuerySelector } from "../jsdom/JSDomQuerySelector";
 import { expect, test } from "vitest";
 import { JSDomDocument } from "../jsdom/JSDomDocument";

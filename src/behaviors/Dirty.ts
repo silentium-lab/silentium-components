@@ -10,7 +10,7 @@ import {
   SourceType,
   SourceWithPool,
   value,
-} from "patron-oop";
+} from "silentium";
 
 export class Dirty<T extends object>
   implements SourceObjectType<Partial<T>>, GuestObjectType<T>

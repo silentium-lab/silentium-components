@@ -1,4 +1,4 @@
-import { GuestObjectType, SourceType, value } from "patron-oop";
+import { GuestObjectType, SourceType, value } from "silentium";
 
 /**
  * @deprecated move to web api

@@ -6,7 +6,7 @@ import {
   value,
   give,
   SourceWithPoolType,
-} from "patron-oop";
+} from "silentium";
 import { RoutePageTransportType } from "src/navigation/PageFetchTransport";
 import { RouteDisplayType } from "src/navigation/RouteDisplay";
 import { RoutePageType } from "src/navigation/RoutePageType";

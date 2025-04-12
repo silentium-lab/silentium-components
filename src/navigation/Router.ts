@@ -7,8 +7,8 @@ import {
   SourceWithPool,
   give,
   sourceOf,
-} from "patron-oop";
-import { HistoryNewPage, HistoryPoppedPage } from "patron-web-api";
+} from "silentium";
+import { HistoryNewPage, HistoryPoppedPage } from "silentium-web-api";
 import { ComputedElement, GroupActiveClass, Link, Visible } from "../controls";
 import { CurrentPage } from "../navigation/CurrentPage";
 import { Navigation } from "../navigation/Navigation";

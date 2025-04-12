@@ -1,4 +1,4 @@
-import { GuestSync, SourceWithPool } from "patron-oop";
+import { GuestSync, SourceWithPool } from "silentium";
 import { Dirty } from "../behaviors/Dirty";
 import { expect, test } from "vitest";
 

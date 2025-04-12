@@ -1,4 +1,4 @@
-import { GuestObjectType, PatronOnce, SourceType, value } from "patron-oop";
+import { GuestObjectType, PatronOnce, SourceType, value } from "silentium";
 
 /**
  * Sets activeClass to one element of group

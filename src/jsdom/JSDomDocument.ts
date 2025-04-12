@@ -1,5 +1,5 @@
 import { JSDOM } from "jsdom";
-import { give, GuestType, SourceObjectType } from "patron-oop";
+import { give, GuestType, SourceObjectType } from "silentium";
 
 export class JSDomDocument implements SourceObjectType<Document> {
   private dom: JSDOM;

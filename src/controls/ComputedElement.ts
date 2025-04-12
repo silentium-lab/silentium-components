@@ -4,7 +4,7 @@ import {
   SourceObjectType,
   GuestCast,
   GuestType,
-} from "patron-oop";
+} from "silentium";
 
 type SourceDetailType = {
   source: SourceObjectType<any>;

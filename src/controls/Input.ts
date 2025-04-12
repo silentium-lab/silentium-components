@@ -1,4 +1,4 @@
-import { GuestType, Patron, SourceWithPoolType } from "patron-oop";
+import { GuestType, Patron, SourceWithPoolType } from "silentium";
 
 type InputValue = number | string;
 

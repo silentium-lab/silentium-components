@@ -1,4 +1,4 @@
-import { GuestType, SourceWithPool, SourceWithPoolType } from "patron-oop";
+import { GuestType, SourceWithPool, SourceWithPoolType } from "silentium";
 
 /**
  * @deprecated move to web api

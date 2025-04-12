@@ -1,4 +1,4 @@
-import { give, GuestType, PrivateClass, SourceWithPool } from "patron-oop";
+import { give, GuestType, PrivateClass, SourceWithPool } from "silentium";
 import { expect, test } from "vitest";
 import { PageFake } from "../page/PageFake";
 import { Navigation } from "./Navigation";

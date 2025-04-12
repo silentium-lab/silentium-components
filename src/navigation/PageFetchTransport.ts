@@ -1,4 +1,4 @@
-import { give, GuestType } from "patron-oop";
+import { give, GuestType } from "silentium";
 
 export interface RoutePageTransportType {
   content(guest: GuestType<string>): void;
