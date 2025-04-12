@@ -1,6 +1,6 @@
 {
   "name": "silentium-components",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "type": "module",
   "main": "dist/silentium-components.js",
@@ -19,7 +19,7 @@
     "cz": "git add . && git cz",
     "push-head": "git push origin HEAD",
     "test-debug": "env DEBUG=app:* vitest",
-    "release": "npm run build && standard-version --no-verify && git push --follow-tags && npm publish",
+    "release": "./beforeRelease.sh && npm run build && standard-version --no-verify && git push --follow-tags && npm publish",
     "prepare": "husky"
   },
   "repository": {
@@ -57,7 +57,7 @@
     }
   },
   "dependencies": {
-    "silentium-oop": "^1.46.0",
-    "silentium-web-api": "^1.13.0"
+    "silentium": "^0.0.2",
+    "silentium-web-api": "^0.0.1"
   }
 }
