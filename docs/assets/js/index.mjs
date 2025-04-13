@@ -1,6 +1,6 @@
-import { CurrentPage, Link, Page, Router } from "patron-components";
-import { Patron, PatronOnce, SourceWithPool, sourceOf } from "patron-oop";
-import { Attribute, Element, Fetched, StyleInstalled } from "patron-web-api";
+import { CurrentPage, Link, Page, Router } from "silentium-components";
+import { Patron, PatronOnce, SourceWithPool, sourceOf } from "silentium";
+import { Attribute, Element, Fetched, StyleInstalled } from "silentium-web-api";
 import { StyleFetched } from "../lib/StyleFetched.mjs";
 
 new StyleFetched(
@@ -9,7 +9,9 @@ new StyleFetched(
 
 const routing = new Router(".loader", ".page-area", ".menu");
 
-const [basePath] = location.href.replace(location.origin, "").split("#");
+const [basePath] = window.location.href
+  .replace(window.location.origin, "")
+  .split("#");
 const cleanBasePath = basePath.replace(/[^/]+\.html$/, "");
 const currentPage = new CurrentPage();
 const basePathSource = new SourceWithPool(

@@ -36,6 +36,9 @@ export default [
 
     languageOptions: {
       parser: tsParser,
+      globals: {
+        window: "readonly",
+      },
     },
   },
   eslintPluginPrettierRecommended,
