@@ -2,7 +2,7 @@ import { GuestSync, SourceWithPool } from "silentium";
 import { Dirty } from "../behaviors/Dirty";
 import { expect, test } from "vitest";
 
-test("GroupActiveClass.test", () => {
+test("Dirty.test", () => {
   const form = new SourceWithPool({
     name: "one",
     surname: "two",
@@ -13,8 +13,9 @@ test("GroupActiveClass.test", () => {
     surname: "two",
   });
 
-  const g = new GuestSync(null as unknown);
+  const g = new GuestSync();
   dirtyForm.value(g);
 
-  expect(g.value).toBe({ name: "new" });
+  // only changed fields
+  expect(g.value()).toStrictEqual({ name: "new" });
 });
