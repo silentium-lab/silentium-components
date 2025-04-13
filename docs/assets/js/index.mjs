@@ -55,7 +55,7 @@ routesTransport.result().value(
           url: "/",
           template: "pages/index.html",
           aliases: [basePath, `${basePath}index.html`, ""],
-          page: new Page("Patron Components"),
+          page: new Page("Silentium Components"),
         },
         ...dynamicRoutes,
         {
