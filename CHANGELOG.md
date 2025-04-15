@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/silentium-lab/silentium-components/compare/v0.0.1...v0.0.2) (2025-04-15)
+
+
+### Features
+
+* **8-issue:** documentation about loading class ([9a4fb31](https://github.com/silentium-lab/silentium-components/commit/9a4fb31025ae3087fb0bcdfc0aa77aebcc4265bb))
+* **8-issue:** loading component ([5ffa25c](https://github.com/silentium-lab/silentium-components/commit/5ffa25c1af79c9b57211fc199e38f60748b64811))
+* **8-issue:** work on loading source ([f0c69b6](https://github.com/silentium-lab/silentium-components/commit/f0c69b674038eacc9c61fd2eec0dd33160b7b966))
+* **main:** base docs fixes ([8e7d5b9](https://github.com/silentium-lab/silentium-components/commit/8e7d5b9605e31698967ee5b7146995c0a396d329))
+* **main:** custom styles ([bb466d7](https://github.com/silentium-lab/silentium-components/commit/bb466d72571759598cf032cbcf976e4726bc3eaa))
+* **main:** custom styles ([fb2d0e1](https://github.com/silentium-lab/silentium-components/commit/fb2d0e19fabaa2fd1d7882836fe73b2ee0c5a6d7))
+* **main:** fix docs ([d703d8a](https://github.com/silentium-lab/silentium-components/commit/d703d8a4f05b536ceab0c34f5c9d92941465c965))
+
 ### 0.0.1 (2025-04-12)
 
 ## [1.20.0](https://github.com/kosukhin/patron-web-api/compare/v1.19.0...v1.20.0) (2025-04-05)
