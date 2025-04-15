@@ -12,6 +12,10 @@ import {
   value,
 } from "silentium";
 
+/**
+ * Takes source and remember it first value
+ * returns new record, what will contain only fields what was changed
+ */
 export class Dirty<T extends object>
   implements SourceObjectType<Partial<T>>, GuestObjectType<T>
 {
@@ -40,16 +44,20 @@ export class Dirty<T extends object>
   public value(guest: GuestType<Partial<T>>): unknown {
     this.all.value(
       new GuestCast(guest, ({ comparing, base }) => {
+        if (!comparing) {
+          return;
+        }
+
         give(
           Object.fromEntries(
-            Object.entries(base).filter(([key, value]) => {
+            Object.entries(comparing).filter(([key, value]) => {
               if (this.alwaysKeep.includes(key)) {
                 return true;
               }
               if (this.excludeKeys.includes(key)) {
                 return false;
               }
-              return value !== (comparing as any)[key];
+              return value !== (base as any)[key];
             }),
           ) as T,
           guest,
