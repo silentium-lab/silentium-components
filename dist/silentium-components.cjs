@@ -83,12 +83,12 @@ class RouteDisplay {
   }
 }
 
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => __defNormalProp(obj, key + "" , value);
+var __defProp$3 = Object.defineProperty;
+var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$3 = (obj, key, value) => __defNormalProp$3(obj, key + "" , value);
 class CurrentPage {
   constructor() {
-    __publicField(this, "source");
+    __publicField$3(this, "source");
     const correctUrl = location.href.replace(location.origin, "");
     this.source = new silentium.SourceWithPool(correctUrl);
   }
@@ -356,17 +356,117 @@ class EntryPointPage {
   }
 }
 
+var __defProp$2 = Object.defineProperty;
+var __defNormalProp$2 = (obj, key, value2) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
+var __publicField$2 = (obj, key, value2) => __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value2);
+class Dirty {
+  constructor(baseEntitySource, alwaysKeep = [], excludeKeys = [], becomePatronAuto = false) {
+    this.alwaysKeep = alwaysKeep;
+    this.excludeKeys = excludeKeys;
+    __publicField$2(this, "comparingSource", new silentium.SourceWithPool());
+    __publicField$2(this, "all", new silentium.SourceAll());
+    this.comparingSource.value(new silentium.Patron(this.all.guestKey("comparing")));
+    silentium.value(baseEntitySource, new silentium.Patron(this.all.guestKey("base")));
+    if (becomePatronAuto) {
+      silentium.value(baseEntitySource, new silentium.PatronOnce(this));
+    }
+  }
+  give(value2) {
+    silentium.give(JSON.parse(JSON.stringify(value2)), this.comparingSource);
+    return this;
+  }
+  value(guest) {
+    this.all.value(
+      new silentium.GuestCast(guest, ({ comparing, base }) => {
+        if (!comparing) {
+          return;
+        }
+        silentium.give(
+          Object.fromEntries(
+            Object.entries(comparing).filter(([key, value2]) => {
+              if (this.alwaysKeep.includes(key)) {
+                return true;
+              }
+              if (this.excludeKeys.includes(key)) {
+                return false;
+              }
+              return value2 !== base[key];
+            })
+          ),
+          guest
+        );
+      })
+    );
+    return this;
+  }
+}
+
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key, value2) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
+var __publicField$1 = (obj, key, value2) => __defNormalProp$1(obj, key + "" , value2);
+class Loading {
+  constructor(loadingStartSource, loadingFinishSource) {
+    this.loadingStartSource = loadingStartSource;
+    this.loadingFinishSource = loadingFinishSource;
+    __publicField$1(this, "loadingSource", new silentium.SourceWithPool());
+  }
+  value(guest) {
+    silentium.value(
+      this.loadingStartSource,
+      new silentium.GuestCast(guest, () => {
+        this.loadingSource.give(true);
+      })
+    );
+    silentium.value(
+      this.loadingFinishSource,
+      new silentium.GuestCast(guest, () => {
+        this.loadingSource.give(false);
+      })
+    );
+    this.loadingSource.value(guest);
+    return this;
+  }
+}
+
+class Touched {
+}
+
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
+var __publicField = (obj, key, value2) => __defNormalProp(obj, key + "" , value2);
+class HashTable {
+  constructor(baseSource) {
+    __publicField(this, "source", new silentium.SourceWithPool({}));
+    silentium.value(
+      baseSource,
+      new silentium.Patron(([key, value2]) => {
+        this.source.value((lastRecord) => {
+          lastRecord[key] = value2;
+        });
+      })
+    );
+  }
+  value(guest) {
+    silentium.value(this.source, guest);
+    return this;
+  }
+}
+
 exports.ComputedElement = ComputedElement;
 exports.CurrentPage = CurrentPage;
+exports.Dirty = Dirty;
 exports.EntryPointPage = EntryPointPage;
 exports.GroupActiveClass = GroupActiveClass;
+exports.HashTable = HashTable;
 exports.Input = Input;
 exports.Link = Link;
+exports.Loading = Loading;
 exports.Navigation = Navigation;
 exports.Page = Page;
 exports.PageFetchTransport = PageFetchTransport;
 exports.RouteDisplay = RouteDisplay;
 exports.Router = Router;
 exports.Text = Text;
+exports.Touched = Touched;
 exports.Visible = Visible;
 //# sourceMappingURL=silentium-components.cjs.map
