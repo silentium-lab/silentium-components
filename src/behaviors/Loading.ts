@@ -7,6 +7,9 @@ import {
   value,
 } from "silentium";
 
+/**
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
+ */
 export class Loading implements SourceObjectType<boolean> {
   private loadingSource = new SourceWithPool<boolean>();
 
