@@ -166,4 +166,41 @@ declare class EntryPointPage implements RoutePageType {
     mounted(): void;
 }
 
-export { ComputedElement, CurrentPage, EntryPointPage, GroupActiveClass, Input, Link, Navigation, Page, PageFetchTransport, RouteDisplay, type RouteDisplayType, type RouteDocument, type RoutePageTransportType, type RoutePageType, Router, Text, Visible };
+/**
+ * Takes source and remember it first value
+ * returns new record, what will contain only fields what was changed
+ */
+declare class Dirty<T extends object> implements SourceObjectType<Partial<T>>, GuestObjectType<T> {
+    private alwaysKeep;
+    private excludeKeys;
+    private comparingSource;
+    private all;
+    constructor(baseEntitySource: SourceType<T>, alwaysKeep?: string[], excludeKeys?: string[], becomePatronAuto?: boolean);
+    give(value: T): this;
+    value(guest: GuestType<Partial<T>>): unknown;
+}
+
+/**
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
+ */
+declare class Loading implements SourceObjectType<boolean> {
+    private loadingStartSource;
+    private loadingFinishSource;
+    private loadingSource;
+    constructor(loadingStartSource: SourceType<unknown>, loadingFinishSource: SourceType<unknown>);
+    value(guest: GuestType<boolean>): this;
+}
+
+declare class Touched {
+}
+
+/**
+ * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
+ */
+declare class HashTable implements SourceObjectType<Record<string, unknown>> {
+    private source;
+    constructor(baseSource: SourceType<[string, unknown]>);
+    value(guest: GuestType<Record<string, unknown>>): this;
+}
+
+export { ComputedElement, CurrentPage, Dirty, EntryPointPage, GroupActiveClass, HashTable, Input, Link, Loading, Navigation, Page, PageFetchTransport, RouteDisplay, type RouteDisplayType, type RouteDocument, type RoutePageTransportType, type RoutePageType, Router, Text, Touched, Visible };

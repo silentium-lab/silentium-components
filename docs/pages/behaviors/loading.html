@@ -3,6 +3,7 @@
     <img src="./assets/img/github_16.jpg" width="16" height="16" />
     Loading на GitHub
 </a>
+
 <h2 class="font-medium title-font text-gray-900 text-lg mb-2">
     <span> Loading </span>
 </h2>
@@ -22,3 +23,45 @@
     что загрузка начата Loading переключается в true, когда Fetch Клиент
     получит результат - загрузка завершена, loading переключается в false.
 </p>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
+<pre
+  class="mb-4"
+><code class="language-js">import { SourceWithPool, SourceSync } from "silentium";
+import { Loading } from 'silentium-components';
+
+const loadingStartSource = new SourceWithPool();
+const loadingFinishSource = new SourceWithPool();
+const loading = new SourceSync(
+    new Loading(loadingStartSource, loadingFinishSource),
+);
+const values = [];
+loadingStartSource.give({});
+values.push(loading.syncValue());
+loadingFinishSource.give({});
+values.push(loading.syncValue());
+
+document.querySelector(".guest-result").textContent = JSON.stringify(values);
+</code></pre>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
+<div class="example mb-4">
+  <span class="guest-result">JS не отработал</span>
+</div>
+<script type="module">
+  import { SourceWithPool, SourceSync } from "silentium";
+  import { Loading } from 'silentium-components';
+
+  const loadingStartSource = new SourceWithPool();
+  const loadingFinishSource = new SourceWithPool();
+  const loading = new SourceSync(
+    new Loading(loadingStartSource, loadingFinishSource),
+  );
+  const values = [];
+  loadingStartSource.give({});
+  values.push(loading.syncValue());
+  loadingFinishSource.give({});
+  values.push(loading.syncValue());
+
+  document.querySelector(".guest-result").textContent = JSON.stringify(values);
+</script>

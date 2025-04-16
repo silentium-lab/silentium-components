@@ -6,3 +6,18 @@ html, body {
     font-size: 16px;
     font-weight: normal;
 }
+
+pre {
+    padding: 16px;
+    background: #282c34;
+    color: #abb2bf;
+    overflow: auto;
+}
+
+.guest-result {
+    display: block;
+    background: #282c34;
+    color: #abb2bf;
+    padding: 16px;
+    font-size: 16px;
+}

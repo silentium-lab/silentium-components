@@ -7,9 +7,56 @@
     <span> Dirty </span>
 </h2>
 
-
 <p class="text-gray-600 text-lg mb-4">
     Позволяет на основе имеющегося источника передающего структуру данных
     создать новый источник, который вернет структуру данных
     где окажутся только измененные поля.
 </p>
+
+<p class="text-gray-600 text-lg mb-4">
+    Может быть полезно в формах, где нужно отправлять только то что было изменено.
+</p>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
+<pre
+  class="mb-4"
+><code class="language-js">import { SourceWithPool, SourceSync } from "silentium";
+import { Dirty } from 'silentium-components';
+
+const form = new SourceWithPool({
+    name: "one",
+    surname: "two",
+});
+const dirtyForm = new Dirty(form);
+dirtyForm.give({
+    name: "new",
+    surname: "two",
+});
+
+const syncDirty = new SourceSync(dirtyForm);
+
+document.querySelector(".guest-result").textContent = JSON.stringify(syncDirty.syncValue());
+</code></pre>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
+<div class="example mb-4">
+  <span class="guest-result">JS не отработал</span>
+</div>
+<script type="module">
+  import { SourceWithPool, SourceSync } from "silentium";
+  import { Dirty } from 'silentium-components';
+
+  const form = new SourceWithPool({
+    name: "one",
+    surname: "two",
+  });
+  const dirtyForm = new Dirty(form);
+  dirtyForm.give({
+    name: "new",
+    surname: "two",
+  });
+
+  const syncDirty = new SourceSync(dirtyForm);
+
+  document.querySelector(".guest-result").textContent = JSON.stringify(syncDirty.syncValue());
+</script>
