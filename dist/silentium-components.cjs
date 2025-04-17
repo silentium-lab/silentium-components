@@ -431,6 +431,31 @@ class Loading {
 class Touched {
 }
 
+class Path {
+  constructor(baseSource, keyType) {
+    this.baseSource = baseSource;
+    this.keyType = keyType;
+  }
+  value(guest) {
+    const all = new silentium.SourceAll(["base", "key"]);
+    silentium.value(this.baseSource, new silentium.GuestCast(guest, all.guestKey("base")));
+    silentium.value(this.keyType, new silentium.GuestCast(guest, all.guestKey("key")));
+    all.value(
+      new silentium.GuestCast(guest, ({ base, key }) => {
+        const keyChunks = key.split(".");
+        let value2 = base;
+        keyChunks.forEach((keyChunk) => {
+          value2 = value2[keyChunk];
+        });
+        if (value2 !== void 0 && value2 !== base) {
+          silentium.give(value2, guest);
+        }
+      })
+    );
+    return this;
+  }
+}
+
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
 var __publicField = (obj, key, value2) => __defNormalProp(obj, key + "" , value2);
@@ -464,6 +489,7 @@ exports.Loading = Loading;
 exports.Navigation = Navigation;
 exports.Page = Page;
 exports.PageFetchTransport = PageFetchTransport;
+exports.Path = Path;
 exports.RouteDisplay = RouteDisplay;
 exports.Router = Router;
 exports.Text = Text;
