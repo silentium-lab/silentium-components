@@ -194,6 +194,13 @@ declare class Loading implements SourceObjectType<boolean> {
 declare class Touched {
 }
 
+declare class Path<T extends Record<string, unknown>, K extends string> implements SourceObjectType<T[K]> {
+    private baseSource;
+    private keyType;
+    constructor(baseSource: SourceType<T>, keyType: SourceType<K>);
+    value(guest: GuestType<T[K]>): this;
+}
+
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
@@ -203,4 +210,4 @@ declare class HashTable implements SourceObjectType<Record<string, unknown>> {
     value(guest: GuestType<Record<string, unknown>>): this;
 }
 
-export { ComputedElement, CurrentPage, Dirty, EntryPointPage, GroupActiveClass, HashTable, Input, Link, Loading, Navigation, Page, PageFetchTransport, RouteDisplay, type RouteDisplayType, type RouteDocument, type RoutePageTransportType, type RoutePageType, Router, Text, Touched, Visible };
+export { ComputedElement, CurrentPage, Dirty, EntryPointPage, GroupActiveClass, HashTable, Input, Link, Loading, Navigation, Page, PageFetchTransport, Path, RouteDisplay, type RouteDisplayType, type RouteDocument, type RoutePageTransportType, type RoutePageType, Router, Text, Touched, Visible };

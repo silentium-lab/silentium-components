@@ -12,3 +12,41 @@
     и информация о ключе, который нужно получить являются источниками,
     благодаря этому можно изменяя ключ получать разные записи от одного и того же источника
 </p>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
+<pre
+  class="mb-4"
+><code class="language-js">import { SourceSync, sourceOf } from "silentium";
+import { Path } from 'silentium-components';
+
+const record = sourceOf({
+    name: "Peter",
+    surname: "Parker",
+    type: {
+    name: "spider-man",
+    },
+});
+const typeName = new SourceSync(new Path(record, sourceOf("type.name")));
+
+document.querySelector(".guest-result").textContent = typeName.syncValue();
+</code></pre>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
+<div class="example mb-4">
+  <span class="guest-result">JS не отработал</span>
+</div>
+<script type="module">
+  import { SourceSync, sourceOf } from "silentium";
+  import { Path } from 'silentium-components';
+
+  const record = sourceOf({
+    name: "Peter",
+    surname: "Parker",
+    type: {
+      name: "spider-man",
+    },
+  });
+  const typeName = new SourceSync(new Path(record, sourceOf("type.name")));
+
+  document.querySelector(".guest-result").textContent = typeName.syncValue();
+</script>

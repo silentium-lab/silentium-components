@@ -429,6 +429,31 @@ class Loading {
 class Touched {
 }
 
+class Path {
+  constructor(baseSource, keyType) {
+    this.baseSource = baseSource;
+    this.keyType = keyType;
+  }
+  value(guest) {
+    const all = new SourceAll(["base", "key"]);
+    value(this.baseSource, new GuestCast(guest, all.guestKey("base")));
+    value(this.keyType, new GuestCast(guest, all.guestKey("key")));
+    all.value(
+      new GuestCast(guest, ({ base, key }) => {
+        const keyChunks = key.split(".");
+        let value2 = base;
+        keyChunks.forEach((keyChunk) => {
+          value2 = value2[keyChunk];
+        });
+        if (value2 !== void 0 && value2 !== base) {
+          give(value2, guest);
+        }
+      })
+    );
+    return this;
+  }
+}
+
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
 var __publicField = (obj, key, value2) => __defNormalProp(obj, key + "" , value2);
@@ -450,5 +475,5 @@ class HashTable {
   }
 }
 
-export { ComputedElement, CurrentPage, Dirty, EntryPointPage, GroupActiveClass, HashTable, Input, Link, Loading, Navigation, Page, PageFetchTransport, RouteDisplay, Router, Text, Touched, Visible };
+export { ComputedElement, CurrentPage, Dirty, EntryPointPage, GroupActiveClass, HashTable, Input, Link, Loading, Navigation, Page, PageFetchTransport, Path, RouteDisplay, Router, Text, Touched, Visible };
 //# sourceMappingURL=silentium-components.mjs.map
