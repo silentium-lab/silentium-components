@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/silentium-lab/silentium-components/compare/v0.0.3...v0.0.4) (2025-04-17)
+
+
+### Features
+
+* **12-issue:** routes added ([faf32a6](https://github.com/silentium-lab/silentium-components/commit/faf32a6dfdbc09776279c4194ecd9c50a55a256c))
+* **12-issue:** work done on creation Path class ([d7fcd11](https://github.com/silentium-lab/silentium-components/commit/d7fcd11e235a6b00d550124859d4013409fb6b9f))
+* **12-issue:** work on path ([f2a13c4](https://github.com/silentium-lab/silentium-components/commit/f2a13c4a9a2d02807d7e9f1fd58392baa0d63767))
+* **12-issue:** work on path ([98db7c1](https://github.com/silentium-lab/silentium-components/commit/98db7c12388c818abf03f7dfe60c5789d3781019))
+* **main:** fix versions of components ([d1ff4d0](https://github.com/silentium-lab/silentium-components/commit/d1ff4d091a4fc62c16f6bb9e710207be3333e12a))
+
 ### [0.0.3](https://github.com/silentium-lab/silentium-components/compare/v0.0.2...v0.0.3) (2025-04-16)
 
 
