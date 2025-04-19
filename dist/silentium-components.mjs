@@ -1,4 +1,4 @@
-import { give, SourceAll, value, Patron, SourceChangeable, GuestCast, PatronOnce, PrivateClass, Source, sourceOf } from 'silentium';
+import { give, SourceAll, value, Patron, SourceChangeable, GuestCast, PatronOnce, PrivateClass, Source, sourceOf, SourceFiltered } from 'silentium';
 import { HistoryNewPage, HistoryPoppedPage } from 'silentium-web-api';
 
 class PageFetchTransport {
@@ -454,6 +454,40 @@ class Path {
   }
 }
 
+class Deadline {
+  constructor(baseSource, errorSource, timeout) {
+    this.baseSource = baseSource;
+    this.errorSource = errorSource;
+    this.timeout = timeout;
+  }
+  value(guest) {
+    value(
+      this.timeout,
+      new GuestCast(guest, (timeout) => {
+        let timeoutReached = false;
+        setTimeout(() => {
+          if (timeoutReached) {
+            return;
+          }
+          timeoutReached = true;
+          give(
+            new Error("Timeout reached in Deadline class"),
+            this.errorSource
+          );
+        }, timeout);
+        new SourceFiltered(this.baseSource, () => !timeoutReached).value(guest);
+        value(
+          this.baseSource,
+          new PatronOnce(() => {
+            timeoutReached = true;
+          })
+        );
+      })
+    );
+    return this;
+  }
+}
+
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
 var __publicField = (obj, key, value2) => __defNormalProp(obj, key + "" , value2);
@@ -475,5 +509,5 @@ class HashTable {
   }
 }
 
-export { ComputedElement, CurrentPage, Dirty, EntryPointPage, GroupActiveClass, HashTable, Input, Link, Loading, Navigation, Page, PageFetchTransport, Path, RouteDisplay, Router, Text, Touched, Visible };
+export { ComputedElement, CurrentPage, Deadline, Dirty, EntryPointPage, GroupActiveClass, HashTable, Input, Link, Loading, Navigation, Page, PageFetchTransport, Path, RouteDisplay, Router, Text, Touched, Visible };
 //# sourceMappingURL=silentium-components.mjs.map

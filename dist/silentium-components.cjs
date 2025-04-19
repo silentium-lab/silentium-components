@@ -456,6 +456,40 @@ class Path {
   }
 }
 
+class Deadline {
+  constructor(baseSource, errorSource, timeout) {
+    this.baseSource = baseSource;
+    this.errorSource = errorSource;
+    this.timeout = timeout;
+  }
+  value(guest) {
+    silentium.value(
+      this.timeout,
+      new silentium.GuestCast(guest, (timeout) => {
+        let timeoutReached = false;
+        setTimeout(() => {
+          if (timeoutReached) {
+            return;
+          }
+          timeoutReached = true;
+          silentium.give(
+            new Error("Timeout reached in Deadline class"),
+            this.errorSource
+          );
+        }, timeout);
+        new silentium.SourceFiltered(this.baseSource, () => !timeoutReached).value(guest);
+        silentium.value(
+          this.baseSource,
+          new silentium.PatronOnce(() => {
+            timeoutReached = true;
+          })
+        );
+      })
+    );
+    return this;
+  }
+}
+
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
 var __publicField = (obj, key, value2) => __defNormalProp(obj, key + "" , value2);
@@ -479,6 +513,7 @@ class HashTable {
 
 exports.ComputedElement = ComputedElement;
 exports.CurrentPage = CurrentPage;
+exports.Deadline = Deadline;
 exports.Dirty = Dirty;
 exports.EntryPointPage = EntryPointPage;
 exports.GroupActiveClass = GroupActiveClass;
