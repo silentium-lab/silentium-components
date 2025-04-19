@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/silentium-lab/silentium-components/compare/v0.0.4...v0.0.5) (2025-04-19)
+
+
+### Features
+
+* **main:** fix source changeable renaming ([66fe284](https://github.com/silentium-lab/silentium-components/commit/66fe28421a4f6c0331c7eee8470cb2ccedb0c79e))
+* **main:** release ([6f7d7d3](https://github.com/silentium-lab/silentium-components/commit/6f7d7d36590dc7e7fa4d65f3d56e00bc23cd79b3))
+
 ### [0.0.4](https://github.com/silentium-lab/silentium-components/compare/v0.0.3...v0.0.4) (2025-04-17)
 
 
