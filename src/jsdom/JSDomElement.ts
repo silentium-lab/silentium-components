@@ -3,12 +3,12 @@ import {
   Patron,
   SourceObjectType,
   SourceType,
-  SourceWithPool,
+  SourceChangeable,
   value,
 } from "silentium";
 
 export class JSDomElement implements SourceObjectType<HTMLElement> {
-  private source = new SourceWithPool<HTMLElement>();
+  private source = new SourceChangeable<HTMLElement>();
 
   public constructor(documentSource: SourceType<Document>, html: string) {
     value(

@@ -8,7 +8,7 @@ import {
   SourceAll,
   SourceObjectType,
   SourceType,
-  SourceWithPool,
+  SourceChangeable,
   value,
 } from "silentium";
 
@@ -19,7 +19,7 @@ import {
 export class Dirty<T extends object>
   implements SourceObjectType<Partial<T>>, GuestObjectType<T>
 {
-  private comparingSource = new SourceWithPool<T>();
+  private comparingSource = new SourceChangeable<T>();
   private all = new SourceAll<{ comparing: T | null; base: T }>();
 
   public constructor(

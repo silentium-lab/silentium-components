@@ -27,11 +27,11 @@
 <p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
 <pre
   class="mb-4"
-><code class="language-js">import { SourceWithPool, SourceSync } from "silentium";
+><code class="language-js">import { SourceChangeable, SourceSync } from "silentium";
 import { Loading } from 'silentium-components';
 
-const loadingStartSource = new SourceWithPool();
-const loadingFinishSource = new SourceWithPool();
+const loadingStartSource = new SourceChangeable();
+const loadingFinishSource = new SourceChangeable();
 const loading = new SourceSync(
     new Loading(loadingStartSource, loadingFinishSource),
 );
@@ -49,11 +49,11 @@ document.querySelector(".guest-result").textContent = JSON.stringify(values);
   <span class="guest-result">JS не отработал</span>
 </div>
 <script type="module">
-  import { SourceWithPool, SourceSync } from "silentium";
+  import { SourceChangeable, SourceSync } from "silentium";
   import { Loading } from 'silentium-components';
 
-  const loadingStartSource = new SourceWithPool();
-  const loadingFinishSource = new SourceWithPool();
+  const loadingStartSource = new SourceChangeable();
+  const loadingFinishSource = new SourceChangeable();
   const loading = new SourceSync(
     new Loading(loadingStartSource, loadingFinishSource),
   );

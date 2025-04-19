@@ -1,24 +1,25 @@
-import { give, GuestType, PrivateClass, SourceWithPool } from "silentium";
+import { give, GuestType, PrivateClass, SourceChangeable } from "silentium";
 import { expect, test } from "vitest";
 import { PageFake } from "../page/PageFake";
 import { Navigation } from "./Navigation";
 import { RoutePageTransportType } from "./PageFetchTransport";
 
 class FakeTransport implements RoutePageTransportType {
-  constructor(
+  public constructor(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     basePath = null,
     private template = "null",
   ) {}
-  content(guest: GuestType<string>): void {
+
+  public content(guest: GuestType<string>): void {
     give(this.template, guest);
   }
 }
 
 test("navigation", () => {
-  const pageLoading = new SourceWithPool(false);
-  const basePath = new SourceWithPool("/some/path/#");
-  const currentPage = new SourceWithPool("/some/path/unknown-page");
+  const pageLoading = new SourceChangeable(false);
+  const basePath = new SourceChangeable("/some/path/#");
+  const currentPage = new SourceChangeable("/some/path/unknown-page");
   const display = {
     display(content: string) {
       expect(content).toBe("default.html");

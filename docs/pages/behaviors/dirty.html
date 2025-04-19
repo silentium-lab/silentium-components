@@ -20,10 +20,10 @@
 <p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
 <pre
   class="mb-4"
-><code class="language-js">import { SourceWithPool, SourceSync } from "silentium";
+><code class="language-js">import { SourceChangeable, SourceSync } from "silentium";
 import { Dirty } from 'silentium-components';
 
-const form = new SourceWithPool({
+const form = new SourceChangeable({
     name: "one",
     surname: "two",
 });
@@ -43,10 +43,10 @@ document.querySelector(".guest-result").textContent = JSON.stringify(syncDirty.s
   <span class="guest-result">JS не отработал</span>
 </div>
 <script type="module">
-  import { SourceWithPool, SourceSync } from "silentium";
+  import { SourceChangeable, SourceSync } from "silentium";
   import { Dirty } from 'silentium-components';
 
-  const form = new SourceWithPool({
+  const form = new SourceChangeable({
     name: "one",
     surname: "two",
   });

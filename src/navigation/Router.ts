@@ -4,7 +4,7 @@ import {
   GuestCast,
   Patron,
   PrivateClass,
-  SourceWithPool,
+  SourceChangeable,
   give,
   sourceOf,
 } from "silentium";
@@ -29,7 +29,7 @@ export class Router {
     private menuSelector: string,
   ) {}
 
-  routes(
+  public routes(
     routes: Route[],
     currentPage: any,
     basePathSource: any,
@@ -42,12 +42,12 @@ export class Router {
 
     const [basePath] = location.href.replace(location.origin, "").split("#");
     if (!basePathSource) {
-      basePathSource = new SourceWithPool(
+      basePathSource = new SourceChangeable(
         `${basePath}#`.replace("index.html", "").replace("//", "/"),
       );
     }
 
-    const pageLoading = new SourceWithPool(false);
+    const pageLoading = new SourceChangeable(false);
     pageLoading.value(new Patron(new Visible(this.loaderSelector)));
 
     const historyPoppedPage = new HistoryPoppedPage(currentPage);

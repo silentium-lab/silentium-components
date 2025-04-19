@@ -1,13 +1,18 @@
-import { GuestType, Patron, SourceWithPoolType } from "silentium";
+import {
+  GuestType,
+  Patron,
+  SourceChangeable,
+  SourceChangeableType,
+} from "silentium";
 
 type InputValue = number | string;
 
 /**
  * @deprecated move to web api
  */
-export class Input implements SourceWithPoolType<InputValue> {
+export class Input implements SourceChangeableType<InputValue> {
   public constructor(
-    private source: SourceWithPoolType<InputValue>,
+    private source: SourceChangeable<InputValue>,
     selector: string,
   ) {
     const el = document.querySelector(selector) as HTMLInputElement;

@@ -1,4 +1,4 @@
-import { give, SourceAll, value, Patron, SourceWithPool, GuestCast, PatronOnce, PrivateClass, Source, sourceOf } from 'silentium';
+import { give, SourceAll, value, Patron, SourceChangeable, GuestCast, PatronOnce, PrivateClass, Source, sourceOf } from 'silentium';
 import { HistoryNewPage, HistoryPoppedPage } from 'silentium-web-api';
 
 class PageFetchTransport {
@@ -88,7 +88,7 @@ class CurrentPage {
   constructor() {
     __publicField$3(this, "source");
     const correctUrl = location.href.replace(location.origin, "");
-    this.source = new SourceWithPool(correctUrl);
+    this.source = new SourceChangeable(correctUrl);
   }
   give(value) {
     this.source.give(value);
@@ -265,11 +265,11 @@ class Router {
     currentPage.value(new Patron(new HistoryNewPage()));
     const [basePath] = location.href.replace(location.origin, "").split("#");
     if (!basePathSource) {
-      basePathSource = new SourceWithPool(
+      basePathSource = new SourceChangeable(
         `${basePath}#`.replace("index.html", "").replace("//", "/")
       );
     }
-    const pageLoading = new SourceWithPool(false);
+    const pageLoading = new SourceChangeable(false);
     pageLoading.value(new Patron(new Visible(this.loaderSelector)));
     const historyPoppedPage = new HistoryPoppedPage(currentPage);
     historyPoppedPage.watchPop();
@@ -361,7 +361,7 @@ class Dirty {
   constructor(baseEntitySource, alwaysKeep = [], excludeKeys = [], becomePatronAuto = false) {
     this.alwaysKeep = alwaysKeep;
     this.excludeKeys = excludeKeys;
-    __publicField$2(this, "comparingSource", new SourceWithPool());
+    __publicField$2(this, "comparingSource", new SourceChangeable());
     __publicField$2(this, "all", new SourceAll());
     this.comparingSource.value(new Patron(this.all.guestKey("comparing")));
     value(baseEntitySource, new Patron(this.all.guestKey("base")));
@@ -406,7 +406,7 @@ class Loading {
   constructor(loadingStartSource, loadingFinishSource) {
     this.loadingStartSource = loadingStartSource;
     this.loadingFinishSource = loadingFinishSource;
-    __publicField$1(this, "loadingSource", new SourceWithPool());
+    __publicField$1(this, "loadingSource", new SourceChangeable());
   }
   value(guest) {
     value(
@@ -459,7 +459,7 @@ var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { e
 var __publicField = (obj, key, value2) => __defNormalProp(obj, key + "" , value2);
 class HashTable {
   constructor(baseSource) {
-    __publicField(this, "source", new SourceWithPool({}));
+    __publicField(this, "source", new SourceChangeable({}));
     value(
       baseSource,
       new Patron(([key, value2]) => {

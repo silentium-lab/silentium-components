@@ -1,5 +1,5 @@
 import * as silentium from 'silentium';
-import { GuestType, SourceWithPoolType, SourceType, PrivateType, GuestObjectType, SourceObjectType } from 'silentium';
+import { GuestType, SourceChangeableType, SourceType, PrivateType, SourceChangeable, GuestObjectType, SourceObjectType } from 'silentium';
 import { RoutePageTransportType as RoutePageTransportType$1 } from 'src/navigation/PageFetchTransport';
 import { RouteDisplayType as RouteDisplayType$1 } from 'src/navigation/RouteDisplay';
 import { RoutePageType as RoutePageType$1 } from 'src/navigation/RoutePageType';
@@ -31,7 +31,7 @@ declare class Navigation {
     private currentPage;
     private display;
     private pageTransport;
-    constructor(loading: SourceWithPoolType<boolean>, basePath: SourceType<string>, currentPage: SourceWithPoolType<string>, display: RouteDisplayType$1, pageTransport: PrivateType<RoutePageTransportType$1>);
+    constructor(loading: SourceChangeableType<boolean>, basePath: SourceType<string>, currentPage: SourceChangeableType<string>, display: RouteDisplayType$1, pageTransport: PrivateType<RoutePageTransportType$1>);
     routes(routes: RouteDocument[]): void;
 }
 
@@ -55,12 +55,12 @@ interface RoutePageType {
 /**
  * @deprecated move to web api
  */
-declare class CurrentPage implements SourceWithPoolType<string> {
+declare class CurrentPage implements SourceChangeableType<string> {
     private source;
     constructor();
     give(value: string): this;
     value(guest: GuestType<string>): GuestType<string>;
-    pool(): silentium.PatronPool<string>;
+    pool(): silentium.PatronPool<unknown>;
 }
 
 type Route = {
@@ -81,12 +81,12 @@ type InputValue = number | string;
 /**
  * @deprecated move to web api
  */
-declare class Input implements SourceWithPoolType<InputValue> {
+declare class Input implements SourceChangeableType<InputValue> {
     private source;
-    constructor(source: SourceWithPoolType<InputValue>, selector: string);
+    constructor(source: SourceChangeable<InputValue>, selector: string);
     value(guest: GuestType<InputValue>): this;
     give(value: InputValue): this;
-    pool(): silentium.PatronPool<InputValue>;
+    pool(): silentium.PatronPool<unknown>;
 }
 
 /**

@@ -3,7 +3,7 @@ import {
   GuestType,
   SourceObjectType,
   SourceType,
-  SourceWithPool,
+  SourceChangeable,
   value,
 } from "silentium";
 
@@ -11,7 +11,7 @@ import {
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
 export class Loading implements SourceObjectType<boolean> {
-  private loadingSource = new SourceWithPool<boolean>();
+  private loadingSource = new SourceChangeable<boolean>();
 
   public constructor(
     private loadingStartSource: SourceType<unknown>,

@@ -5,7 +5,7 @@ import {
   SourceType,
   value,
   give,
-  SourceWithPoolType,
+  SourceChangeableType,
 } from "silentium";
 import { RoutePageTransportType } from "src/navigation/PageFetchTransport";
 import { RouteDisplayType } from "src/navigation/RouteDisplay";
@@ -21,9 +21,9 @@ export interface RouteDocument {
 
 export class Navigation {
   public constructor(
-    private loading: SourceWithPoolType<boolean>,
+    private loading: SourceChangeableType<boolean>,
     private basePath: SourceType<string>,
-    private currentPage: SourceWithPoolType<string>,
+    private currentPage: SourceChangeableType<string>,
     private display: RouteDisplayType,
     private pageTransport: PrivateType<RoutePageTransportType>,
   ) {}

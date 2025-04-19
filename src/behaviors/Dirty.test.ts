@@ -1,9 +1,9 @@
-import { GuestSync, SourceWithPool } from "silentium";
+import { GuestSync, SourceChangeable } from "silentium";
 import { Dirty } from "../behaviors/Dirty";
 import { expect, test } from "vitest";
 
 test("Dirty.test", () => {
-  const form = new SourceWithPool({
+  const form = new SourceChangeable({
     name: "one",
     surname: "two",
   });

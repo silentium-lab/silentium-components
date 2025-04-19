@@ -3,7 +3,7 @@ import {
   Patron,
   SourceObjectType,
   SourceType,
-  SourceWithPool,
+  SourceChangeable,
   value,
 } from "silentium";
 
@@ -11,7 +11,7 @@ import {
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 export class HashTable implements SourceObjectType<Record<string, unknown>> {
-  private source = new SourceWithPool<Record<string, unknown>>({});
+  private source = new SourceChangeable<Record<string, unknown>>({});
 
   public constructor(baseSource: SourceType<[string, unknown]>) {
     value(

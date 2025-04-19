@@ -1,14 +1,14 @@
-import { GuestType, SourceWithPool, SourceWithPoolType } from "silentium";
+import { GuestType, SourceChangeable, SourceChangeableType } from "silentium";
 
 /**
  * @deprecated move to web api
  */
-export class CurrentPage implements SourceWithPoolType<string> {
-  private source: SourceWithPoolType<string>;
+export class CurrentPage implements SourceChangeableType<string> {
+  private source: SourceChangeable<string>;
 
   public constructor() {
     const correctUrl = location.href.replace(location.origin, "");
-    this.source = new SourceWithPool(correctUrl);
+    this.source = new SourceChangeable(correctUrl);
   }
 
   public give(value: string): this {

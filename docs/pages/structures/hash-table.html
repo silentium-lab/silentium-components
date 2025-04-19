@@ -19,10 +19,10 @@
 <p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
 <pre
   class="mb-4"
-><code class="language-js">import { SourceWithPool, SourceSync } from "silentium";
+><code class="language-js">import { SourceChangeable, SourceSync } from "silentium";
 import { HashTable } from 'silentium-components';
 
-const entrySource = new SourceWithPool();
+const entrySource = new SourceChangeable();
 const hashTable = new SourceSync(new HashTable(entrySource));
 entrySource.give(["key-one", "value-one"]);
 entrySource.give(["key-two", "value-two"]);
@@ -36,10 +36,10 @@ document.querySelector(".guest-result").textContent = JSON.stringify(hashTable.s
   <span class="guest-result">Значение установится синхронно!</span>
 </div>
 <script type="module">
-  import { SourceWithPool, SourceSync } from "silentium";
+  import { SourceChangeable, SourceSync } from "silentium";
   import { HashTable } from 'silentium-components';
 
-  const entrySource = new SourceWithPool();
+  const entrySource = new SourceChangeable();
   const hashTable = new SourceSync(new HashTable(entrySource));
   entrySource.give(["key-one", "value-one"]);
   entrySource.give(["key-two", "value-two"]);

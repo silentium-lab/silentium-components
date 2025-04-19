@@ -1,9 +1,9 @@
-import { SourceSync, SourceWithPool } from "silentium";
+import { SourceSync, SourceChangeable } from "silentium";
 import { HashTable } from "../structures/HashTable";
 import { expect, test } from "vitest";
 
 test("HashTable.test", () => {
-  const entrySource = new SourceWithPool<[string, string]>();
+  const entrySource = new SourceChangeable<[string, string]>();
   const hashTable = new SourceSync(new HashTable(entrySource));
   entrySource.give(["key-one", "value-one"]);
   entrySource.give(["key-two", "value-two"]);

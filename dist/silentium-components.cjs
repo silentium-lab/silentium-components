@@ -90,7 +90,7 @@ class CurrentPage {
   constructor() {
     __publicField$3(this, "source");
     const correctUrl = location.href.replace(location.origin, "");
-    this.source = new silentium.SourceWithPool(correctUrl);
+    this.source = new silentium.SourceChangeable(correctUrl);
   }
   give(value) {
     this.source.give(value);
@@ -267,11 +267,11 @@ class Router {
     currentPage.value(new silentium.Patron(new silentiumWebApi.HistoryNewPage()));
     const [basePath] = location.href.replace(location.origin, "").split("#");
     if (!basePathSource) {
-      basePathSource = new silentium.SourceWithPool(
+      basePathSource = new silentium.SourceChangeable(
         `${basePath}#`.replace("index.html", "").replace("//", "/")
       );
     }
-    const pageLoading = new silentium.SourceWithPool(false);
+    const pageLoading = new silentium.SourceChangeable(false);
     pageLoading.value(new silentium.Patron(new Visible(this.loaderSelector)));
     const historyPoppedPage = new silentiumWebApi.HistoryPoppedPage(currentPage);
     historyPoppedPage.watchPop();
@@ -363,7 +363,7 @@ class Dirty {
   constructor(baseEntitySource, alwaysKeep = [], excludeKeys = [], becomePatronAuto = false) {
     this.alwaysKeep = alwaysKeep;
     this.excludeKeys = excludeKeys;
-    __publicField$2(this, "comparingSource", new silentium.SourceWithPool());
+    __publicField$2(this, "comparingSource", new silentium.SourceChangeable());
     __publicField$2(this, "all", new silentium.SourceAll());
     this.comparingSource.value(new silentium.Patron(this.all.guestKey("comparing")));
     silentium.value(baseEntitySource, new silentium.Patron(this.all.guestKey("base")));
@@ -408,7 +408,7 @@ class Loading {
   constructor(loadingStartSource, loadingFinishSource) {
     this.loadingStartSource = loadingStartSource;
     this.loadingFinishSource = loadingFinishSource;
-    __publicField$1(this, "loadingSource", new silentium.SourceWithPool());
+    __publicField$1(this, "loadingSource", new silentium.SourceChangeable());
   }
   value(guest) {
     silentium.value(
@@ -461,7 +461,7 @@ var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { e
 var __publicField = (obj, key, value2) => __defNormalProp(obj, key + "" , value2);
 class HashTable {
   constructor(baseSource) {
-    __publicField(this, "source", new silentium.SourceWithPool({}));
+    __publicField(this, "source", new silentium.SourceChangeable({}));
     silentium.value(
       baseSource,
       new silentium.Patron(([key, value2]) => {

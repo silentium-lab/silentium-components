@@ -1,10 +1,10 @@
-import { SourceSync, SourceWithPool } from "silentium";
+import { SourceSync, SourceChangeable } from "silentium";
 import { expect, test } from "vitest";
 import { Loading } from "../behaviors/Loading";
 
 test("Loading.test", () => {
-  const loadingStartSource = new SourceWithPool();
-  const loadingFinishSource = new SourceWithPool();
+  const loadingStartSource = new SourceChangeable();
+  const loadingFinishSource = new SourceChangeable();
   const loading = new SourceSync(
     new Loading(loadingStartSource, loadingFinishSource),
   );
