@@ -1,15 +1,15 @@
-import { sourceOf, SourceSync } from "silentium";
-import { Path } from "./Path";
+import { sourceSync } from "silentium";
 import { expect, test } from "vitest";
+import { path } from "./Path";
 
 test("Path.nested.test", () => {
-  const record = sourceOf({
+  const record = {
     name: "Peter",
     surname: "Parker",
     type: {
       name: "spider-man",
     },
-  });
-  const typeName = new SourceSync(new Path(record, sourceOf("type.name")));
+  };
+  const typeName = sourceSync(path(record, "type.name"));
   expect(typeName.syncValue()).toBe("spider-man");
 });

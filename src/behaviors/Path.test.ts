@@ -1,12 +1,12 @@
-import { sourceOf, SourceSync } from "silentium";
-import { Path } from "../behaviors/Path";
+import { sourceSync } from "silentium";
 import { expect, test } from "vitest";
+import { path } from "../behaviors/Path";
 
 test("Path.test", () => {
-  const record = sourceOf({
+  const record = {
     name: "Peter",
     surname: "Parker",
-  });
-  const name = new SourceSync(new Path(record, sourceOf("name")));
+  };
+  const name = sourceSync(path(record, "name"));
   expect(name.syncValue()).toBe("Peter");
 });

@@ -1,29 +1,34 @@
-import { GuestObjectType, PatronOnce, SourceType, value } from "silentium";
+import {
+  give,
+  guestCast,
+  GuestType,
+  sourceAll,
+  SourceType,
+  value,
+} from "silentium";
 
 /**
  * Sets activeClass to one element of group
  * and resets activeClass on other group elements
  * suitable for menu active class
- *
- * @deprecated heavily related to web api needs refactoring
  */
-export class GroupActiveClass implements GuestObjectType<HTMLElement> {
-  public constructor(
-    private activeClass: string,
-    private groupSelector: string,
-    private document: SourceType<Document>,
-  ) {}
-
-  public give(element: HTMLElement): this {
+export const groupActiveClass = (
+  activeClassSrc: SourceType<string>,
+  activeElementSrc: SourceType<HTMLElement>,
+  groupElementsSrc: SourceType<HTMLElement[]>,
+) => {
+  return (g: GuestType<HTMLElement>) => {
     value(
-      this.document,
-      new PatronOnce((document) => {
-        document.querySelectorAll(this.groupSelector).forEach((el) => {
-          el.classList.remove(this.activeClass);
+      sourceAll([activeClassSrc, activeElementSrc, groupElementsSrc]),
+      guestCast(g, ([activeClass, activeElement, groupElements]) => {
+        groupElements.forEach((el) => {
+          if (el.classList) {
+            el.classList.remove(activeClass);
+          }
         });
-        element.classList.add(this.activeClass);
+        activeElement.classList.add(activeClass);
+        give(activeElement, g);
       }),
     );
-    return this;
-  }
-}
+  };
+};

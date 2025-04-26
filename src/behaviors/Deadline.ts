@@ -9,6 +9,12 @@ import {
   value,
 } from "silentium";
 
+export const deadline = (
+  baseSource: SourceType<T>,
+  private errorSource: GuestType<Error>,
+  private timeout: SourceType<number>,
+) => {};
+
 export class Deadline<T> implements SourceObjectType<T> {
   public constructor(
     private baseSource: SourceType<T>,

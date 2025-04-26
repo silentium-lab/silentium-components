@@ -45,6 +45,7 @@
     "rollup": "^4.24.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-esbuild": "^6.1.1",
+    "silentium-jsdom": "^0.0.1",
     "standard-version": "^9.5.0",
     "vitest": "^3.0.9"
   },
@@ -57,7 +58,7 @@
     }
   },
   "dependencies": {
-    "silentium": "^0.0.11",
-    "silentium-web-api": "^0.0.3"
+    "silentium": "^0.0.19",
+    "silentium-web-api": "^0.0.4"
   }
 }
