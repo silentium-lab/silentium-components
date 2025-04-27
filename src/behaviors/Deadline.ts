@@ -1,53 +1,49 @@
 import {
   give,
-  GuestCast,
+  guestCast,
   GuestType,
-  PatronOnce,
-  SourceFiltered,
-  SourceObjectType,
+  patronOnce,
+  sourceFiltered,
   SourceType,
   value,
 } from "silentium";
 
-export const deadline = (
-  baseSource: SourceType<T>,
-  private errorSource: GuestType<Error>,
-  private timeout: SourceType<number>,
-) => {};
-
-export class Deadline<T> implements SourceObjectType<T> {
-  public constructor(
-    private baseSource: SourceType<T>,
-    private errorSource: GuestType<Error>,
-    private timeout: SourceType<number>,
-  ) {}
-
-  public value(guest: GuestType<T>) {
+export const deadline = <T>(
+  error: GuestType<Error>,
+  baseSrc: SourceType<T>,
+  timeoutSrc: SourceType<number>,
+) => {
+  let timerHead: unknown = null;
+  return (g: GuestType<T>) => {
     value(
-      this.timeout,
-      new GuestCast(guest, (timeout) => {
+      timeoutSrc,
+      guestCast(g, (timeout) => {
+        if (timerHead) {
+          clearTimeout(timerHead as number);
+        }
+
         let timeoutReached = false;
 
-        setTimeout(() => {
+        timerHead = setTimeout(() => {
           if (timeoutReached) {
             return;
           }
           timeoutReached = true;
-          give(
-            new Error("Timeout reached in Deadline class"),
-            this.errorSource,
-          );
+          give(new Error("Timeout reached in Deadline class"), error);
         }, timeout);
 
-        new SourceFiltered(this.baseSource, () => !timeoutReached).value(guest);
         value(
-          this.baseSource,
-          new PatronOnce(() => {
+          sourceFiltered(baseSrc, () => !timeoutReached),
+          g,
+        );
+
+        value(
+          baseSrc,
+          patronOnce(() => {
             timeoutReached = true;
           }),
         );
       }),
     );
-    return this;
-  }
-}
+  };
+};

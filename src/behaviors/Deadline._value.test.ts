@@ -1,6 +1,6 @@
-import { SourceChangeable, SourceSync } from "silentium";
+import { sourceOf, sourceSync } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { Deadline } from "../behaviors/Deadline";
+import { deadline } from "../behaviors/Deadline";
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -13,12 +13,12 @@ afterEach(() => {
 
 test("Deadline._value.test", () => {
   const errorGuest = vi.fn();
-  const source = new SourceChangeable();
+  const source = sourceOf();
 
   setTimeout(() => {
     source.give(11);
   }, 10);
-  const sync = new SourceSync(new Deadline(source, errorGuest, 200));
+  const sync = sourceSync(deadline(errorGuest, source, 200));
 
   vi.runAllTimers();
 
