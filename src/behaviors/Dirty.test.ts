@@ -1,19 +1,19 @@
-import { GuestSync, SourceChangeable } from "silentium";
-import { Dirty } from "../behaviors/Dirty";
+import { guestSync, sourceOf } from "silentium";
 import { expect, test } from "vitest";
+import { dirty } from "../behaviors/Dirty";
 
 test("Dirty.test", () => {
-  const form = new SourceChangeable({
+  const form = sourceOf({
     name: "one",
     surname: "two",
   });
-  const dirtyForm = new Dirty(form);
+  const dirtyForm = dirty(form);
   dirtyForm.give({
     name: "new",
     surname: "two",
   });
 
-  const g = new GuestSync();
+  const g = guestSync();
   dirtyForm.value(g);
 
   // only changed fields
