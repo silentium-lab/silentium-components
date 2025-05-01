@@ -1,11 +1,4 @@
-import {
-  give,
-  guestCast,
-  GuestType,
-  sourceAll,
-  SourceType,
-  value,
-} from "silentium";
+import { patron, sourceAll, SourceType, value } from "silentium";
 
 /**
  * Sets activeClass to one element of group
@@ -17,18 +10,17 @@ export const groupActiveClass = (
   activeElementSrc: SourceType<HTMLElement>,
   groupElementsSrc: SourceType<HTMLElement[]>,
 ) => {
-  return (g: GuestType<HTMLElement>) => {
-    value(
-      sourceAll([activeClassSrc, activeElementSrc, groupElementsSrc]),
-      guestCast(g, ([activeClass, activeElement, groupElements]) => {
-        groupElements.forEach((el) => {
-          if (el.classList) {
-            el.classList.remove(activeClass);
-          }
-        });
-        activeElement.classList.add(activeClass);
-        give(activeElement, g);
-      }),
-    );
-  };
+  value(
+    sourceAll([activeClassSrc, activeElementSrc, groupElementsSrc]),
+    patron(([activeClass, activeElement, groupElements]) => {
+      groupElements.forEach((el) => {
+        if (el.classList) {
+          el.classList.remove(activeClass);
+        }
+      });
+      activeElement.classList.add(activeClass);
+    }),
+  );
+
+  return groupElementsSrc;
 };

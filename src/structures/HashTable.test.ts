@@ -1,14 +1,14 @@
-import { SourceSync, SourceChangeable } from "silentium";
-import { HashTable } from "../structures/HashTable";
+import { sourceOf, sourceSync } from "silentium";
 import { expect, test } from "vitest";
+import { hashTable } from "../structures/HashTable";
 
 test("HashTable.test", () => {
-  const entrySource = new SourceChangeable<[string, string]>();
-  const hashTable = new SourceSync(new HashTable(entrySource));
+  const entrySource = sourceOf<[string, string]>();
+  const hashTableSrc = sourceSync(hashTable(entrySource));
   entrySource.give(["key-one", "value-one"]);
   entrySource.give(["key-two", "value-two"]);
 
-  expect(hashTable.syncValue()).toStrictEqual({
+  expect(hashTableSrc.syncValue()).toStrictEqual({
     "key-one": "value-one",
     "key-two": "value-two",
   });

@@ -1,15 +1,15 @@
-import { SourceSync, SourceChangeable } from "silentium";
+import { sourceOf, sourceSync } from "silentium";
+import { loading } from "../behaviors/Loading";
 import { expect, test } from "vitest";
-import { Loading } from "../behaviors/Loading";
 
 test("Loading.test", () => {
-  const loadingStartSource = new SourceChangeable();
-  const loadingFinishSource = new SourceChangeable();
-  const loading = new SourceSync(
-    new Loading(loadingStartSource, loadingFinishSource),
+  const loadingStartSource = sourceOf();
+  const loadingFinishSource = sourceOf();
+  const loadingSrc = sourceSync(
+    loading(loadingStartSource, loadingFinishSource),
   );
   loadingStartSource.give({});
-  expect(loading.syncValue()).toBe(true);
+  expect(loadingSrc.syncValue()).toBe(true);
   loadingFinishSource.give({});
-  expect(loading.syncValue()).toBe(false);
+  expect(loadingSrc.syncValue()).toBe(false);
 });

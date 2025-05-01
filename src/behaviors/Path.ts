@@ -1,9 +1,10 @@
 import {
   give,
-  guestCast,
-  GuestType,
+  patron,
   sourceAll,
+  sourceOf,
   SourceType,
+  subSourceMany,
   value,
 } from "silentium";
 
@@ -11,20 +12,23 @@ export const path = <T extends Record<string, unknown>, K extends string>(
   baseSrc: SourceType<T>,
   keySrc: SourceType<K>,
 ) => {
-  return (g: GuestType<T[K]>) => {
-    value(
-      sourceAll([baseSrc, keySrc]),
-      guestCast(g, ([base, key]) => {
-        const keyChunks = key.split(".");
-        let value: unknown = base;
-        keyChunks.forEach((keyChunk) => {
-          value = (value as T)[keyChunk];
-        });
+  const pathSrc = sourceOf<T[K]>();
+  subSourceMany(pathSrc, [baseSrc, keySrc]);
 
-        if (value !== undefined && value !== base) {
-          give(value as T[K], g);
-        }
-      }),
-    );
-  };
+  value(
+    sourceAll([baseSrc, keySrc]),
+    patron(([base, key]) => {
+      const keyChunks = key.split(".");
+      let value: unknown = base;
+      keyChunks.forEach((keyChunk) => {
+        value = (value as T)[keyChunk];
+      });
+
+      if (value !== undefined && value !== base) {
+        give(value as T[K], pathSrc);
+      }
+    }),
+  );
+
+  return pathSrc.value;
 };
