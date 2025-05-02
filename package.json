@@ -15,11 +15,12 @@
     "build-doc": "./docs/build.sh",
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
     "cz": "git add . && git cz",
     "push-head": "git push origin HEAD",
     "test-debug": "env DEBUG=app:* vitest",
-    "release": "./beforeRelease.sh && npm run build && standard-version --no-verify && git push --follow-tags && npm publish",
+    "release": "./beforeRelease.sh && npm run build && git add . && git commit -m 'build: before release' && standard-version --no-verify && git push --follow-tags && npm publish",
     "prepare": "husky"
   },
   "repository": {
@@ -58,7 +59,7 @@
     }
   },
   "dependencies": {
-    "silentium": "^0.0.19",
+    "silentium": "^0.0.27",
     "silentium-web-api": "^0.0.4"
   }
 }
