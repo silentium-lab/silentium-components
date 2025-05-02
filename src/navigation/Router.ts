@@ -15,6 +15,9 @@ export interface Route<T> {
   template: T | SourceType<T>;
 }
 
+/**
+ * Router component what will return template if url matches pattern
+ */
 export const router = <T = "string">(
   urlSrc: SourceType<string>,
   routesSrc: SourceType<Route<T>[]>,
