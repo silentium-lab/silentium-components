@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/silentium-lab/silentium-components/compare/v0.0.5...v0.0.6) (2025-05-02)
+
+
+### Features
+
+* **1-issue:** done deadline class ([1f4b785](https://github.com/silentium-lab/silentium-components/commit/1f4b785c6dc4241e71f8ec5fd2b4782f02adc58f))
+* **1-issue:** moving to procedures ([83e85a9](https://github.com/silentium-lab/silentium-components/commit/83e85a9da06dbf8aece637801f1a116e016d2492))
+* **main:** deadline to procedures ([087d4e6](https://github.com/silentium-lab/silentium-components/commit/087d4e689cd940c72364310b67f5da406055a0bc))
+* **main:** deps updated ([6140111](https://github.com/silentium-lab/silentium-components/commit/61401111ef0e7bb7530aaa489f8210b56462fd4e))
+* **main:** dirty to procedure ([c4291ca](https://github.com/silentium-lab/silentium-components/commit/c4291ca2aa3d499d8c4087b92798aff899530ff8))
+* **main:** hashtable path and loading moved to procedures ([4edde10](https://github.com/silentium-lab/silentium-components/commit/4edde1001ab75dd9cbd1076fc16e7175ea9acafb))
+* **main:** remove unneeded classes ([aafea7a](https://github.com/silentium-lab/silentium-components/commit/aafea7a7719d2b0561cff45edaa9e9efb01abbf2))
+* **main:** router done ([c9f0648](https://github.com/silentium-lab/silentium-components/commit/c9f06482987c9421ae9c98165cf3f44af36edeaf))
+
 ### [0.0.5](https://github.com/silentium-lab/silentium-components/compare/v0.0.4...v0.0.5) (2025-04-19)
 
 
