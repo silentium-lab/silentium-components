@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/silentium-lab/silentium-components/compare/v0.0.6...v0.0.7) (2025-05-03)
+
+
+### Features
+
+* **main:** concatenated string source component ([77d0bef](https://github.com/silentium-lab/silentium-components/commit/77d0bef86f485e73422a0ede2d72a2fef2d161f5))
+* **main:** release command ([764ee95](https://github.com/silentium-lab/silentium-components/commit/764ee9574526e422d3a73668579914fd83075a4d))
+
 ### [0.0.6](https://github.com/silentium-lab/silentium-components/compare/v0.0.5...v0.0.6) (2025-05-02)
 
 
