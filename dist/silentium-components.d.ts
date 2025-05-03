@@ -28,4 +28,10 @@ declare const deadline: <T>(error: GuestType<Error>, baseSrc: SourceType<T>, tim
  */
 declare const hashTable: (baseSource: SourceType<[string, unknown]>) => silentium.SourceExecutorType<Record<string, unknown>>;
 
-export { deadline, dirty, groupActiveClass, hashTable, loading, path };
+/**
+ * Returns record of data from record of sources
+ * https://silentium-lab.github.io/silentium-components/#/structures/record
+ */
+declare const record: (recordSrc: Record<string, SourceType>) => SourceType<Record<string, any>>;
+
+export { deadline, dirty, groupActiveClass, hashTable, loading, path, record };

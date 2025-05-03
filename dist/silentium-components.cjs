@@ -140,10 +140,24 @@ const hashTable = (baseSource) => {
   return result.value;
 };
 
+const record = (recordSrc) => {
+  const keys = Object.keys(recordSrc);
+  return silentium.sourceCombined(...Object.values(recordSrc))(
+    (g, ...entries) => {
+      const record2 = {};
+      entries.forEach((entry, index) => {
+        record2[keys[index]] = entry;
+      });
+      silentium.give(record2, g);
+    }
+  );
+};
+
 exports.deadline = deadline;
 exports.dirty = dirty;
 exports.groupActiveClass = groupActiveClass;
 exports.hashTable = hashTable;
 exports.loading = loading;
 exports.path = path;
+exports.record = record;
 //# sourceMappingURL=silentium-components.cjs.map

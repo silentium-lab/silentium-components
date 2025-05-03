@@ -1,4 +1,4 @@
-import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource } from 'silentium';
+import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceCombined } from 'silentium';
 
 const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
   value(
@@ -138,5 +138,18 @@ const hashTable = (baseSource) => {
   return result.value;
 };
 
-export { deadline, dirty, groupActiveClass, hashTable, loading, path };
+const record = (recordSrc) => {
+  const keys = Object.keys(recordSrc);
+  return sourceCombined(...Object.values(recordSrc))(
+    (g, ...entries) => {
+      const record2 = {};
+      entries.forEach((entry, index) => {
+        record2[keys[index]] = entry;
+      });
+      give(record2, g);
+    }
+  );
+};
+
+export { deadline, dirty, groupActiveClass, hashTable, loading, path, record };
 //# sourceMappingURL=silentium-components.js.map
