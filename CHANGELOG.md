@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/silentium-lab/silentium-components/compare/v0.0.7...v0.0.8) (2025-05-03)
+
+
+### Features
+
+* **17-issue:** record structure done ([2666794](https://github.com/silentium-lab/silentium-components/commit/2666794a7b408e9542dd404ebd570a245b262c17))
+
 ### [0.0.7](https://github.com/silentium-lab/silentium-components/compare/v0.0.6...v0.0.7) (2025-05-03)
 
 
