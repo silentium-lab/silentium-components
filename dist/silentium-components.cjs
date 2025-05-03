@@ -153,6 +153,50 @@ const record = (recordSrc) => {
   );
 };
 
+const concatenated = (sources, joinPartSrc = "") => {
+  const result = silentium.sourceCombined(
+    joinPartSrc,
+    ...sources
+  )((g, joinPart, ...strings) => {
+    silentium.give(strings.join(joinPart), g);
+  });
+  return result;
+};
+
+const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCombined(
+  patternSrc,
+  valueSrc,
+  flagsSrc
+)((g, pattern, value, flags) => {
+  silentium.give(new RegExp(pattern, flags).test(value), g);
+});
+
+const router = (urlSrc, routesSrc, defaultSrc) => {
+  const resultSrc = silentium.sourceOf();
+  silentium.value(
+    routesSrc,
+    silentium.patron((routes) => {
+      silentium.value(
+        silentium.sourceAny([
+          silentium.sourceChain(urlSrc, defaultSrc),
+          ...routes.map(
+            (r) => silentium.sourceChain(
+              silentium.sourceFiltered(
+                regexpMatched(r.pattern, urlSrc, r.patternFlags),
+                Boolean
+              ),
+              r.template
+            )
+          )
+        ]),
+        silentium.patron(resultSrc)
+      );
+    })
+  );
+  return resultSrc.value;
+};
+
+exports.concatenated = concatenated;
 exports.deadline = deadline;
 exports.dirty = dirty;
 exports.groupActiveClass = groupActiveClass;
@@ -160,4 +204,5 @@ exports.hashTable = hashTable;
 exports.loading = loading;
 exports.path = path;
 exports.record = record;
+exports.router = router;
 //# sourceMappingURL=silentium-components.cjs.map

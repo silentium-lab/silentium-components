@@ -34,4 +34,19 @@ declare const hashTable: (baseSource: SourceType<[string, unknown]>) => silentiu
  */
 declare const record: (recordSrc: Record<string, SourceType>) => SourceType<Record<string, any>>;
 
-export { deadline, dirty, groupActiveClass, hashTable, loading, path, record };
+/**
+ * Join sources of strings to one source
+ */
+declare const concatenated: (sources: SourceType<string>[], joinPartSrc?: SourceType<string>) => SourceType<string>;
+
+interface Route<T> {
+    pattern: string;
+    patternFlags?: string;
+    template: T | SourceType<T>;
+}
+/**
+ * Router component what will return template if url matches pattern
+ */
+declare const router: <T = "string">(urlSrc: SourceType<string>, routesSrc: SourceType<Route<T>[]>, defaultSrc: SourceType<T>) => silentium.SourceExecutorType<T>;
+
+export { type Route, concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, router };

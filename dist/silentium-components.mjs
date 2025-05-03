@@ -1,4 +1,4 @@
-import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceCombined } from 'silentium';
+import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceCombined, sourceAny, sourceChain } from 'silentium';
 
 const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
   value(
@@ -151,5 +151,48 @@ const record = (recordSrc) => {
   );
 };
 
-export { deadline, dirty, groupActiveClass, hashTable, loading, path, record };
+const concatenated = (sources, joinPartSrc = "") => {
+  const result = sourceCombined(
+    joinPartSrc,
+    ...sources
+  )((g, joinPart, ...strings) => {
+    give(strings.join(joinPart), g);
+  });
+  return result;
+};
+
+const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => sourceCombined(
+  patternSrc,
+  valueSrc,
+  flagsSrc
+)((g, pattern, value, flags) => {
+  give(new RegExp(pattern, flags).test(value), g);
+});
+
+const router = (urlSrc, routesSrc, defaultSrc) => {
+  const resultSrc = sourceOf();
+  value(
+    routesSrc,
+    patron((routes) => {
+      value(
+        sourceAny([
+          sourceChain(urlSrc, defaultSrc),
+          ...routes.map(
+            (r) => sourceChain(
+              sourceFiltered(
+                regexpMatched(r.pattern, urlSrc, r.patternFlags),
+                Boolean
+              ),
+              r.template
+            )
+          )
+        ]),
+        patron(resultSrc)
+      );
+    })
+  );
+  return resultSrc.value;
+};
+
+export { concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, router };
 //# sourceMappingURL=silentium-components.mjs.map
