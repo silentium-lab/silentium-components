@@ -49,4 +49,14 @@ interface Route<T> {
  */
 declare const router: <T = "string">(urlSrc: SourceType<string>, routesSrc: SourceType<Route<T>[]>, defaultSrc: SourceType<T>) => silentium.SourceExecutorType<T>;
 
-export { type Route, concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, router };
+/**
+ * Boolean source what checks what string matches pattern
+ */
+declare const regexpMatched: (patternSrc: SourceType<string>, valueSrc: SourceType<string>, flagsSrc?: SourceType<string>) => SourceType<boolean>;
+
+/**
+ * Returns string replaced by regular expression pattern
+ */
+declare const regexpReplaced: (valueSrc: SourceType<string>, patternSrc: SourceType<string>, replaceValueSrc: SourceType<string>, flagsSrc?: SourceType<string>) => SourceType<string>;
+
+export { type Route, concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router };

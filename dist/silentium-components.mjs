@@ -194,5 +194,14 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
   return resultSrc.value;
 };
 
-export { concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, router };
+const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") => sourceCombined(
+  patternSrc,
+  valueSrc,
+  replaceValueSrc,
+  flagsSrc
+)((g, pattern, value, replaceValue, flags) => {
+  give(String(value).replace(new RegExp(pattern, flags), replaceValue), g);
+});
+
+export { concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router };
 //# sourceMappingURL=silentium-components.mjs.map
