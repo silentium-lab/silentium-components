@@ -2,6 +2,7 @@ import { give, GuestType, sourceCombined, SourceType } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
+ * https://silentium-lab.github.io/silentium-components/#/system/regexp-replaced
  */
 export const regexpReplaced = (
   valueSrc: SourceType<string>,

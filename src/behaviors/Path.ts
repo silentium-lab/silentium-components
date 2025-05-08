@@ -8,6 +8,10 @@ import {
   value,
 } from "silentium";
 
+/**
+ * Return source of record path
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/path
+ */
 export const path = <T extends Record<string, unknown>, K extends string>(
   baseSrc: SourceType<T>,
   keySrc: SourceType<K>,

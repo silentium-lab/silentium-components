@@ -2,6 +2,7 @@ import { give, GuestType, sourceCombined, SourceType } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
+ * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
  */
 export const regexpMatched = (
   patternSrc: SourceType<string>,
