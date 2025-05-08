@@ -77,4 +77,5 @@ declare const regexpMatched: (patternSrc: SourceType<string>, valueSrc: SourceTy
  */
 declare const regexpReplaced: (valueSrc: SourceType<string>, patternSrc: SourceType<string>, replaceValueSrc: SourceType<string>, flagsSrc?: SourceType<string>) => SourceType<string>;
 
-export { type Route, concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
+export { concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
+export type { Route };
