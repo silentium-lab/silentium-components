@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.11](https://github.com/silentium-lab/silentium-components/compare/v0.0.10...v0.0.11) (2025-05-08)
+
+
+### Features
+
+* **21-issue:** routes ([de30408](https://github.com/silentium-lab/silentium-components/commit/de30408d9c8011c9821b821c078f88ad70b812cd))
+* **21-issue:** version of silentium deps ([cb097eb](https://github.com/silentium-lab/silentium-components/commit/cb097ebd622bbaa1dc108aa3de37a7a2474fc2ed))
+* **25-issue:** added tick procedure usefull for group many sources in one by tick ([499ee6d](https://github.com/silentium-lab/silentium-components/commit/499ee6d2016a8fc491a4a2c8a5b61dcf0b79fef2))
+* **25-issue:** enlarged commit message length, 72 was too small ([415cfc8](https://github.com/silentium-lab/silentium-components/commit/415cfc8778321cf898f44c7b5e954f86c320ed2c))
+
+
+### Bug Fixes
+
+* **main:** exports fix ([9f60410](https://github.com/silentium-lab/silentium-components/commit/9f6041044e11ee409e607851c19b04ecbfe3952d))
+
 ### [0.0.10](https://github.com/silentium-lab/silentium-components/compare/v0.0.9...v0.0.10) (2025-05-04)
 
 
