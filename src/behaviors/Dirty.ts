@@ -13,6 +13,7 @@ import {
 /**
  * Takes source and remember it first value
  * returns new record, what will contain only fields what was changed
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
 export const dirty = <T extends object>(
   baseEntitySource: SourceType<T>,

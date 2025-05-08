@@ -17,6 +17,7 @@ export interface Route<T> {
 
 /**
  * Router component what will return template if url matches pattern
+ * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
 export const router = <T = "string">(
   urlSrc: SourceType<string>,

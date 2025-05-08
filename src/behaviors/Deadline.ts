@@ -8,6 +8,9 @@ import {
   value,
 } from "silentium";
 
+/**
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/path
+ */
 export const deadline = <T>(
   error: GuestType<Error>,
   baseSrc: SourceType<T>,
