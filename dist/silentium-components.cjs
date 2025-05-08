@@ -126,6 +126,33 @@ const deadline = (error, baseSrc, timeoutSrc) => {
   };
 };
 
+const tick = (baseSrc) => {
+  const result = silentium.sourceOf();
+  silentium.subSource(result, baseSrc);
+  let microtaskScheduled = false;
+  let lastValue = null;
+  const scheduleMicrotask = () => {
+    microtaskScheduled = true;
+    queueMicrotask(() => {
+      microtaskScheduled = false;
+      if (lastValue !== null) {
+        silentium.give(lastValue, result);
+        lastValue = null;
+      }
+    });
+  };
+  silentium.value(
+    baseSrc,
+    silentium.patron((v) => {
+      lastValue = v;
+      if (!microtaskScheduled) {
+        scheduleMicrotask();
+      }
+    })
+  );
+  return result;
+};
+
 const hashTable = (baseSource) => {
   const result = silentium.sourceOf({});
   silentium.subSource(result, baseSource);
@@ -216,4 +243,5 @@ exports.record = record;
 exports.regexpMatched = regexpMatched;
 exports.regexpReplaced = regexpReplaced;
 exports.router = router;
+exports.tick = tick;
 //# sourceMappingURL=silentium-components.cjs.map

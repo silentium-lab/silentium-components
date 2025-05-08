@@ -124,6 +124,33 @@ const deadline = (error, baseSrc, timeoutSrc) => {
   };
 };
 
+const tick = (baseSrc) => {
+  const result = sourceOf();
+  subSource(result, baseSrc);
+  let microtaskScheduled = false;
+  let lastValue = null;
+  const scheduleMicrotask = () => {
+    microtaskScheduled = true;
+    queueMicrotask(() => {
+      microtaskScheduled = false;
+      if (lastValue !== null) {
+        give(lastValue, result);
+        lastValue = null;
+      }
+    });
+  };
+  value(
+    baseSrc,
+    patron((v) => {
+      lastValue = v;
+      if (!microtaskScheduled) {
+        scheduleMicrotask();
+      }
+    })
+  );
+  return result;
+};
+
 const hashTable = (baseSource) => {
   const result = sourceOf({});
   subSource(result, baseSource);
@@ -203,5 +230,5 @@ const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") =>
   give(String(value).replace(new RegExp(pattern, flags), replaceValue), g);
 });
 
-export { concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router };
+export { concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
 //# sourceMappingURL=silentium-components.js.map
