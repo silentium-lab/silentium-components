@@ -1,4 +1,4 @@
-import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceCombined, sourceAny, sourceChain } from 'silentium';
+import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, sourceCombined, sourceAny, sourceChain } from 'silentium';
 
 const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
   value(
@@ -151,6 +151,34 @@ const tick = (baseSrc) => {
   return result;
 };
 
+const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
+  const result = sourceOf();
+  const reset = sourceOf();
+  const resultResettable = sourceResettable(result, reset);
+  let thenPatron;
+  let elsePatron;
+  value(
+    conditionSrc,
+    patron((v) => {
+      reset.give(1);
+      if (thenPatron) {
+        removePatronFromPools(thenPatron);
+      }
+      if (elsePatron) {
+        removePatronFromPools(elsePatron);
+      }
+      if (predicate(v)) {
+        thenPatron = patron(result);
+        value(thenSrc, thenPatron);
+      } else if (elseSrc) {
+        elsePatron = patron(result);
+        value(elseSrc, elsePatron);
+      }
+    })
+  );
+  return resultResettable;
+};
+
 const hashTable = (baseSource) => {
   const result = sourceOf({});
   subSource(result, baseSource);
@@ -230,5 +258,5 @@ const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") =>
   give(String(value).replace(new RegExp(pattern, flags), replaceValue), g);
 });
 
-export { concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
+export { concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
 //# sourceMappingURL=silentium-components.mjs.map

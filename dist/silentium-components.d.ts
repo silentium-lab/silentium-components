@@ -38,6 +38,11 @@ declare const deadline: <T>(error: GuestType<Error>, baseSrc: SourceType<T>, tim
 declare const tick: <T>(baseSrc: SourceType<T>) => silentium.SourceChangeableType<T>;
 
 /**
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
+ */
+declare const fork: <T, Then, Else>(conditionSrc: SourceType<T>, predicate: (v: T) => boolean, thenSrc: SourceType<Then>, elseSrc?: SourceType<Else>) => SourceType<Then | Else>;
+
+/**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 declare const hashTable: (baseSource: SourceType<[string, unknown]>) => silentium.SourceExecutorType<Record<string, unknown>>;
@@ -77,5 +82,5 @@ declare const regexpMatched: (patternSrc: SourceType<string>, valueSrc: SourceTy
  */
 declare const regexpReplaced: (valueSrc: SourceType<string>, patternSrc: SourceType<string>, replaceValueSrc: SourceType<string>, flagsSrc?: SourceType<string>) => SourceType<string>;
 
-export { concatenated, deadline, dirty, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
+export { concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
 export type { Route };

@@ -153,6 +153,34 @@ const tick = (baseSrc) => {
   return result;
 };
 
+const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
+  const result = silentium.sourceOf();
+  const reset = silentium.sourceOf();
+  const resultResettable = silentium.sourceResettable(result, reset);
+  let thenPatron;
+  let elsePatron;
+  silentium.value(
+    conditionSrc,
+    silentium.patron((v) => {
+      reset.give(1);
+      if (thenPatron) {
+        silentium.removePatronFromPools(thenPatron);
+      }
+      if (elsePatron) {
+        silentium.removePatronFromPools(elsePatron);
+      }
+      if (predicate(v)) {
+        thenPatron = silentium.patron(result);
+        silentium.value(thenSrc, thenPatron);
+      } else if (elseSrc) {
+        elsePatron = silentium.patron(result);
+        silentium.value(elseSrc, elsePatron);
+      }
+    })
+  );
+  return resultResettable;
+};
+
 const hashTable = (baseSource) => {
   const result = silentium.sourceOf({});
   silentium.subSource(result, baseSource);
@@ -235,6 +263,7 @@ const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") =>
 exports.concatenated = concatenated;
 exports.deadline = deadline;
 exports.dirty = dirty;
+exports.fork = fork;
 exports.groupActiveClass = groupActiveClass;
 exports.hashTable = hashTable;
 exports.loading = loading;
