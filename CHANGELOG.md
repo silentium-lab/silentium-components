@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.13](https://github.com/silentium-lab/silentium-components/compare/v0.0.12...v0.0.13) (2025-05-09)
+
+
+### Features
+
+* **23-issue:** fork done ([bcba20b](https://github.com/silentium-lab/silentium-components/commit/bcba20bc45347509791ecf0e8cc811af5267a2e8))
+* **23-issue:** work on fork implementation ([c528fa9](https://github.com/silentium-lab/silentium-components/commit/c528fa91c0f93c21365feda31fdbbfd053b6cf6a))
+
 ### [0.0.12](https://github.com/silentium-lab/silentium-components/compare/v0.0.11...v0.0.12) (2025-05-08)
 
 ### [0.0.11](https://github.com/silentium-lab/silentium-components/compare/v0.0.10...v0.0.11) (2025-05-08)
