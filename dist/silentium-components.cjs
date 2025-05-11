@@ -260,6 +260,45 @@ const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") =>
   silentium.give(String(value).replace(new RegExp(pattern, flags), replaceValue), g);
 });
 
+const regexpMatch = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCombined(
+  patternSrc,
+  valueSrc,
+  flagsSrc
+)((g, pattern, value, flags) => {
+  const result = new RegExp(pattern, flags).exec(value);
+  silentium.give(result ?? [], g);
+});
+
+const and = (oneSrc, twoSrc) => {
+  return silentium.sourceCombined(
+    oneSrc,
+    twoSrc
+  )((guest, one, two) => {
+    silentium.give(one && two, guest);
+  });
+};
+
+const or = (oneSrc, twoSrc) => {
+  return silentium.sourceCombined(
+    oneSrc,
+    twoSrc
+  )((guest, one, two) => {
+    silentium.give(one || two, guest);
+  });
+};
+
+const not = (baseSrc) => {
+  return (g) => {
+    silentium.value(
+      baseSrc,
+      silentium.guestCast(g, (base) => {
+        silentium.give(!base, g);
+      })
+    );
+  };
+};
+
+exports.and = and;
 exports.concatenated = concatenated;
 exports.deadline = deadline;
 exports.dirty = dirty;
@@ -267,8 +306,11 @@ exports.fork = fork;
 exports.groupActiveClass = groupActiveClass;
 exports.hashTable = hashTable;
 exports.loading = loading;
+exports.not = not;
+exports.or = or;
 exports.path = path;
 exports.record = record;
+exports.regexpMatch = regexpMatch;
 exports.regexpMatched = regexpMatched;
 exports.regexpReplaced = regexpReplaced;
 exports.router = router;

@@ -24,7 +24,7 @@ declare const loading: (loadingStartSource: SourceType<unknown>, loadingFinishSo
  * Return source of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare const path: <T extends Record<string, unknown>, K extends string>(baseSrc: SourceType<T>, keySrc: SourceType<K>) => silentium.SourceExecutorType<T[K]>;
+declare const path: <T extends Record<string, unknown> | Array<unknown>, K extends string>(baseSrc: SourceType<T>, keySrc: SourceType<K>) => silentium.SourceExecutorType<unknown>;
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
@@ -82,5 +82,26 @@ declare const regexpMatched: (patternSrc: SourceType<string>, valueSrc: SourceTy
  */
 declare const regexpReplaced: (valueSrc: SourceType<string>, patternSrc: SourceType<string>, replaceValueSrc: SourceType<string>, flagsSrc?: SourceType<string>) => SourceType<string>;
 
-export { concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
+/**
+ * First match of regexp
+ * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
+ */
+declare const regexpMatch: (patternSrc: SourceType<string>, valueSrc: SourceType<string>, flagsSrc?: SourceType<string>) => SourceType<string[]>;
+
+/**
+ * https://silentium-lab.github.io/silentium-components/#/boolean/and
+ */
+declare const and: (oneSrc: SourceType<boolean>, twoSrc: SourceType<boolean>) => SourceType<boolean>;
+
+/**
+ * https://silentium-lab.github.io/silentium-components/#/boolean/or
+ */
+declare const or: (oneSrc: SourceType<boolean>, twoSrc: SourceType<boolean>) => SourceType<boolean>;
+
+/**
+ * https://silentium-lab.github.io/silentium-components/#/boolean/not
+ */
+declare const not: (baseSrc: SourceType<boolean>) => (g: GuestType<boolean>) => void;
+
+export { and, concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, tick };
 export type { Route };

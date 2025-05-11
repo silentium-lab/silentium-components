@@ -258,5 +258,43 @@ const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") =>
   give(String(value).replace(new RegExp(pattern, flags), replaceValue), g);
 });
 
-export { concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, path, record, regexpMatched, regexpReplaced, router, tick };
+const regexpMatch = (patternSrc, valueSrc, flagsSrc = "") => sourceCombined(
+  patternSrc,
+  valueSrc,
+  flagsSrc
+)((g, pattern, value, flags) => {
+  const result = new RegExp(pattern, flags).exec(value);
+  give(result ?? [], g);
+});
+
+const and = (oneSrc, twoSrc) => {
+  return sourceCombined(
+    oneSrc,
+    twoSrc
+  )((guest, one, two) => {
+    give(one && two, guest);
+  });
+};
+
+const or = (oneSrc, twoSrc) => {
+  return sourceCombined(
+    oneSrc,
+    twoSrc
+  )((guest, one, two) => {
+    give(one || two, guest);
+  });
+};
+
+const not = (baseSrc) => {
+  return (g) => {
+    value(
+      baseSrc,
+      guestCast(g, (base) => {
+        give(!base, g);
+      })
+    );
+  };
+};
+
+export { and, concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, tick };
 //# sourceMappingURL=silentium-components.mjs.map

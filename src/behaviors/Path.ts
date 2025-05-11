@@ -12,11 +12,14 @@ import {
  * Return source of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-export const path = <T extends Record<string, unknown>, K extends string>(
+export const path = <
+  T extends Record<string, unknown> | Array<unknown>,
+  K extends string,
+>(
   baseSrc: SourceType<T>,
   keySrc: SourceType<K>,
 ) => {
-  const pathSrc = sourceOf<T[K]>();
+  const pathSrc = sourceOf<unknown>();
   subSourceMany(pathSrc, [baseSrc, keySrc]);
 
   value(
@@ -25,11 +28,11 @@ export const path = <T extends Record<string, unknown>, K extends string>(
       const keyChunks = key.split(".");
       let value: unknown = base;
       keyChunks.forEach((keyChunk) => {
-        value = (value as T)[keyChunk];
+        value = (value as Record<string, unknown>)[keyChunk];
       });
 
       if (value !== undefined && value !== base) {
-        give(value as T[K], pathSrc);
+        give(value, pathSrc);
       }
     }),
   );
