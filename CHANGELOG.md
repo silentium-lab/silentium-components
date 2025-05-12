@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.14](https://github.com/silentium-lab/silentium-components/compare/v0.0.13...v0.0.14) (2025-05-12)
+
+
+### Features
+
+* **28-issue:** set component created ([0b5d04c](https://github.com/silentium-lab/silentium-components/commit/0b5d04c52e5be844529baf51dc96bd037799351c))
+* **main:** boolean export added ([278d8f2](https://github.com/silentium-lab/silentium-components/commit/278d8f2ecaee9fab81a8090b47fa5483b33fc204))
+* **main:** not component done ([b53a434](https://github.com/silentium-lab/silentium-components/commit/b53a434171f8b6b0f4ab5d03e97c72edd8ae60c1))
+* **main:** regexp match ([e4974be](https://github.com/silentium-lab/silentium-components/commit/e4974be38b29a14b85a0220527347ec1ddbf2ab8))
+* **main:** work on or and and sources ([58d15d1](https://github.com/silentium-lab/silentium-components/commit/58d15d1236d74313c3fc128b2537125623d786c2))
+
 ### [0.0.13](https://github.com/silentium-lab/silentium-components/compare/v0.0.12...v0.0.13) (2025-05-09)
 
 
