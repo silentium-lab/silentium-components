@@ -269,6 +269,16 @@ const regexpMatch = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCom
   silentium.give(result ?? [], g);
 });
 
+const set = (baseSrc, keySrc, valueSrc) => {
+  silentium.value(
+    silentium.sourceAll([baseSrc, keySrc, valueSrc]),
+    silentium.patron(([base, key, value2]) => {
+      base[key] = value2;
+    })
+  );
+  return baseSrc;
+};
+
 const and = (oneSrc, twoSrc) => {
   return silentium.sourceCombined(
     oneSrc,
@@ -314,5 +324,6 @@ exports.regexpMatch = regexpMatch;
 exports.regexpMatched = regexpMatched;
 exports.regexpReplaced = regexpReplaced;
 exports.router = router;
+exports.set = set;
 exports.tick = tick;
 //# sourceMappingURL=silentium-components.cjs.map

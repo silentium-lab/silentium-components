@@ -89,6 +89,12 @@ declare const regexpReplaced: (valueSrc: SourceType<string>, patternSrc: SourceT
 declare const regexpMatch: (patternSrc: SourceType<string>, valueSrc: SourceType<string>, flagsSrc?: SourceType<string>) => SourceType<string[]>;
 
 /**
+ * Ability to mutate some object, helpful when integrate to procedure systems
+ * https://silentium-lab.github.io/silentium-components/#/system/set
+ */
+declare const set: <T extends Record<string, unknown>>(baseSrc: SourceType<T>, keySrc: SourceType<string>, valueSrc: SourceType<unknown>) => SourceType<T>;
+
+/**
  * https://silentium-lab.github.io/silentium-components/#/boolean/and
  */
 declare const and: (oneSrc: SourceType<boolean>, twoSrc: SourceType<boolean>) => SourceType<boolean>;
@@ -103,5 +109,5 @@ declare const or: (oneSrc: SourceType<boolean>, twoSrc: SourceType<boolean>) => 
  */
 declare const not: (baseSrc: SourceType<boolean>) => (g: GuestType<boolean>) => void;
 
-export { and, concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, tick };
+export { and, concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
 export type { Route };

@@ -267,6 +267,16 @@ const regexpMatch = (patternSrc, valueSrc, flagsSrc = "") => sourceCombined(
   give(result ?? [], g);
 });
 
+const set = (baseSrc, keySrc, valueSrc) => {
+  value(
+    sourceAll([baseSrc, keySrc, valueSrc]),
+    patron(([base, key, value2]) => {
+      base[key] = value2;
+    })
+  );
+  return baseSrc;
+};
+
 const and = (oneSrc, twoSrc) => {
   return sourceCombined(
     oneSrc,
@@ -296,5 +306,5 @@ const not = (baseSrc) => {
   };
 };
 
-export { and, concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, tick };
+export { and, concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
 //# sourceMappingURL=silentium-components.js.map
