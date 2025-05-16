@@ -181,6 +181,17 @@ const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
   return resultResettable;
 };
 
+const deferred = (baseSrc, triggerSrc) => {
+  const result = silentium.sourceResettable(silentium.sourceOf(), baseSrc);
+  silentium.value(
+    triggerSrc,
+    silentium.patron(() => {
+      silentium.value(baseSrc, result);
+    })
+  );
+  return result.value;
+};
+
 const hashTable = (baseSource) => {
   const result = silentium.sourceOf({});
   silentium.subSource(result, baseSource);
@@ -311,6 +322,7 @@ const not = (baseSrc) => {
 exports.and = and;
 exports.concatenated = concatenated;
 exports.deadline = deadline;
+exports.deferred = deferred;
 exports.dirty = dirty;
 exports.fork = fork;
 exports.groupActiveClass = groupActiveClass;

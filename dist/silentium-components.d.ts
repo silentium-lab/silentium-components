@@ -43,6 +43,12 @@ declare const tick: <T>(baseSrc: SourceType<T>) => silentium.SourceChangeableTyp
 declare const fork: <T, Then, Else>(conditionSrc: SourceType<T>, predicate: (v: T) => boolean, thenSrc: SourceType<Then>, elseSrc?: SourceType<Else>) => SourceType<Then | Else>;
 
 /**
+ * Defer one source after another, gives values of baseSrc only once when triggerSrc responds
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
+ */
+declare const deferred: <T>(baseSrc: SourceType<T>, triggerSrc: SourceType<unknown>) => silentium.SourceExecutorType<T>;
+
+/**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 declare const hashTable: (baseSource: SourceType<[string, unknown]>) => silentium.SourceExecutorType<Record<string, unknown>>;
@@ -109,5 +115,5 @@ declare const or: (oneSrc: SourceType<boolean>, twoSrc: SourceType<boolean>) => 
  */
 declare const not: (baseSrc: SourceType<boolean>) => (g: GuestType<boolean>) => void;
 
-export { and, concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
+export { and, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
 export type { Route };

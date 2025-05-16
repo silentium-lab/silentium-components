@@ -179,6 +179,17 @@ const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
   return resultResettable;
 };
 
+const deferred = (baseSrc, triggerSrc) => {
+  const result = sourceResettable(sourceOf(), baseSrc);
+  value(
+    triggerSrc,
+    patron(() => {
+      value(baseSrc, result);
+    })
+  );
+  return result.value;
+};
+
 const hashTable = (baseSource) => {
   const result = sourceOf({});
   subSource(result, baseSource);
@@ -306,5 +317,5 @@ const not = (baseSrc) => {
   };
 };
 
-export { and, concatenated, deadline, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
+export { and, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
 //# sourceMappingURL=silentium-components.mjs.map
