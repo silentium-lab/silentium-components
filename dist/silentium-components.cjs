@@ -170,10 +170,10 @@ const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
         silentium.removePatronFromPools(elsePatron);
       }
       if (predicate(v)) {
-        thenPatron = silentium.patron(result);
+        thenPatron = silentium.patronOnce(result);
         silentium.value(thenSrc, thenPatron);
       } else if (elseSrc) {
-        elsePatron = silentium.patron(result);
+        elsePatron = silentium.patronOnce(result);
         silentium.value(elseSrc, elsePatron);
       }
     })
@@ -187,6 +187,31 @@ const deferred = (baseSrc, triggerSrc) => {
     triggerSrc,
     silentium.patron(() => {
       silentium.value(baseSrc, result);
+    })
+  );
+  return result.value;
+};
+
+const branch = (conditionSrc, thenSrc, elseSrc) => {
+  const result = silentium.sourceOf();
+  silentium.value(
+    conditionSrc,
+    silentium.patron((v) => {
+      if (v === true) {
+        silentium.value(
+          thenSrc,
+          silentium.patronOnce((v2) => {
+            result.give(v2);
+          })
+        );
+      } else if (elseSrc !== void 0) {
+        silentium.value(
+          elseSrc,
+          silentium.patronOnce((v2) => {
+            result.give(v2);
+          })
+        );
+      }
     })
   );
   return result.value;
@@ -320,6 +345,7 @@ const not = (baseSrc) => {
 };
 
 exports.and = and;
+exports.branch = branch;
 exports.concatenated = concatenated;
 exports.deadline = deadline;
 exports.deferred = deferred;

@@ -6,6 +6,7 @@ import {
   patron,
   removePatronFromPools,
   GuestObjectType,
+  patronOnce,
 } from "silentium";
 
 /**
@@ -34,10 +35,10 @@ export const fork = <T, Then, Else>(
         removePatronFromPools(elsePatron);
       }
       if (predicate(v)) {
-        thenPatron = patron(result);
+        thenPatron = patronOnce(result);
         value(thenSrc, thenPatron);
       } else if (elseSrc) {
-        elsePatron = patron(result);
+        elsePatron = patronOnce(result);
         value(elseSrc, elsePatron);
       }
     }),

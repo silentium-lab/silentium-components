@@ -168,10 +168,10 @@ const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
         removePatronFromPools(elsePatron);
       }
       if (predicate(v)) {
-        thenPatron = patron(result);
+        thenPatron = patronOnce(result);
         value(thenSrc, thenPatron);
       } else if (elseSrc) {
-        elsePatron = patron(result);
+        elsePatron = patronOnce(result);
         value(elseSrc, elsePatron);
       }
     })
@@ -185,6 +185,31 @@ const deferred = (baseSrc, triggerSrc) => {
     triggerSrc,
     patron(() => {
       value(baseSrc, result);
+    })
+  );
+  return result.value;
+};
+
+const branch = (conditionSrc, thenSrc, elseSrc) => {
+  const result = sourceOf();
+  value(
+    conditionSrc,
+    patron((v) => {
+      if (v === true) {
+        value(
+          thenSrc,
+          patronOnce((v2) => {
+            result.give(v2);
+          })
+        );
+      } else if (elseSrc !== void 0) {
+        value(
+          elseSrc,
+          patronOnce((v2) => {
+            result.give(v2);
+          })
+        );
+      }
     })
   );
   return result.value;
@@ -317,5 +342,5 @@ const not = (baseSrc) => {
   };
 };
 
-export { and, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
+export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
 //# sourceMappingURL=silentium-components.js.map
