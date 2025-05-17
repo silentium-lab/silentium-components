@@ -54,6 +54,12 @@ declare const deferred: <T>(baseSrc: SourceType<T>, triggerSrc: SourceType<unkno
 declare const branch: <Then, Else>(conditionSrc: SourceType<boolean>, thenSrc: SourceType<Then>, elseSrc?: SourceType<Else>) => SourceType<Then | Else>;
 
 /**
+ * Didn't respond if new value of baseSrc not equals to
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/memo
+ */
+declare const memo: <T>(baseSrc: SourceType<T>) => silentium.SourceExecutorType<T>;
+
+/**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 declare const hashTable: (baseSource: SourceType<[string, unknown]>) => silentium.SourceExecutorType<Record<string, unknown>>;
@@ -120,5 +126,5 @@ declare const or: (oneSrc: SourceType<boolean>, twoSrc: SourceType<boolean>) => 
  */
 declare const not: (baseSrc: SourceType<boolean>) => (g: GuestType<boolean>) => void;
 
-export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
+export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, memo, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
 export type { Route };

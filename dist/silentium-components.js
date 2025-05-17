@@ -215,6 +215,21 @@ const branch = (conditionSrc, thenSrc, elseSrc) => {
   return result.value;
 };
 
+const memo = (baseSrc) => {
+  const result = sourceOf();
+  let lastValue = null;
+  value(
+    baseSrc,
+    patron((v) => {
+      if (v !== lastValue) {
+        result.give(v);
+        lastValue = v;
+      }
+    })
+  );
+  return result.value;
+};
+
 const hashTable = (baseSource) => {
   const result = sourceOf({});
   subSource(result, baseSource);
@@ -342,5 +357,5 @@ const not = (baseSrc) => {
   };
 };
 
-export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
+export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, memo, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
 //# sourceMappingURL=silentium-components.js.map

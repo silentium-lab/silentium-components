@@ -217,6 +217,21 @@ const branch = (conditionSrc, thenSrc, elseSrc) => {
   return result.value;
 };
 
+const memo = (baseSrc) => {
+  const result = silentium.sourceOf();
+  let lastValue = null;
+  silentium.value(
+    baseSrc,
+    silentium.patron((v) => {
+      if (v !== lastValue) {
+        result.give(v);
+        lastValue = v;
+      }
+    })
+  );
+  return result.value;
+};
+
 const hashTable = (baseSource) => {
   const result = silentium.sourceOf({});
   silentium.subSource(result, baseSource);
@@ -354,6 +369,7 @@ exports.fork = fork;
 exports.groupActiveClass = groupActiveClass;
 exports.hashTable = hashTable;
 exports.loading = loading;
+exports.memo = memo;
 exports.not = not;
 exports.or = or;
 exports.path = path;
