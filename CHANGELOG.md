@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.15](https://github.com/silentium-lab/silentium-components/compare/v0.0.14...v0.0.15) (2025-05-17)
+
+
+### Features
+
+* **30-issue:** done deferred component ([df72fa1](https://github.com/silentium-lab/silentium-components/commit/df72fa19c66e9d369eff95d6914a8dba721697c3))
+* **32-issue:** branch component ([8f55bd5](https://github.com/silentium-lab/silentium-components/commit/8f55bd5def2726cce099e8824cf7faecc503f426))
+* **34-issue:** memo component ([caea021](https://github.com/silentium-lab/silentium-components/commit/caea02105b7c9518bd0fcd39db4ab4cdd60de6fa))
+* **main:** changes around branch and fork logic ([7291e6d](https://github.com/silentium-lab/silentium-components/commit/7291e6da91f484f1f1dc31544e6664d232f261c8))
+* **main:** export set comopnent ([4a221d0](https://github.com/silentium-lab/silentium-components/commit/4a221d0c1090756ee3596dc1025f6e45c5f3da1b))
+
 ### [0.0.14](https://github.com/silentium-lab/silentium-components/compare/v0.0.13...v0.0.14) (2025-05-12)
 
 
