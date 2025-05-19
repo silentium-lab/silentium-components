@@ -8,3 +8,4 @@ export * from "./Deferred";
 export * from "./Branch";
 export * from "./Memo";
 export * from "./Lock";
+export * from "./Moment";

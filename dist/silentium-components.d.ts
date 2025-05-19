@@ -54,10 +54,21 @@ declare const deferred: <T>(baseSrc: SourceType<T>, triggerSrc: SourceType<unkno
 declare const branch: <Then, Else>(conditionSrc: SourceType<boolean>, thenSrc: SourceType<Then>, elseSrc?: SourceType<Else>) => SourceType<Then | Else>;
 
 /**
- * Didn't respond if new value of baseSrc not equals to
+ * Didn't respond if new value of baseSrc equals to old value
  * https://silentium-lab.github.io/silentium-components/#/behaviors/memo
  */
 declare const memo: <T>(baseSrc: SourceType<T>) => silentium.SourceExecutorType<T>;
+
+/**
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
+ */
+declare const lock: <T>(baseSrc: SourceType<T>, lockSrc: SourceType<unknown>) => silentium.SourceExecutorType<unknown>;
+
+/**
+ * Get's value from source in moment of component call and than return this value every time
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/moment
+ */
+declare const moment: <T>(baseSrc: SourceType<T>, defaultValue?: T) => SourceType<T>;
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
@@ -126,5 +137,5 @@ declare const or: (oneSrc: SourceType<boolean>, twoSrc: SourceType<boolean>) => 
  */
 declare const not: (baseSrc: SourceType<boolean>) => (g: GuestType<boolean>) => void;
 
-export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, memo, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
+export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, lock, memo, moment, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
 export type { Route };
