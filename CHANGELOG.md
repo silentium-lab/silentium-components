@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.16](https://github.com/silentium-lab/silentium-components/compare/v0.0.15...v0.0.16) (2025-05-19)
+
+
+### Features
+
+* **36-issue:** lock component created ([4cb378b](https://github.com/silentium-lab/silentium-components/commit/4cb378b4ca9ae9a4f7d228a56e7ed04c36251466))
+* **39-issue:** moment component created ([57f5be1](https://github.com/silentium-lab/silentium-components/commit/57f5be1e9ee7d1a1d90db1e80999097f4883a152))
+* **main:** fix export of memo component ([0871eb7](https://github.com/silentium-lab/silentium-components/commit/0871eb7f444152feb561e59a4037241dfcab3f1a))
+
 ### [0.0.15](https://github.com/silentium-lab/silentium-components/compare/v0.0.14...v0.0.15) (2025-05-17)
 
 
