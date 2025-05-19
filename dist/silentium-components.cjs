@@ -232,6 +232,30 @@ const memo = (baseSrc) => {
   return result.value;
 };
 
+const lock = (baseSrc, lockSrc) => {
+  const result = silentium.sourceOf();
+  const resultResettable = silentium.sourceResettable(result, lockSrc);
+  let locked = false;
+  silentium.subSource(result, baseSrc);
+  silentium.value(baseSrc, silentium.patron(silentium.guestDisposable(result.give, () => locked)));
+  silentium.value(
+    lockSrc,
+    silentium.patronOnce(() => {
+      locked = true;
+      silentium.destroy([result]);
+    })
+  );
+  return resultResettable.value;
+};
+
+const moment = (baseSrc, defaultValue) => {
+  const guest = silentium.guestSync(defaultValue);
+  silentium.value(baseSrc, guest);
+  return (g) => {
+    silentium.give(guest.value(), g);
+  };
+};
+
 const hashTable = (baseSource) => {
   const result = silentium.sourceOf({});
   silentium.subSource(result, baseSource);
@@ -369,7 +393,9 @@ exports.fork = fork;
 exports.groupActiveClass = groupActiveClass;
 exports.hashTable = hashTable;
 exports.loading = loading;
+exports.lock = lock;
 exports.memo = memo;
+exports.moment = moment;
 exports.not = not;
 exports.or = or;
 exports.path = path;
