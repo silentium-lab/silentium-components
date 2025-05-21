@@ -256,6 +256,22 @@ const moment = (baseSrc, defaultValue) => {
   };
 };
 
+const shot = (baseSrc, shotSrc) => {
+  const resetResult = silentium.sourceOf();
+  const result = silentium.sourceOf();
+  const baseSrcSync = silentium.sourceSync(baseSrc, null);
+  silentium.value(
+    shotSrc,
+    silentium.patron(() => {
+      if (baseSrcSync.syncValue() !== null) {
+        result.give(baseSrcSync.syncValue());
+        resetResult.give(1);
+      }
+    })
+  );
+  return silentium.sourceResettable(result, resetResult);
+};
+
 const hashTable = (baseSource) => {
   const result = silentium.sourceOf({});
   silentium.subSource(result, baseSource);
@@ -405,5 +421,6 @@ exports.regexpMatched = regexpMatched;
 exports.regexpReplaced = regexpReplaced;
 exports.router = router;
 exports.set = set;
+exports.shot = shot;
 exports.tick = tick;
 //# sourceMappingURL=silentium-components.cjs.map

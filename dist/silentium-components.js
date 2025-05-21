@@ -1,4 +1,4 @@
-import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, guestDisposable, destroy, guestSync, sourceCombined, sourceAny, sourceChain } from 'silentium';
+import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, guestDisposable, destroy, guestSync, sourceSync, sourceCombined, sourceAny, sourceChain } from 'silentium';
 
 const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
   value(
@@ -254,6 +254,22 @@ const moment = (baseSrc, defaultValue) => {
   };
 };
 
+const shot = (baseSrc, shotSrc) => {
+  const resetResult = sourceOf();
+  const result = sourceOf();
+  const baseSrcSync = sourceSync(baseSrc, null);
+  value(
+    shotSrc,
+    patron(() => {
+      if (baseSrcSync.syncValue() !== null) {
+        result.give(baseSrcSync.syncValue());
+        resetResult.give(1);
+      }
+    })
+  );
+  return sourceResettable(result, resetResult);
+};
+
 const hashTable = (baseSource) => {
   const result = sourceOf({});
   subSource(result, baseSource);
@@ -381,5 +397,5 @@ const not = (baseSrc) => {
   };
 };
 
-export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, lock, memo, moment, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, tick };
+export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, lock, memo, moment, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick };
 //# sourceMappingURL=silentium-components.js.map
