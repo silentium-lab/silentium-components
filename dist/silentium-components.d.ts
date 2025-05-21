@@ -77,6 +77,12 @@ declare const moment: <T>(baseSrc: SourceType<T>, defaultValue?: T) => SourceTyp
 declare const shot: <T>(baseSrc: SourceType<T>, shotSrc: SourceType<unknown>) => silentium.SourceChangeableType<T>;
 
 /**
+ * Represents source what was changed at least once
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
+ */
+declare const onlyChanged: <T>(baseSrc: SourceType<T>) => silentium.SourceExecutorType<T>;
+
+/**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 declare const hashTable: (baseSource: SourceType<[string, unknown]>) => silentium.SourceExecutorType<Record<string, unknown>>;
@@ -143,5 +149,5 @@ declare const or: (oneSrc: SourceType<boolean>, twoSrc: SourceType<boolean>) => 
  */
 declare const not: (baseSrc: SourceType<boolean>) => (g: GuestType<boolean>) => void;
 
-export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, lock, memo, moment, not, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick };
+export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, lock, memo, moment, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick };
 export type { Route };

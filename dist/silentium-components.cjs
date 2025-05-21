@@ -272,6 +272,22 @@ const shot = (baseSrc, shotSrc) => {
   return silentium.sourceResettable(result, resetResult);
 };
 
+const onlyChanged = (baseSrc) => {
+  let firstValue = silentium.sourceSync(baseSrc, null).syncValue();
+  return silentium.source((g) => {
+    silentium.value(
+      baseSrc,
+      silentium.guestCast(g, (v) => {
+        if (firstValue === null) {
+          firstValue = v;
+        } else if (firstValue !== v) {
+          silentium.give(v, g);
+        }
+      })
+    );
+  });
+};
+
 const hashTable = (baseSource) => {
   const result = silentium.sourceOf({});
   silentium.subSource(result, baseSource);
@@ -413,6 +429,7 @@ exports.lock = lock;
 exports.memo = memo;
 exports.moment = moment;
 exports.not = not;
+exports.onlyChanged = onlyChanged;
 exports.or = or;
 exports.path = path;
 exports.record = record;
