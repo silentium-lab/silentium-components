@@ -25,43 +25,26 @@
 </p>
 
 <p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
-<pre
-  class="mb-4"
-><code class="language-js">import { SourceChangeable, SourceSync } from "silentium";
-import { Loading } from 'silentium-components';
-
-const loadingStartSource = new SourceChangeable();
-const loadingFinishSource = new SourceChangeable();
-const loading = new SourceSync(
-    new Loading(loadingStartSource, loadingFinishSource),
-);
-const values = [];
-loadingStartSource.give({});
-values.push(loading.syncValue());
-loadingFinishSource.give({});
-values.push(loading.syncValue());
-
-document.querySelector(".guest-result").textContent = JSON.stringify(values);
-</code></pre>
+<pre class="mb-4 w-full"><code class="language-js listing-1"></code></pre>
 
 <p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
 <div class="example mb-4">
   <span class="guest-result">JS не отработал</span>
 </div>
-<script type="module">
-  import { SourceChangeable, SourceSync } from "silentium";
-  import { Loading } from 'silentium-components';
+<script type="module" data-listing=".listing-1">
+import { sourceOf, sourceSync } from "silentium";
+import { loading } from 'silentium-components';
 
-  const loadingStartSource = new SourceChangeable();
-  const loadingFinishSource = new SourceChangeable();
-  const loading = new SourceSync(
-    new Loading(loadingStartSource, loadingFinishSource),
-  );
-  const values = [];
-  loadingStartSource.give({});
-  values.push(loading.syncValue());
-  loadingFinishSource.give({});
-  values.push(loading.syncValue());
+const loadingStartSource = sourceOf();
+const loadingFinishSource = sourceOf();
+const l = sourceSync(
+  loading(loadingStartSource, loadingFinishSource),
+);
+const values = [];
+loadingStartSource.give({});
+values.push(l.syncValue());
+loadingFinishSource.give({});
+values.push(l.syncValue());
 
-  document.querySelector(".guest-result").textContent = JSON.stringify(values);
+document.querySelector(".guest-result").textContent = JSON.stringify(values);
 </script>
