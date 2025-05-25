@@ -18,3 +18,5 @@ To install the library you can use the command.
 ```bash
 npm install silentium-components
 ```
+
+A set of components that are compatible with the silentium library and allow the use of ready-made solutions
