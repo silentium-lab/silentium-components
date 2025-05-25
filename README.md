@@ -11,10 +11,10 @@
 </p>
 <br/>
 
-[Documentation](https://silentium-lab.github.io/silentium/#/en/)
+[Documentation](https://silentium-lab.github.io/silentium-components/)
 
 To install the library you can use the command.
 
 ```bash
-npm install silentium
+npm install silentium-components
 ```
