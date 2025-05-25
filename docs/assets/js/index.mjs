@@ -166,35 +166,6 @@ const layoutContentSrc = nativeFetched(
     url: tick(
       sourceAny([
         concatenated([basePath, sourceChain(urlSrc, "layouts/default.html")]),
-        branch(
-          regexpMatched("/source/", urlSrc),
-          concatenated([basePath, "layouts/source.html"]),
-        ),
-        branch(
-          regexpMatched("/patron/", urlSrc),
-          concatenated([basePath, "layouts/patron.html"]),
-        ),
-        branch(
-          regexpMatched("/guest/", urlSrc),
-          concatenated([basePath, "layouts/guest.html"]),
-        ),
-        branch(
-          regexpMatched("/utils/", urlSrc),
-          concatenated([basePath, "layouts/utils.html"]),
-        ),
-        branch(
-          regexpMatched("/terminology/", urlSrc),
-          concatenated([
-            basePath,
-            "layouts",
-            langUrlPartSrc,
-            "terminology.html",
-          ]),
-        ),
-        branch(
-          regexpMatched("/examples/", urlSrc),
-          concatenated([basePath, "layouts", langUrlPartSrc, "examples.html"]),
-        ),
       ]),
     ),
   }),

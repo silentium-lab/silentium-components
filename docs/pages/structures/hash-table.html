@@ -17,33 +17,20 @@
 </p>
 
 <p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
-<pre
-  class="mb-4"
-><code class="language-js">import { SourceChangeable, SourceSync } from "silentium";
-import { HashTable } from 'silentium-components';
-
-const entrySource = new SourceChangeable();
-const hashTable = new SourceSync(new HashTable(entrySource));
-entrySource.give(["key-one", "value-one"]);
-entrySource.give(["key-two", "value-two"]);
-
-hashTable.value(console.log);
-document.querySelector(".guest-result").textContent = JSON.stringify(hashTable.syncValue());
-</code></pre>
+<pre class="mb-4 w-full"><code class="language-js listing-1"></code></pre>
 
 <p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
 <div class="example mb-4">
   <span class="guest-result">Значение установится синхронно!</span>
 </div>
-<script type="module">
-  import { SourceChangeable, SourceSync } from "silentium";
-  import { HashTable } from 'silentium-components';
+<script type="module" data-listing=".listing-1">
+import { sourceOf, sourceSync } from "silentium";
+import { hashTable } from 'silentium-components';
 
-  const entrySource = new SourceChangeable();
-  const hashTable = new SourceSync(new HashTable(entrySource));
-  entrySource.give(["key-one", "value-one"]);
-  entrySource.give(["key-two", "value-two"]);
+const entrySource = sourceOf();
+const ht = sourceSync(hashTable(entrySource));
+entrySource.give(["key-one", "value-one"]);
+entrySource.give(["key-two", "value-two"]);
 
-  hashTable.value(console.log);
-  document.querySelector(".guest-result").textContent = JSON.stringify(hashTable.syncValue());
+document.querySelector(".guest-result").textContent = JSON.stringify(ht.syncValue());
 </script>

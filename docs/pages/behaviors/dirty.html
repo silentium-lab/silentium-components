@@ -1,10 +1,10 @@
 <a href="https://github.com/silentium-lab/silentium-components/blob/main/src/behaviors/Dirty.ts" target="_blank"
     class="text-regular inline-flex gap-1 items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 mb-4">
     <img src="./assets/img/github_16.jpg" width="16" height="16" />
-    Dirty на GitHub
+    dirty на GitHub
 </a>
 <h2 class="font-medium title-font text-gray-900 text-lg mb-2">
-    <span> Dirty </span>
+    <span> dirty </span>
 </h2>
 
 <p class="text-gray-600 text-lg mb-4">
@@ -18,45 +18,27 @@
 </p>
 
 <p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
-<pre
-  class="mb-4"
-><code class="language-js">import { SourceChangeable, SourceSync } from "silentium";
-import { Dirty } from 'silentium-components';
-
-const form = new SourceChangeable({
-    name: "one",
-    surname: "two",
-});
-const dirtyForm = new Dirty(form);
-dirtyForm.give({
-    name: "new",
-    surname: "two",
-});
-
-const syncDirty = new SourceSync(dirtyForm);
-
-document.querySelector(".guest-result").textContent = JSON.stringify(syncDirty.syncValue());
-</code></pre>
+<pre class="mb-4 w-full"><code class="language-js listing-1"></code></pre>
 
 <p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
 <div class="example mb-4">
   <span class="guest-result">JS не отработал</span>
 </div>
-<script type="module">
-  import { SourceChangeable, SourceSync } from "silentium";
-  import { Dirty } from 'silentium-components';
+<script type="module" data-listing=".listing-1">
+import { sourceOf, sourceSync } from "silentium";
+import { dirty } from 'silentium-components';
 
-  const form = new SourceChangeable({
-    name: "one",
-    surname: "two",
-  });
-  const dirtyForm = new Dirty(form);
-  dirtyForm.give({
-    name: "new",
-    surname: "two",
-  });
+const form = sourceOf({
+  name: "one",
+  surname: "two",
+});
+const dirtyForm = dirty(form);
+dirtyForm.give({
+  name: "new",
+  surname: "two",
+});
 
-  const syncDirty = new SourceSync(dirtyForm);
+const syncDirty = sourceSync(dirtyForm);
 
-  document.querySelector(".guest-result").textContent = JSON.stringify(syncDirty.syncValue());
+document.querySelector(".guest-result").textContent = JSON.stringify(syncDirty.syncValue());
 </script>
