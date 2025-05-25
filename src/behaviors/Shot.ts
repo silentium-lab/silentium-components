@@ -29,5 +29,5 @@ export const shot = <T>(
     }),
   );
 
-  return sourceResettable(result, resetResult);
+  return sourceResettable(result, resetResult).value;
 };

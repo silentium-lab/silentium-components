@@ -269,7 +269,23 @@ const shot = (baseSrc, shotSrc) => {
       }
     })
   );
-  return silentium.sourceResettable(result, resetResult);
+  return silentium.sourceResettable(result, resetResult).value;
+};
+
+const onlyChanged = (baseSrc) => {
+  let firstValue = false;
+  return silentium.source((g) => {
+    silentium.value(
+      baseSrc,
+      silentium.guestCast(g, (v) => {
+        if (firstValue === false) {
+          firstValue = true;
+        } else {
+          silentium.give(v, g);
+        }
+      })
+    );
+  });
 };
 
 const hashTable = (baseSource) => {
@@ -413,6 +429,7 @@ exports.lock = lock;
 exports.memo = memo;
 exports.moment = moment;
 exports.not = not;
+exports.onlyChanged = onlyChanged;
 exports.or = or;
 exports.path = path;
 exports.record = record;
