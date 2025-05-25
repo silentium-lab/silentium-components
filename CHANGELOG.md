@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.19](https://github.com/silentium-lab/silentium-components/compare/v0.0.18...v0.0.19) (2025-05-25)
+
+
+### Features
+
+* **43-issue:** only changed component done ([770bd67](https://github.com/silentium-lab/silentium-components/commit/770bd679c311d5520a88e05eb5cfa1e6808410ce))
+* **main:** shot export ([e05dabc](https://github.com/silentium-lab/silentium-components/commit/e05dabc0785aacdb9e6d5e9a30bdb206b40d15b3))
+
 ### [0.0.18](https://github.com/silentium-lab/silentium-components/compare/v0.0.17...v0.0.18) (2025-05-21)
 
 
