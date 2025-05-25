@@ -1,10 +1,10 @@
 <a href="https://github.com/silentium-lab/silentium-components/blob/main/src/behaviors/Deadline.ts" target="_blank"
     class="text-regular inline-flex gap-1 items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 mb-4">
     <img src="./assets/img/github_16.jpg" width="16" height="16" />
-    Deadline на GitHub
+    deadline на GitHub
 </a>
 <h2 class="font-medium title-font text-gray-900 text-lg mb-2">
-    <span> Deadline </span>
+    <span> deadline </span>
 </h2>
 
 <p class="text-gray-600 text-lg mb-4">
@@ -12,49 +12,29 @@
 </p>
 
 <p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
-<pre
-  class="mb-4"
-><code class="language-js">import { SourceChangeable, SourceSync, Source, give, Patron } from "silentium";
-import { Deadline } from 'silentium-components';
-import { Log } from 'silentium-web-api';
+<pre class="mb-4 w-full"><code class="language-js listing-1"></code></pre>
 
-const errors = new SourceChangeable();
-const source = (after) => new Source((g) => {
+<p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
+<div class="example mb-4">
+    <span class="guest-result">JS не отработал</span>
+</div>
+<script type="module" data-listing=".listing-1">
+import { sourceOf, sourceSync, give, value, patron } from "silentium";
+import { deadline } from 'silentium-components';
+import { log } from 'silentium-web-api';
+
+const errors = sourceOf();
+const source = (after) => (g) => {
     setTimeout(() => {
         give(42, g);
     }, after);
-});
+};
 const g = (v) => {
     document.querySelector(
         ".guest-result"
     ).textContent = `Результат = ${v}`;
 }
 
-const dl = new Deadline(source(100), errors, 20).value(new Patron(g));
-errors.value(new Patron(g));
-</code></pre>
-
-<p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
-<div class="example mb-4">
-    <span class="guest-result">JS не отработал</span>
-</div>
-<script type="module">
-    import { SourceChangeable, SourceSync, Source, give, Patron } from "silentium";
-    import { Deadline } from 'silentium-components';
-    import { Log } from 'silentium-web-api';
-
-    const errors = new SourceChangeable();
-    const source = (after) => new Source((g) => {
-        setTimeout(() => {
-            give(42, g);
-        }, after);
-    });
-    const g = (v) => {
-        document.querySelector(
-            ".guest-result"
-        ).textContent = `Результат = ${v}`;
-    }
-
-    const dl = new Deadline(source(100), errors, 20).value(new Patron(g));
-    errors.value(new Patron(g));
+const dl = value(deadline(errors, source(100), 20), patron(g));
+errors.value(patron(g));
 </script>
