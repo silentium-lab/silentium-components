@@ -1,0 +1,54 @@
+<script class="page-title" type="text/template">
+  Loading
+</script>
+
+<a href="https://github.com/silentium-lab/silentium-components/blob/main/src/behaviors/Loading.ts" target="_blank"
+    class="text-regular inline-flex gap-1 items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 mb-4">
+    <img src="./assets/img/github_16.jpg" width="16" height="16" />
+    Loading on GitHub
+</a>
+
+<h2 class="font-medium title-font text-gray-900 text-lg mb-2">
+    <span> Loading </span>ding </span>
+</h2>
+
+<p class="text-gray-600 text-lg mb-4">
+Allows you to represent the behavior of a source that reports that
+    Some work has been done. The Loading class is based on two sources,
+    the first source starts the download process, the second completes it.
+</p>
+
+<p class="text-gray-600 text-lg mb-4">
+To better understand why the Loading class works this way, let's imagine that
+    We need to make a request via FetchAPI. We have a client,
+    which is the source of the API query result and this
+    the client has a dependency on the source with the request. Therefore
+    when a request appears in the source with a request, this is a signal that
+    that loading has started, Loading switches to true when the Fetch Client
+    gets the result - the download is completed, loading switches to false.
+</p>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Example 1.</p>
+<pre class="mb-4 w-full"><code class="language-js listing-1"></code></pre>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Result 1.</p>
+<div class="example mb-4">
+<span class="guest-result">JS failed</span>
+</div>
+<script type="module" data-listing=".listing-1">
+import { sourceOf, sourceSync } from "silentium";
+import { loading } from 'silentium-components';
+
+const loadingStartSource = sourceOf();
+const loadingFinishSource = sourceOf();
+const l = sourceSync(
+  loading(loadingStartSource, loadingFinishSource),
+);
+const values = [];
+loadingStartSource.give({});
+values.push(l.syncValue());
+loadingFinishSource.give({});
+values.push(l.syncValue());
+
+document.querySelector(".guest-result").textContent = JSON.stringify(values);
+</script>

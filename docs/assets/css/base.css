@@ -21,3 +21,10 @@ pre {
     padding: 16px;
     font-size: 16px;
 }
+
+.lang {
+    height: 32px;
+    margin-right: 6px;
+    outline: none;
+    cursor: pointer;
+}
