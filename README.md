@@ -11,7 +11,7 @@
 </p>
 <br/>
 
-[Documentation](https://silentium-lab.github.io/silentium-components/)
+[Documentation](https://silentium-lab.github.io/silentium-components/#/en/)
 
 To install the library you can use the command.
 
