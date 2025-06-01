@@ -1,4 +1,6 @@
 import {
+  firstVisit,
+  GuestType,
   patron,
   sourceOf,
   sourceResettable,
@@ -16,12 +18,17 @@ export const deferred = <T>(
 ) => {
   const result = sourceResettable<T>(sourceOf(), baseSrc as SourceType);
 
-  value(
-    triggerSrc,
-    patron(() => {
-      value(baseSrc, result);
-    }),
-  );
+  const visited = firstVisit(() => {
+    value(
+      triggerSrc,
+      patron(() => {
+        value(baseSrc, result);
+      }),
+    );
+  });
 
-  return result.value;
+  return (g: GuestType<T>) => {
+    visited();
+    value(result, g);
+  };
 };

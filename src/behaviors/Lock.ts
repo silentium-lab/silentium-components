@@ -32,5 +32,5 @@ export const lock = <T>(
     }),
   );
 
-  return resultResettable.value;
+  return resultResettable;
 };
