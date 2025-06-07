@@ -8,11 +8,12 @@ const drop = (dropPart: string) => (value: string) => {
 
 test("Router.test", () => {
   const urlSrc = sourceOf<string>("http://domain.com/some/url/");
-  const urlClearedSrc = sourceApplied(urlSrc, drop("http://domain.com"));
+  const urlPathSrc = sourceApplied(urlSrc, drop("http://domain.com"));
+  const urlPathSync = sourceSync(urlPathSrc);
 
   const template = sourceSync(
     router(
-      urlClearedSrc,
+      urlPathSrc,
       [
         {
           pattern: "^/$",
@@ -35,6 +36,7 @@ test("Router.test", () => {
 
   urlSrc.give("http://domain.com/some/contacts/");
 
+  expect(urlPathSync.syncValue()).toBe("/some/contacts/");
   expect(template.syncValue()).toBe("page/contacts.html");
 
   urlSrc.give("http://domain.com/some/unknown/");

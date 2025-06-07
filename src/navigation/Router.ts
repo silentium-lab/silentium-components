@@ -1,13 +1,14 @@
 import {
   patron,
-  sourceAny,
   sourceChain,
   sourceFiltered,
   sourceOf,
   SourceType,
   value,
 } from "silentium";
+import { priority } from "../behaviors/Priority";
 import { regexpMatched } from "../system/RegexpMatched";
+import { shot } from "../behaviors";
 
 export interface Route<T> {
   pattern: string;
@@ -30,18 +31,21 @@ export const router = <T = "string">(
     routesSrc,
     patron((routes) => {
       value(
-        sourceAny([
-          sourceChain(urlSrc, defaultSrc as T),
-          ...routes.map((r) =>
-            sourceChain(
-              sourceFiltered(
-                regexpMatched(r.pattern, urlSrc, r.patternFlags),
-                Boolean,
+        priority(
+          [
+            sourceChain(urlSrc, defaultSrc as T),
+            ...routes.map((r) =>
+              shot(
+                r.template as SourceType,
+                sourceFiltered(
+                  regexpMatched(r.pattern, urlSrc, r.patternFlags),
+                  Boolean,
+                ),
               ),
-              r.template,
             ),
-          ),
-        ]),
+          ],
+          urlSrc as SourceType,
+        ),
         patron(resultSrc),
       );
     }),
