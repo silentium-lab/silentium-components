@@ -25,7 +25,7 @@ export const priority = <T>(
   const visited = firstVisit(() => {
     value(
       triggerSrc,
-      systemPatron(() => {
+      systemPatron((v) => {
         highestPriorityIndex = 0;
         sources.forEach((source, index) => {
           value(source, (v) => {

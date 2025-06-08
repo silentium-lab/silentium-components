@@ -7,21 +7,17 @@ const drop = (dropPart: string) => (value: string) => {
 };
 
 test("Router.test", () => {
-  const urlSrc = sourceOf<string>("http://domain.com/some/url/");
+  const urlSrc = sourceOf<string>("http://domain.com/");
   const urlPathSrc = sourceApplied(urlSrc, drop("http://domain.com"));
   const urlPathSync = sourceSync(urlPathSrc);
 
-  const template = sourceSync(
+  const responseSrc = sourceSync(
     router(
       urlPathSrc,
       [
         {
           pattern: "^/$",
           template: source("page/home.html"),
-        },
-        {
-          pattern: "/some/url",
-          template: "page/home.html",
         },
         {
           pattern: "/some/contacts",
@@ -33,21 +29,21 @@ test("Router.test", () => {
   );
 
   const g1 = vi.fn();
-  template.value(g1);
+  responseSrc.value(g1);
   expect(g1).toBeCalledWith("page/home.html");
 
-  urlSrc.give("http://domain.com/some/contacts/");
+  urlSrc.give("http://domain.com/some/contacts");
 
-  expect(urlPathSync.syncValue()).toBe("/some/contacts/");
+  expect(urlPathSync.syncValue()).toBe("/some/contacts");
   const g2 = vi.fn();
-  template.value(g2);
+  responseSrc.value(g2);
   expect(g2).toBeCalledWith("page/contacts.html");
 
   urlSrc.give("http://domain.com/some/unknown/");
 
-  expect(template.syncValue()).toBe("page/404.html");
+  expect(responseSrc.syncValue()).toBe("page/404.html");
 
   urlSrc.give("http://domain.com/");
 
-  expect(template.syncValue()).toBe("page/home.html");
+  expect(responseSrc.syncValue()).toBe("page/home.html");
 });

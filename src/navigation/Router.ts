@@ -1,9 +1,11 @@
 import {
+  patron,
   sourceChain,
   sourceOf,
   SourceType,
   systemPatron,
   value,
+  withPriority,
 } from "silentium";
 import { branch } from "../behaviors";
 import { priority } from "../behaviors/Priority";
@@ -48,10 +50,13 @@ export const router = <T = "string">(
           urlSrc as SourceType,
         ),
         [
-          systemPatron(resultSrc),
-          (v) => {
-            return v;
-          },
+          withPriority(<any>patron(resultSrc), 150),
+          withPriority(
+            <any>patron((v) => {
+              return v;
+            }),
+            150,
+          ),
         ],
       );
     }),
