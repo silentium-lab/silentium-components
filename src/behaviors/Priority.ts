@@ -2,15 +2,15 @@ import {
   firstVisit,
   give,
   GuestType,
-  patron,
   sourceOf,
   SourceType,
+  systemPatron,
   value,
 } from "silentium";
 
 export const priority = <T>(
   sources: SourceType<T>[],
-  resetSrc: SourceType<unknown>,
+  triggerSrc: SourceType<unknown>,
 ) => {
   const resultSrc = sourceOf<T>();
   let highestPriorityIndex = 0;
@@ -23,18 +23,9 @@ export const priority = <T>(
   };
 
   const visited = firstVisit(() => {
-    sources.forEach((source, index) => {
-      value(
-        source,
-        patron((v) => {
-          sourceHandler(v, index);
-        }),
-      );
-    });
-
     value(
-      resetSrc,
-      patron(() => {
+      triggerSrc,
+      systemPatron(() => {
         highestPriorityIndex = 0;
         sources.forEach((source, index) => {
           value(source, (v) => {

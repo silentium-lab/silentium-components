@@ -6,12 +6,13 @@ test("Priority.test", () => {
   const src1 = sourceOf();
   const src2Reset = sourceOf();
   const src2 = sourceResettable<number>(2, src2Reset);
-  const resetSrc = sourceOf();
+  const triggerSrc = sourceOf();
 
-  const prioritySrc = sourceSync(priority([src1, src2], resetSrc));
+  const prioritySrc = sourceSync(priority([src1, src2], triggerSrc));
 
   src1.give(1);
   src2.give(2);
+  triggerSrc.give(1);
 
   expect(prioritySrc.syncValue()).toBe(2);
 
@@ -20,11 +21,12 @@ test("Priority.test", () => {
   expect(prioritySrc.syncValue()).toBe(2);
 
   src2.give(4);
+  triggerSrc.give(1);
 
   expect(prioritySrc.syncValue()).toBe(4);
 
   src2Reset.give(1);
-  resetSrc.give(1);
+  triggerSrc.give(1);
 
   expect(prioritySrc.syncValue()).toBe(3);
 });

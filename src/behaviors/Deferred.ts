@@ -1,10 +1,10 @@
 import {
   firstVisit,
   GuestType,
-  patron,
   sourceOf,
   sourceResettable,
   SourceType,
+  systemPatron,
   value,
 } from "silentium";
 
@@ -21,7 +21,7 @@ export const deferred = <T>(
   const visited = firstVisit(() => {
     value(
       triggerSrc,
-      patron(() => {
+      systemPatron(() => {
         value(baseSrc, result);
       }),
     );

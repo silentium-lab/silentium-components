@@ -1,4 +1,13 @@
-import { patron, patronOnce, sourceOf, SourceType, value } from "silentium";
+import {
+  firstVisit,
+  GuestType,
+  patronOnce,
+  sourceOf,
+  sourceResettable,
+  SourceType,
+  systemPatron,
+  value,
+} from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
@@ -8,28 +17,36 @@ export const branch = <Then, Else>(
   thenSrc: SourceType<Then>,
   elseSrc?: SourceType<Else>,
 ): SourceType<Then | Else> => {
+  const resetSrc = sourceOf();
   const result = sourceOf<Then | Else>();
+  const resultSrc = sourceResettable(result, resetSrc);
 
-  value(
-    conditionSrc,
-    patron((v) => {
-      if (v === true) {
-        value(
-          thenSrc,
-          patronOnce((v) => {
-            result.give(v);
-          }),
-        );
-      } else if (elseSrc !== undefined) {
-        value(
-          elseSrc,
-          patronOnce((v) => {
-            result.give(v);
-          }),
-        );
-      }
-    }),
-  );
+  const visited = firstVisit(() => {
+    value(
+      conditionSrc,
+      systemPatron((v) => {
+        resetSrc.give(1);
+        if (v === true) {
+          value(
+            thenSrc,
+            patronOnce((v) => {
+              result.give(v);
+            }),
+          );
+        } else if (elseSrc !== undefined) {
+          value(
+            elseSrc,
+            patronOnce((v) => {
+              result.give(v);
+            }),
+          );
+        }
+      }),
+    );
+  });
 
-  return result.value;
+  return (g: GuestType<Then | Else>) => {
+    visited();
+    resultSrc.value(g);
+  };
 };

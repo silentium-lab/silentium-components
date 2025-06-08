@@ -1,9 +1,9 @@
 import {
   give,
-  patron,
   sourceOf,
   SourceType,
   subSource,
+  systemPatron,
   value,
 } from "silentium";
 
@@ -31,7 +31,7 @@ export const tick = <T>(baseSrc: SourceType<T>) => {
 
   value(
     baseSrc,
-    patron((v) => {
+    systemPatron((v) => {
       lastValue = v;
       if (!microtaskScheduled) {
         scheduleMicrotask();

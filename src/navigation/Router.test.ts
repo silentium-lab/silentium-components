@@ -1,5 +1,5 @@
 import { source, sourceApplied, sourceOf, sourceSync } from "silentium";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { router } from "../navigation/Router";
 
 const drop = (dropPart: string) => (value: string) => {
@@ -32,12 +32,16 @@ test("Router.test", () => {
     ),
   );
 
-  expect(template.syncValue()).toBe("page/home.html");
+  const g1 = vi.fn();
+  template.value(g1);
+  expect(g1).toBeCalledWith("page/home.html");
 
   urlSrc.give("http://domain.com/some/contacts/");
 
   expect(urlPathSync.syncValue()).toBe("/some/contacts/");
-  expect(template.syncValue()).toBe("page/contacts.html");
+  const g2 = vi.fn();
+  template.value(g2);
+  expect(g2).toBeCalledWith("page/contacts.html");
 
   urlSrc.give("http://domain.com/some/unknown/");
 

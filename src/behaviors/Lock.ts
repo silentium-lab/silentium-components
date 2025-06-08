@@ -1,12 +1,12 @@
 import {
   destroy,
   guestDisposable,
-  patron,
   patronOnce,
   sourceOf,
   sourceResettable,
   SourceType,
   subSource,
+  systemPatron,
   value,
 } from "silentium";
 
@@ -22,7 +22,7 @@ export const lock = <T>(
   let locked = false;
   subSource(result, baseSrc);
 
-  value(baseSrc, patron(guestDisposable(result.give, () => locked)));
+  value(baseSrc, systemPatron(guestDisposable(result.give, () => locked)));
 
   value(
     lockSrc,

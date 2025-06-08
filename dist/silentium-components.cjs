@@ -5,7 +5,7 @@ var silentium = require('silentium');
 const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
   silentium.value(
     silentium.sourceAll([activeClassSrc, activeElementSrc, groupElementsSrc]),
-    silentium.patron(([activeClass, activeElement, groupElements]) => {
+    silentium.systemPatron(([activeClass, activeElement, groupElements]) => {
       groupElements.forEach((el) => {
         if (el.classList) {
           el.classList.remove(activeClass);
@@ -62,13 +62,13 @@ const loading = (loadingStartSource, loadingFinishSource) => {
   silentium.subSourceMany(loadingSrc, [loadingStartSource, loadingFinishSource]);
   silentium.value(
     loadingStartSource,
-    silentium.patron(() => {
+    silentium.systemPatron(() => {
       loadingSrc.give(true);
     })
   );
   silentium.value(
     loadingFinishSource,
-    silentium.patron(() => {
+    silentium.systemPatron(() => {
       loadingSrc.give(false);
     })
   );
@@ -80,7 +80,7 @@ const path = (baseSrc, keySrc) => {
   silentium.subSourceMany(pathSrc, [baseSrc, keySrc]);
   silentium.value(
     silentium.sourceAll([baseSrc, keySrc]),
-    silentium.patron(([base, key]) => {
+    silentium.systemPatron(([base, key]) => {
       const keyChunks = key.split(".");
       let value2 = base;
       keyChunks.forEach((keyChunk) => {
@@ -143,7 +143,7 @@ const tick = (baseSrc) => {
   };
   silentium.value(
     baseSrc,
-    silentium.patron((v) => {
+    silentium.systemPatron((v) => {
       lastValue = v;
       if (!microtaskScheduled) {
         scheduleMicrotask();
@@ -161,7 +161,7 @@ const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
   let elsePatron;
   silentium.value(
     conditionSrc,
-    silentium.patron((v) => {
+    silentium.systemPatron((v) => {
       reset.give(1);
       if (thenPatron) {
         silentium.removePatronFromPools(thenPatron);
@@ -183,38 +183,51 @@ const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
 
 const deferred = (baseSrc, triggerSrc) => {
   const result = silentium.sourceResettable(silentium.sourceOf(), baseSrc);
-  silentium.value(
-    triggerSrc,
-    silentium.patron(() => {
-      silentium.value(baseSrc, result);
-    })
-  );
-  return result.value;
+  const visited = silentium.firstVisit(() => {
+    silentium.value(
+      triggerSrc,
+      silentium.systemPatron(() => {
+        silentium.value(baseSrc, result);
+      })
+    );
+  });
+  return (g) => {
+    visited();
+    silentium.value(result, g);
+  };
 };
 
 const branch = (conditionSrc, thenSrc, elseSrc) => {
+  const resetSrc = silentium.sourceOf();
   const result = silentium.sourceOf();
-  silentium.value(
-    conditionSrc,
-    silentium.patron((v) => {
-      if (v === true) {
-        silentium.value(
-          thenSrc,
-          silentium.patronOnce((v2) => {
-            result.give(v2);
-          })
-        );
-      } else if (elseSrc !== void 0) {
-        silentium.value(
-          elseSrc,
-          silentium.patronOnce((v2) => {
-            result.give(v2);
-          })
-        );
-      }
-    })
-  );
-  return result.value;
+  const resultSrc = silentium.sourceResettable(result, resetSrc);
+  const visited = silentium.firstVisit(() => {
+    silentium.value(
+      conditionSrc,
+      silentium.systemPatron((v) => {
+        resetSrc.give(1);
+        if (v === true) {
+          silentium.value(
+            thenSrc,
+            silentium.patronOnce((v2) => {
+              result.give(v2);
+            })
+          );
+        } else if (elseSrc !== void 0) {
+          silentium.value(
+            elseSrc,
+            silentium.patronOnce((v2) => {
+              result.give(v2);
+            })
+          );
+        }
+      })
+    );
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
 };
 
 const memo = (baseSrc) => {
@@ -222,7 +235,7 @@ const memo = (baseSrc) => {
   let lastValue = null;
   silentium.value(
     baseSrc,
-    silentium.patron((v) => {
+    silentium.systemPatron((v) => {
       if (v !== lastValue) {
         result.give(v);
         lastValue = v;
@@ -237,7 +250,7 @@ const lock = (baseSrc, lockSrc) => {
   const resultResettable = silentium.sourceResettable(result, lockSrc);
   let locked = false;
   silentium.subSource(result, baseSrc);
-  silentium.value(baseSrc, silentium.patron(silentium.guestDisposable(result.give, () => locked)));
+  silentium.value(baseSrc, silentium.systemPatron(silentium.guestDisposable(result.give, () => locked)));
   silentium.value(
     lockSrc,
     silentium.patronOnce(() => {
@@ -245,7 +258,7 @@ const lock = (baseSrc, lockSrc) => {
       silentium.destroy([result]);
     })
   );
-  return resultResettable.value;
+  return resultResettable;
 };
 
 const moment = (baseSrc, defaultValue) => {
@@ -262,14 +275,14 @@ const shot = (baseSrc, shotSrc) => {
   const baseSrcSync = silentium.sourceSync(baseSrc, null);
   silentium.value(
     shotSrc,
-    silentium.patron(() => {
+    silentium.systemPatron(() => {
       if (baseSrcSync.syncValue() !== null) {
         result.give(baseSrcSync.syncValue());
         resetResult.give(1);
       }
     })
   );
-  return silentium.sourceResettable(result, resetResult).value;
+  return silentium.sourceResettable(result, resetResult);
 };
 
 const onlyChanged = (baseSrc) => {
@@ -293,7 +306,7 @@ const hashTable = (baseSource) => {
   silentium.subSource(result, baseSource);
   silentium.value(
     baseSource,
-    silentium.patron(([key, value2]) => {
+    silentium.systemPatron(([key, value2]) => {
       result.value((lastRecord) => {
         lastRecord[key] = value2;
       });
@@ -325,6 +338,34 @@ const concatenated = (sources, joinPartSrc = "") => {
   return result;
 };
 
+const priority = (sources, triggerSrc) => {
+  const resultSrc = silentium.sourceOf();
+  let highestPriorityIndex = 0;
+  const sourceHandler = (v, index) => {
+    if (highestPriorityIndex <= index) {
+      highestPriorityIndex = index;
+      silentium.give(v, resultSrc);
+    }
+  };
+  const visited = silentium.firstVisit(() => {
+    silentium.value(
+      triggerSrc,
+      silentium.systemPatron(() => {
+        highestPriorityIndex = 0;
+        sources.forEach((source, index) => {
+          silentium.value(source, (v) => {
+            sourceHandler(v, index);
+          });
+        });
+      })
+    );
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
+};
+
 const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCombined(
   patternSrc,
   valueSrc,
@@ -337,21 +378,31 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
   const resultSrc = silentium.sourceOf();
   silentium.value(
     routesSrc,
-    silentium.patron((routes) => {
+    silentium.systemPatron((routes) => {
       silentium.value(
-        silentium.sourceAny([
-          silentium.sourceChain(urlSrc, defaultSrc),
-          ...routes.map(
-            (r) => silentium.sourceChain(
-              silentium.sourceFiltered(
-                regexpMatched(r.pattern, urlSrc, r.patternFlags),
-                Boolean
-              ),
-              r.template
+        priority(
+          [
+            silentium.sourceChain(urlSrc, defaultSrc),
+            ...routes.map(
+              (r) => silentium.value(
+                branch(
+                  regexpMatched(r.pattern, urlSrc, r.patternFlags),
+                  r.template
+                ),
+                silentium.systemPatron((v) => {
+                  return v;
+                })
+              )
             )
-          )
-        ]),
-        silentium.patron(resultSrc)
+          ],
+          urlSrc
+        ),
+        [
+          silentium.systemPatron(resultSrc),
+          (v) => {
+            return v;
+          }
+        ]
       );
     })
   );
@@ -379,7 +430,7 @@ const regexpMatch = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCom
 const set = (baseSrc, keySrc, valueSrc) => {
   silentium.value(
     silentium.sourceAll([baseSrc, keySrc, valueSrc]),
-    silentium.patron(([base, key, value2]) => {
+    silentium.systemPatron(([base, key, value2]) => {
       base[key] = value2;
     })
   );

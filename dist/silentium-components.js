@@ -1,9 +1,9 @@
-import { value, sourceAll, patron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, guestDisposable, destroy, guestSync, sourceSync, source, sourceCombined, sourceAny, sourceChain } from 'silentium';
+import { value, sourceAll, systemPatron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, firstVisit, guestDisposable, destroy, guestSync, sourceSync, source, sourceCombined, sourceChain } from 'silentium';
 
 const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
   value(
     sourceAll([activeClassSrc, activeElementSrc, groupElementsSrc]),
-    patron(([activeClass, activeElement, groupElements]) => {
+    systemPatron(([activeClass, activeElement, groupElements]) => {
       groupElements.forEach((el) => {
         if (el.classList) {
           el.classList.remove(activeClass);
@@ -60,13 +60,13 @@ const loading = (loadingStartSource, loadingFinishSource) => {
   subSourceMany(loadingSrc, [loadingStartSource, loadingFinishSource]);
   value(
     loadingStartSource,
-    patron(() => {
+    systemPatron(() => {
       loadingSrc.give(true);
     })
   );
   value(
     loadingFinishSource,
-    patron(() => {
+    systemPatron(() => {
       loadingSrc.give(false);
     })
   );
@@ -78,7 +78,7 @@ const path = (baseSrc, keySrc) => {
   subSourceMany(pathSrc, [baseSrc, keySrc]);
   value(
     sourceAll([baseSrc, keySrc]),
-    patron(([base, key]) => {
+    systemPatron(([base, key]) => {
       const keyChunks = key.split(".");
       let value2 = base;
       keyChunks.forEach((keyChunk) => {
@@ -141,7 +141,7 @@ const tick = (baseSrc) => {
   };
   value(
     baseSrc,
-    patron((v) => {
+    systemPatron((v) => {
       lastValue = v;
       if (!microtaskScheduled) {
         scheduleMicrotask();
@@ -159,7 +159,7 @@ const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
   let elsePatron;
   value(
     conditionSrc,
-    patron((v) => {
+    systemPatron((v) => {
       reset.give(1);
       if (thenPatron) {
         removePatronFromPools(thenPatron);
@@ -181,38 +181,51 @@ const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
 
 const deferred = (baseSrc, triggerSrc) => {
   const result = sourceResettable(sourceOf(), baseSrc);
-  value(
-    triggerSrc,
-    patron(() => {
-      value(baseSrc, result);
-    })
-  );
-  return result.value;
+  const visited = firstVisit(() => {
+    value(
+      triggerSrc,
+      systemPatron(() => {
+        value(baseSrc, result);
+      })
+    );
+  });
+  return (g) => {
+    visited();
+    value(result, g);
+  };
 };
 
 const branch = (conditionSrc, thenSrc, elseSrc) => {
+  const resetSrc = sourceOf();
   const result = sourceOf();
-  value(
-    conditionSrc,
-    patron((v) => {
-      if (v === true) {
-        value(
-          thenSrc,
-          patronOnce((v2) => {
-            result.give(v2);
-          })
-        );
-      } else if (elseSrc !== void 0) {
-        value(
-          elseSrc,
-          patronOnce((v2) => {
-            result.give(v2);
-          })
-        );
-      }
-    })
-  );
-  return result.value;
+  const resultSrc = sourceResettable(result, resetSrc);
+  const visited = firstVisit(() => {
+    value(
+      conditionSrc,
+      systemPatron((v) => {
+        resetSrc.give(1);
+        if (v === true) {
+          value(
+            thenSrc,
+            patronOnce((v2) => {
+              result.give(v2);
+            })
+          );
+        } else if (elseSrc !== void 0) {
+          value(
+            elseSrc,
+            patronOnce((v2) => {
+              result.give(v2);
+            })
+          );
+        }
+      })
+    );
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
 };
 
 const memo = (baseSrc) => {
@@ -220,7 +233,7 @@ const memo = (baseSrc) => {
   let lastValue = null;
   value(
     baseSrc,
-    patron((v) => {
+    systemPatron((v) => {
       if (v !== lastValue) {
         result.give(v);
         lastValue = v;
@@ -235,7 +248,7 @@ const lock = (baseSrc, lockSrc) => {
   const resultResettable = sourceResettable(result, lockSrc);
   let locked = false;
   subSource(result, baseSrc);
-  value(baseSrc, patron(guestDisposable(result.give, () => locked)));
+  value(baseSrc, systemPatron(guestDisposable(result.give, () => locked)));
   value(
     lockSrc,
     patronOnce(() => {
@@ -243,7 +256,7 @@ const lock = (baseSrc, lockSrc) => {
       destroy([result]);
     })
   );
-  return resultResettable.value;
+  return resultResettable;
 };
 
 const moment = (baseSrc, defaultValue) => {
@@ -260,14 +273,14 @@ const shot = (baseSrc, shotSrc) => {
   const baseSrcSync = sourceSync(baseSrc, null);
   value(
     shotSrc,
-    patron(() => {
+    systemPatron(() => {
       if (baseSrcSync.syncValue() !== null) {
         result.give(baseSrcSync.syncValue());
         resetResult.give(1);
       }
     })
   );
-  return sourceResettable(result, resetResult).value;
+  return sourceResettable(result, resetResult);
 };
 
 const onlyChanged = (baseSrc) => {
@@ -291,7 +304,7 @@ const hashTable = (baseSource) => {
   subSource(result, baseSource);
   value(
     baseSource,
-    patron(([key, value2]) => {
+    systemPatron(([key, value2]) => {
       result.value((lastRecord) => {
         lastRecord[key] = value2;
       });
@@ -323,6 +336,34 @@ const concatenated = (sources, joinPartSrc = "") => {
   return result;
 };
 
+const priority = (sources, triggerSrc) => {
+  const resultSrc = sourceOf();
+  let highestPriorityIndex = 0;
+  const sourceHandler = (v, index) => {
+    if (highestPriorityIndex <= index) {
+      highestPriorityIndex = index;
+      give(v, resultSrc);
+    }
+  };
+  const visited = firstVisit(() => {
+    value(
+      triggerSrc,
+      systemPatron(() => {
+        highestPriorityIndex = 0;
+        sources.forEach((source, index) => {
+          value(source, (v) => {
+            sourceHandler(v, index);
+          });
+        });
+      })
+    );
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
+};
+
 const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => sourceCombined(
   patternSrc,
   valueSrc,
@@ -335,21 +376,31 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
   const resultSrc = sourceOf();
   value(
     routesSrc,
-    patron((routes) => {
+    systemPatron((routes) => {
       value(
-        sourceAny([
-          sourceChain(urlSrc, defaultSrc),
-          ...routes.map(
-            (r) => sourceChain(
-              sourceFiltered(
-                regexpMatched(r.pattern, urlSrc, r.patternFlags),
-                Boolean
-              ),
-              r.template
+        priority(
+          [
+            sourceChain(urlSrc, defaultSrc),
+            ...routes.map(
+              (r) => value(
+                branch(
+                  regexpMatched(r.pattern, urlSrc, r.patternFlags),
+                  r.template
+                ),
+                systemPatron((v) => {
+                  return v;
+                })
+              )
             )
-          )
-        ]),
-        patron(resultSrc)
+          ],
+          urlSrc
+        ),
+        [
+          systemPatron(resultSrc),
+          (v) => {
+            return v;
+          }
+        ]
       );
     })
   );
@@ -377,7 +428,7 @@ const regexpMatch = (patternSrc, valueSrc, flagsSrc = "") => sourceCombined(
 const set = (baseSrc, keySrc, valueSrc) => {
   value(
     sourceAll([baseSrc, keySrc, valueSrc]),
-    patron(([base, key, value2]) => {
+    systemPatron(([base, key, value2]) => {
       base[key] = value2;
     })
   );

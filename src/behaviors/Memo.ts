@@ -1,4 +1,4 @@
-import { patron, sourceOf, SourceType, value } from "silentium";
+import { sourceOf, SourceType, systemPatron, value } from "silentium";
 
 /**
  * Didn't respond if new value of baseSrc equals to old value
@@ -10,7 +10,7 @@ export const memo = <T>(baseSrc: SourceType<T>) => {
 
   value(
     baseSrc,
-    patron((v) => {
+    systemPatron((v) => {
       if (v !== lastValue) {
         result.give(v);
         lastValue = v;

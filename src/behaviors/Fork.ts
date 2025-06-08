@@ -1,12 +1,12 @@
 import {
-  sourceOf,
-  SourceType,
-  sourceResettable,
-  value,
-  patron,
-  removePatronFromPools,
   GuestObjectType,
   patronOnce,
+  removePatronFromPools,
+  sourceOf,
+  sourceResettable,
+  SourceType,
+  systemPatron,
+  value,
 } from "silentium";
 
 /**
@@ -26,7 +26,7 @@ export const fork = <T, Then, Else>(
 
   value(
     conditionSrc,
-    patron((v) => {
+    systemPatron((v) => {
       reset.give(1);
       if (thenPatron) {
         removePatronFromPools(thenPatron);

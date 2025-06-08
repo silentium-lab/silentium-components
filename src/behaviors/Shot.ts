@@ -1,9 +1,9 @@
 import {
-  patron,
   sourceOf,
   sourceResettable,
   sourceSync,
   SourceType,
+  systemPatron,
   value,
 } from "silentium";
 
@@ -21,7 +21,7 @@ export const shot = <T>(
   const baseSrcSync = sourceSync(baseSrc, null);
   value(
     shotSrc,
-    patron(() => {
+    systemPatron(() => {
       if (baseSrcSync.syncValue() !== null) {
         result.give(baseSrcSync.syncValue() as T);
         resetResult.give(1);

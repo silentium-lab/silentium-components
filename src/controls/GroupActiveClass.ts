@@ -1,4 +1,4 @@
-import { patron, sourceAll, SourceType, value } from "silentium";
+import { sourceAll, SourceType, systemPatron, value } from "silentium";
 
 /**
  * Sets activeClass to one element of group
@@ -12,7 +12,7 @@ export const groupActiveClass = (
 ) => {
   value(
     sourceAll([activeClassSrc, activeElementSrc, groupElementsSrc]),
-    patron(([activeClass, activeElement, groupElements]) => {
+    systemPatron(([activeClass, activeElement, groupElements]) => {
       groupElements.forEach((el) => {
         if (el.classList) {
           el.classList.remove(activeClass);

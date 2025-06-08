@@ -1,4 +1,10 @@
-import { patron, sourceOf, SourceType, subSource, value } from "silentium";
+import {
+  sourceOf,
+  SourceType,
+  subSource,
+  systemPatron,
+  value,
+} from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
@@ -9,7 +15,7 @@ export const hashTable = (baseSource: SourceType<[string, unknown]>) => {
 
   value(
     baseSource,
-    patron(([key, value]) => {
+    systemPatron(([key, value]) => {
       result.value((lastRecord) => {
         lastRecord[key] = value;
       });
