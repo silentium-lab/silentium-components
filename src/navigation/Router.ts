@@ -1,5 +1,6 @@
 import {
   patron,
+  sourceAny,
   sourceChain,
   sourceOf,
   SourceType,
@@ -31,34 +32,29 @@ export const router = <T = "string">(
   value(
     routesSrc,
     systemPatron((routes) => {
-      value(
-        priority(
-          [
-            sourceChain(urlSrc, defaultSrc as T) as SourceType,
-            ...routes.map((r) =>
-              value(
-                branch(
-                  regexpMatched(r.pattern, urlSrc, r.patternFlags),
-                  r.template as SourceType,
-                ),
-                systemPatron((v) => {
-                  return v;
-                }),
-              ),
+      const routesBranches = [
+        sourceChain(urlSrc, defaultSrc as T) as SourceType,
+        ...routes.map((r) =>
+          value(
+            branch(
+              regexpMatched(r.pattern, urlSrc, r.patternFlags),
+              r.template as SourceType,
             ),
-          ],
-          urlSrc as SourceType,
-        ),
-        [
-          withPriority(<any>patron(resultSrc), 150),
-          withPriority(
-            <any>patron((v) => {
+            systemPatron((v) => {
               return v;
             }),
-            150,
           ),
-        ],
-      );
+        ),
+      ];
+      value(priority(routesBranches, sourceAny(routesBranches)), [
+        withPriority(<any>patron(resultSrc), 150),
+        withPriority(
+          <any>patron((v) => {
+            return v;
+          }),
+          150,
+        ),
+      ]);
     }),
   );
 
