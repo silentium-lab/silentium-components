@@ -1,16 +1,17 @@
 import {
+  firstVisit,
+  GuestType,
   patron,
-  sourceAny,
-  sourceChain,
+  patronOnce,
   sourceOf,
   SourceType,
   systemPatron,
   value,
-  withPriority,
 } from "silentium";
+import { survey } from "../behaviors/Survey";
 import { branch } from "../behaviors";
-import { priority } from "../behaviors/Priority";
 import { regexpMatched } from "../system/RegexpMatched";
+import { priority } from "../behaviors/Priority";
 
 export interface Route<T> {
   pattern: string;
@@ -29,34 +30,38 @@ export const router = <T = "string">(
 ) => {
   const resultSrc = sourceOf<T>();
 
-  value(
-    routesSrc,
-    systemPatron((routes) => {
-      const routesBranches = [
-        sourceChain(urlSrc, defaultSrc as T) as SourceType,
-        ...routes.map((r) =>
-          value(
-            branch(
-              regexpMatched(r.pattern, urlSrc, r.patternFlags),
-              r.template as SourceType,
+  const visited = firstVisit(() => {
+    value(
+      routesSrc,
+      patronOnce((routes) => {
+        const prioritySrc = priority([
+          defaultSrc,
+          ...routes.map((r) =>
+            value(
+              branch(
+                regexpMatched(r.pattern, urlSrc, r.patternFlags),
+                r.template as SourceType,
+              ),
+              systemPatron((v) => {
+                return v;
+              }),
             ),
-            systemPatron((v) => {
-              return v;
-            }),
           ),
-        ),
-      ];
-      value(priority(routesBranches, sourceAny(routesBranches)), [
-        withPriority(<any>patron(resultSrc), 150),
-        withPriority(
-          <any>patron((v) => {
+        ]);
+        const surveySrc = survey(prioritySrc, urlSrc);
+        value(surveySrc, patron(resultSrc));
+        value(
+          surveySrc,
+          patron((v) => {
             return v;
           }),
-          150,
-        ),
-      ]);
-    }),
-  );
+        );
+      }),
+    );
+  });
 
-  return resultSrc.value;
+  return (g: GuestType<T>) => {
+    visited();
+    resultSrc.value(g);
+  };
 };

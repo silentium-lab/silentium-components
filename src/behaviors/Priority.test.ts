@@ -1,6 +1,7 @@
 import { sourceOf, sourceResettable, sourceSync } from "silentium";
 import { priority } from "../behaviors/Priority";
 import { expect, test } from "vitest";
+import { survey } from "../behaviors/Survey";
 
 test("Priority.test", () => {
   const src1 = sourceOf();
@@ -8,7 +9,7 @@ test("Priority.test", () => {
   const src2 = sourceResettable<number>(2, src2Reset);
   const triggerSrc = sourceOf();
 
-  const prioritySrc = sourceSync(priority([src1, src2], triggerSrc));
+  const prioritySrc = sourceSync(survey(priority([src1, src2]), triggerSrc));
 
   src1.give(1);
   src2.give(2);

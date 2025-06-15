@@ -1,7 +1,6 @@
 import {
   firstVisit,
   GuestType,
-  patronOnce,
   sourceOf,
   sourceResettable,
   SourceType,
@@ -27,19 +26,9 @@ export const branch = <Then, Else>(
       systemPatron((v) => {
         resetSrc.give(1);
         if (v === true) {
-          value(
-            thenSrc,
-            patronOnce((v) => {
-              result.give(v);
-            }),
-          );
+          value(thenSrc, result.give);
         } else if (elseSrc !== undefined) {
-          value(
-            elseSrc,
-            patronOnce((v) => {
-              result.give(v);
-            }),
-          );
+          value(elseSrc, result.give);
         }
       }),
     );
