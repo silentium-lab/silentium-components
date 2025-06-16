@@ -1,10 +1,10 @@
 import {
   give,
-  patron,
   sourceAll,
   sourceOf,
   SourceType,
   subSourceMany,
+  systemPatron,
   value,
 } from "silentium";
 
@@ -24,7 +24,7 @@ export const path = <
 
   value(
     sourceAll([baseSrc, keySrc]),
-    patron(([base, key]) => {
+    systemPatron(([base, key]) => {
       const keyChunks = key.split(".");
       let value: unknown = base;
       keyChunks.forEach((keyChunk) => {

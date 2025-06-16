@@ -1,4 +1,4 @@
-import { personalClass, sourceOf, sourceSync, value } from "silentium";
+import { lazyClass, sourceOf, sourceSync, value } from "silentium";
 import { jsdomDocument } from "silentium-jsdom";
 import { element } from "silentium-web-api";
 import { expect, test } from "vitest";
@@ -22,16 +22,13 @@ test("GroupActiveClass.test", () => {
   </div>`),
   ).syncValue();
   const groupElements = path(
-    <any>element(personalClass(Mutation), document, ".menu"),
+    <any>element(lazyClass(Mutation), document, ".menu"),
     "childNodes",
   );
   const activeElement = sourceOf<HTMLElement>();
   sourceSync(groupActiveClass("active", activeElement, groupElements));
 
-  value(
-    element(personalClass(Mutation), document, "#next-active"),
-    activeElement,
-  );
+  value(element(lazyClass(Mutation), document, "#next-active"), activeElement);
 
   expect(document.body.outerHTML).toContain(
     'id="next-active" class="menu-link active"',

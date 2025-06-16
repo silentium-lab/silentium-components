@@ -18,13 +18,13 @@ declare const dirty: <T extends object>(baseEntitySource: SourceType<T>, becomeP
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
-declare const loading: (loadingStartSource: SourceType<unknown>, loadingFinishSource: SourceType<unknown>) => silentium.SourceExecutorType<boolean>;
+declare const loading: (loadingStartSource: SourceType<unknown>, loadingFinishSource: SourceType<unknown>) => silentium.SourceExecutorType<boolean, unknown>;
 
 /**
  * Return source of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare const path: <T extends Record<string, unknown> | Array<unknown>, K extends string>(baseSrc: SourceType<T>, keySrc: SourceType<K>) => silentium.SourceExecutorType<unknown>;
+declare const path: <T extends Record<string, unknown> | Array<unknown>, K extends string>(baseSrc: SourceType<T>, keySrc: SourceType<K>) => silentium.SourceExecutorType<unknown, unknown>;
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
@@ -46,7 +46,7 @@ declare const fork: <T, Then, Else>(conditionSrc: SourceType<T>, predicate: (v: 
  * Defer one source after another, gives values of baseSrc only once when triggerSrc responds
  * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
  */
-declare const deferred: <T>(baseSrc: SourceType<T>, triggerSrc: SourceType<unknown>) => silentium.SourceExecutorType<T>;
+declare const deferred: <T>(baseSrc: SourceType<T>, triggerSrc: SourceType<unknown>) => (g: GuestType<T>) => void;
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
@@ -57,12 +57,12 @@ declare const branch: <Then, Else>(conditionSrc: SourceType<boolean>, thenSrc: S
  * Didn't respond if new value of baseSrc equals to old value
  * https://silentium-lab.github.io/silentium-components/#/behaviors/memo
  */
-declare const memo: <T>(baseSrc: SourceType<T>) => silentium.SourceExecutorType<T>;
+declare const memo: <T>(baseSrc: SourceType<T>) => silentium.SourceExecutorType<T, unknown>;
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
  */
-declare const lock: <T>(baseSrc: SourceType<T>, lockSrc: SourceType<unknown>) => silentium.SourceExecutorType<unknown>;
+declare const lock: <T>(baseSrc: SourceType<T>, lockSrc: SourceType<unknown>) => silentium.SourceChangeableType<unknown>;
 
 /**
  * Get's value from source in moment of component call and than return this value every time
@@ -74,18 +74,18 @@ declare const moment: <T>(baseSrc: SourceType<T>, defaultValue?: T) => SourceTyp
  * Helps to represent only last fresh value of some source, refreshing controls by shotSrc
  * https://silentium-lab.github.io/silentium-components/#/behaviors/shot
  */
-declare const shot: <T>(baseSrc: SourceType<T>, shotSrc: SourceType<unknown>) => silentium.SourceExecutorType<T>;
+declare const shot: <T>(baseSrc: SourceType<T>, shotSrc: SourceType<unknown>) => silentium.SourceChangeableType<T>;
 
 /**
  * Represents source what was changed at least once
  * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
  */
-declare const onlyChanged: <T>(baseSrc: SourceType<T>) => silentium.SourceExecutorType<T>;
+declare const onlyChanged: <T>(baseSrc: SourceType<T>) => silentium.SourceExecutorType<T, unknown>;
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
-declare const hashTable: (baseSource: SourceType<[string, unknown]>) => silentium.SourceExecutorType<Record<string, unknown>>;
+declare const hashTable: (baseSource: SourceType<[string, unknown]>) => silentium.SourceExecutorType<Record<string, unknown>, unknown>;
 
 /**
  * Returns record of data from record of sources
@@ -108,7 +108,7 @@ interface Route<T> {
  * Router component what will return template if url matches pattern
  * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
-declare const router: <T = "string">(urlSrc: SourceType<string>, routesSrc: SourceType<Route<T>[]>, defaultSrc: SourceType<T>) => silentium.SourceExecutorType<T>;
+declare const router: <T = "string">(urlSrc: SourceType<string>, routesSrc: SourceType<Route<T>[]>, defaultSrc: SourceType<T>) => silentium.SourceExecutorType<T, unknown>;
 
 /**
  * Boolean source what checks what string matches pattern

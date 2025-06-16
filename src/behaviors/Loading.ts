@@ -1,4 +1,10 @@
-import { patron, sourceOf, SourceType, subSourceMany, value } from "silentium";
+import {
+  sourceOf,
+  SourceType,
+  subSourceMany,
+  systemPatron,
+  value,
+} from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
@@ -12,13 +18,13 @@ export const loading = (
 
   value(
     loadingStartSource,
-    patron(() => {
+    systemPatron(() => {
       loadingSrc.give(true);
     }),
   );
   value(
     loadingFinishSource,
-    patron(() => {
+    systemPatron(() => {
       loadingSrc.give(false);
     }),
   );

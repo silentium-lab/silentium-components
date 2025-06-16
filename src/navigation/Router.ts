@@ -1,13 +1,17 @@
 import {
+  firstVisit,
+  GuestType,
   patron,
-  sourceAny,
-  sourceChain,
-  sourceFiltered,
+  patronOnce,
   sourceOf,
   SourceType,
+  systemPatron,
   value,
 } from "silentium";
+import { survey } from "../behaviors/Survey";
+import { branch } from "../behaviors";
 import { regexpMatched } from "../system/RegexpMatched";
+import { priority } from "../behaviors/Priority";
 
 export interface Route<T> {
   pattern: string;
@@ -26,26 +30,38 @@ export const router = <T = "string">(
 ) => {
   const resultSrc = sourceOf<T>();
 
-  value(
-    routesSrc,
-    patron((routes) => {
-      value(
-        sourceAny([
-          sourceChain(urlSrc, defaultSrc as T),
+  const visited = firstVisit(() => {
+    value(
+      routesSrc,
+      patronOnce((routes) => {
+        const prioritySrc = priority([
+          defaultSrc,
           ...routes.map((r) =>
-            sourceChain(
-              sourceFiltered(
+            value(
+              branch(
                 regexpMatched(r.pattern, urlSrc, r.patternFlags),
-                Boolean,
+                r.template as SourceType,
               ),
-              r.template,
+              systemPatron((v) => {
+                return v;
+              }),
             ),
           ),
-        ]),
-        patron(resultSrc),
-      );
-    }),
-  );
+        ]);
+        const surveySrc = survey(prioritySrc, urlSrc);
+        value(surveySrc, patron(resultSrc));
+        value(
+          surveySrc,
+          patron((v) => {
+            return v;
+          }),
+        );
+      }),
+    );
+  });
 
-  return resultSrc.value;
+  return (g: GuestType<T>) => {
+    visited();
+    resultSrc.value(g);
+  };
 };

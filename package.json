@@ -59,7 +59,7 @@
     }
   },
   "dependencies": {
-    "silentium": "^0.0.43",
-    "silentium-web-api": "^0.0.6"
+    "silentium": "^0.0.46",
+    "silentium-web-api": "^0.0.9"
   }
 }

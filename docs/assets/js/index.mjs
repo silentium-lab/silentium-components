@@ -19,16 +19,15 @@ import {
   memo,
   moment,
   not,
+  onlyChanged,
   path,
   record,
   regexpMatch,
-  regexpMatched,
   regexpReplaced,
   router,
   set,
-  tick,
   shot,
-  onlyChanged,
+  tick
 } from "silentium-components";
 import {
   attribute,

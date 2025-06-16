@@ -1,4 +1,4 @@
-import { patron, sourceAll, SourceType, value } from "silentium";
+import { sourceAll, SourceType, systemPatron, value } from "silentium";
 
 /**
  * Ability to mutate some object, helpful when integrate to procedure systems
@@ -11,7 +11,7 @@ export const set = <T extends Record<string, unknown>>(
 ) => {
   value(
     sourceAll([baseSrc, keySrc, valueSrc]),
-    patron(([base, key, value]) => {
+    systemPatron(([base, key, value]) => {
       (base as Record<string, unknown>)[key] = value;
     }),
   );
