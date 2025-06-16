@@ -1,4 +1,4 @@
-import { value, sourceAll, systemPatron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, firstVisit, guestDisposable, destroy, guestSync, sourceSync, source, sourceCombined, sourceChain } from 'silentium';
+import { value, sourceAll, systemPatron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, firstVisit, guestDisposable, destroy, guestSync, sourceSync, source, sourceCombined, patron } from 'silentium';
 
 const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
   value(
@@ -205,19 +205,9 @@ const branch = (conditionSrc, thenSrc, elseSrc) => {
       systemPatron((v) => {
         resetSrc.give(1);
         if (v === true) {
-          value(
-            thenSrc,
-            patronOnce((v2) => {
-              result.give(v2);
-            })
-          );
+          value(thenSrc, result.give);
         } else if (elseSrc !== void 0) {
-          value(
-            elseSrc,
-            patronOnce((v2) => {
-              result.give(v2);
-            })
-          );
+          value(elseSrc, result.give);
         }
       })
     );
@@ -336,25 +326,13 @@ const concatenated = (sources, joinPartSrc = "") => {
   return result;
 };
 
-const priority = (sources, triggerSrc) => {
+const survey = (targetSrc, triggerSrc) => {
   const resultSrc = sourceOf();
-  let highestPriorityIndex = 0;
-  const sourceHandler = (v, index) => {
-    if (highestPriorityIndex <= index) {
-      highestPriorityIndex = index;
-      give(v, resultSrc);
-    }
-  };
   const visited = firstVisit(() => {
     value(
       triggerSrc,
       systemPatron(() => {
-        highestPriorityIndex = 0;
-        sources.forEach((source, index) => {
-          value(source, (v) => {
-            sourceHandler(v, index);
-          });
-        });
+        value(targetSrc, resultSrc);
       })
     );
   });
@@ -372,39 +350,59 @@ const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => sourceCombined(
   give(new RegExp(pattern, flags).test(value), g);
 });
 
+const priority = (sources) => {
+  return (g) => {
+    let highestPriorityIndex = 0;
+    let highestPriorityResult;
+    sources.forEach((source, index) => {
+      value(source, (v) => {
+        if (highestPriorityIndex <= index) {
+          highestPriorityIndex = index;
+          highestPriorityResult = v;
+        }
+      });
+    });
+    if (highestPriorityResult !== void 0) {
+      give(highestPriorityResult, g);
+    }
+  };
+};
+
 const router = (urlSrc, routesSrc, defaultSrc) => {
   const resultSrc = sourceOf();
-  value(
-    routesSrc,
-    systemPatron((routes) => {
-      value(
-        priority(
-          [
-            sourceChain(urlSrc, defaultSrc),
-            ...routes.map(
-              (r) => value(
-                branch(
-                  regexpMatched(r.pattern, urlSrc, r.patternFlags),
-                  r.template
-                ),
-                systemPatron((v) => {
-                  return v;
-                })
-              )
+  const visited = firstVisit(() => {
+    value(
+      routesSrc,
+      patronOnce((routes) => {
+        const prioritySrc = priority([
+          defaultSrc,
+          ...routes.map(
+            (r) => value(
+              branch(
+                regexpMatched(r.pattern, urlSrc, r.patternFlags),
+                r.template
+              ),
+              systemPatron((v) => {
+                return v;
+              })
             )
-          ],
-          urlSrc
-        ),
-        [
-          systemPatron(resultSrc),
-          (v) => {
+          )
+        ]);
+        const surveySrc = survey(prioritySrc, urlSrc);
+        value(surveySrc, patron(resultSrc));
+        value(
+          surveySrc,
+          patron((v) => {
             return v;
-          }
-        ]
-      );
-    })
-  );
-  return resultSrc.value;
+          })
+        );
+      })
+    );
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
 };
 
 const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") => sourceCombined(

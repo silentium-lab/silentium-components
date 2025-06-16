@@ -74,7 +74,7 @@ declare const moment: <T>(baseSrc: SourceType<T>, defaultValue?: T) => SourceTyp
  * Helps to represent only last fresh value of some source, refreshing controls by shotSrc
  * https://silentium-lab.github.io/silentium-components/#/behaviors/shot
  */
-declare const shot: <T>(baseSrc: SourceType<T>, shotSrc: SourceType<unknown>) => silentium.SourceChangeableType<T>;
+declare const shot: <T>(baseSrc: SourceType<T>, shotSrc: SourceType) => silentium.SourceChangeableType<T>;
 
 /**
  * Represents source what was changed at least once
@@ -108,7 +108,7 @@ interface Route<T> {
  * Router component what will return template if url matches pattern
  * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
-declare const router: <T = "string">(urlSrc: SourceType<string>, routesSrc: SourceType<Route<T>[]>, defaultSrc: SourceType<T>) => silentium.SourceExecutorType<T, unknown>;
+declare const router: <T = "string">(urlSrc: SourceType<string>, routesSrc: SourceType<Route<T>[]>, defaultSrc: SourceType<T>) => (g: GuestType<T>) => void;
 
 /**
  * Boolean source what checks what string matches pattern

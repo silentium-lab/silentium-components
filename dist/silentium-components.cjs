@@ -207,19 +207,9 @@ const branch = (conditionSrc, thenSrc, elseSrc) => {
       silentium.systemPatron((v) => {
         resetSrc.give(1);
         if (v === true) {
-          silentium.value(
-            thenSrc,
-            silentium.patronOnce((v2) => {
-              result.give(v2);
-            })
-          );
+          silentium.value(thenSrc, result.give);
         } else if (elseSrc !== void 0) {
-          silentium.value(
-            elseSrc,
-            silentium.patronOnce((v2) => {
-              result.give(v2);
-            })
-          );
+          silentium.value(elseSrc, result.give);
         }
       })
     );
@@ -338,25 +328,13 @@ const concatenated = (sources, joinPartSrc = "") => {
   return result;
 };
 
-const priority = (sources, triggerSrc) => {
+const survey = (targetSrc, triggerSrc) => {
   const resultSrc = silentium.sourceOf();
-  let highestPriorityIndex = 0;
-  const sourceHandler = (v, index) => {
-    if (highestPriorityIndex <= index) {
-      highestPriorityIndex = index;
-      silentium.give(v, resultSrc);
-    }
-  };
   const visited = silentium.firstVisit(() => {
     silentium.value(
       triggerSrc,
       silentium.systemPatron(() => {
-        highestPriorityIndex = 0;
-        sources.forEach((source, index) => {
-          silentium.value(source, (v) => {
-            sourceHandler(v, index);
-          });
-        });
+        silentium.value(targetSrc, resultSrc);
       })
     );
   });
@@ -374,39 +352,59 @@ const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceC
   silentium.give(new RegExp(pattern, flags).test(value), g);
 });
 
+const priority = (sources) => {
+  return (g) => {
+    let highestPriorityIndex = 0;
+    let highestPriorityResult;
+    sources.forEach((source, index) => {
+      silentium.value(source, (v) => {
+        if (highestPriorityIndex <= index) {
+          highestPriorityIndex = index;
+          highestPriorityResult = v;
+        }
+      });
+    });
+    if (highestPriorityResult !== void 0) {
+      silentium.give(highestPriorityResult, g);
+    }
+  };
+};
+
 const router = (urlSrc, routesSrc, defaultSrc) => {
   const resultSrc = silentium.sourceOf();
-  silentium.value(
-    routesSrc,
-    silentium.systemPatron((routes) => {
-      silentium.value(
-        priority(
-          [
-            silentium.sourceChain(urlSrc, defaultSrc),
-            ...routes.map(
-              (r) => silentium.value(
-                branch(
-                  regexpMatched(r.pattern, urlSrc, r.patternFlags),
-                  r.template
-                ),
-                silentium.systemPatron((v) => {
-                  return v;
-                })
-              )
+  const visited = silentium.firstVisit(() => {
+    silentium.value(
+      routesSrc,
+      silentium.patronOnce((routes) => {
+        const prioritySrc = priority([
+          defaultSrc,
+          ...routes.map(
+            (r) => silentium.value(
+              branch(
+                regexpMatched(r.pattern, urlSrc, r.patternFlags),
+                r.template
+              ),
+              silentium.systemPatron((v) => {
+                return v;
+              })
             )
-          ],
-          urlSrc
-        ),
-        [
-          silentium.systemPatron(resultSrc),
-          (v) => {
+          )
+        ]);
+        const surveySrc = survey(prioritySrc, urlSrc);
+        silentium.value(surveySrc, silentium.patron(resultSrc));
+        silentium.value(
+          surveySrc,
+          silentium.patron((v) => {
             return v;
-          }
-        ]
-      );
-    })
-  );
-  return resultSrc.value;
+          })
+        );
+      })
+    );
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
 };
 
 const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") => silentium.sourceCombined(
