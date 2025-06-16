@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.21](https://github.com/silentium-lab/silentium-components/compare/v0.0.20...v0.0.21) (2025-06-16)
+
+
+### Features
+
+* **main:** path done ([f62333f](https://github.com/silentium-lab/silentium-components/commit/f62333f757d04c411c06bf3bff982c483471ccee))
+* **wip-router:** router done ([6b4832a](https://github.com/silentium-lab/silentium-components/commit/6b4832ae04b14bcb57b961ffdb545a7d04b871d9))
+* **wip-router:** work on router ([8433924](https://github.com/silentium-lab/silentium-components/commit/8433924b91f4ce2ef623513d0bc777b81cb7008e))
+* **wip-router:** work on router ([a56601e](https://github.com/silentium-lab/silentium-components/commit/a56601e3467a9cecaa3773e3304341b4c164a99b))
+* **wip-router:** work on router ([7877f55](https://github.com/silentium-lab/silentium-components/commit/7877f55d36287188db69518141bbd80f574e67be))
+* **wip-router:** work on router logic ([9707db7](https://github.com/silentium-lab/silentium-components/commit/9707db7aa483d9b8d12fa390589cb7cc8bed2066))
+* **wip-router:** work on router logic ([fe9c257](https://github.com/silentium-lab/silentium-components/commit/fe9c257b37636a261d76cdd0bbdef1a4d23c504a))
+
+
+### Bug Fixes
+
+* **wip-router:** work on router ([782bb87](https://github.com/silentium-lab/silentium-components/commit/782bb87886b4917acb10379d2e495b6db577ed32))
+
 ### [0.0.20](https://github.com/silentium-lab/silentium-components/compare/v0.0.19...v0.0.20) (2025-05-25)
 
 ### [0.0.19](https://github.com/silentium-lab/silentium-components/compare/v0.0.18...v0.0.19) (2025-05-25)
