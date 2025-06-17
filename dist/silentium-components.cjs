@@ -207,9 +207,9 @@ const branch = (conditionSrc, thenSrc, elseSrc) => {
       silentium.systemPatron((v) => {
         resetSrc.give(1);
         if (v === true) {
-          silentium.value(thenSrc, result.give);
+          silentium.value(thenSrc, silentium.patronOnce(result.give));
         } else if (elseSrc !== void 0) {
-          silentium.value(elseSrc, result.give);
+          silentium.value(elseSrc, silentium.patronOnce(result.give));
         }
       })
     );
@@ -328,7 +328,7 @@ const concatenated = (sources, joinPartSrc = "") => {
   return result;
 };
 
-const survey = (targetSrc, triggerSrc) => {
+const polling = (targetSrc, triggerSrc) => {
   const resultSrc = silentium.sourceOf();
   const visited = silentium.firstVisit(() => {
     silentium.value(
@@ -343,14 +343,6 @@ const survey = (targetSrc, triggerSrc) => {
     resultSrc.value(g);
   };
 };
-
-const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCombined(
-  patternSrc,
-  valueSrc,
-  flagsSrc
-)((g, pattern, value, flags) => {
-  silentium.give(new RegExp(pattern, flags).test(value), g);
-});
 
 const priority = (sources) => {
   return (g) => {
@@ -369,6 +361,14 @@ const priority = (sources) => {
     }
   };
 };
+
+const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCombined(
+  patternSrc,
+  valueSrc,
+  flagsSrc
+)((g, pattern, value, flags) => {
+  silentium.give(new RegExp(pattern, flags).test(value), g);
+});
 
 const router = (urlSrc, routesSrc, defaultSrc) => {
   const resultSrc = silentium.sourceOf();
@@ -390,14 +390,8 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
             )
           )
         ]);
-        const surveySrc = survey(prioritySrc, urlSrc);
-        silentium.value(surveySrc, silentium.patron(resultSrc));
-        silentium.value(
-          surveySrc,
-          silentium.patron((v) => {
-            return v;
-          })
-        );
+        const pollingSrc = polling(prioritySrc, urlSrc);
+        silentium.value(pollingSrc, silentium.systemPatron(resultSrc));
       })
     );
   });
@@ -433,6 +427,19 @@ const set = (baseSrc, keySrc, valueSrc) => {
     })
   );
   return baseSrc;
+};
+
+const promised = (promise, errorGuest) => {
+  const resultSrc = silentium.sourceOf();
+  const visited = silentium.firstVisit(() => {
+    promise.then(resultSrc.give).catch((e) => {
+      silentium.give(e, errorGuest);
+    });
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
 };
 
 const and = (oneSrc, twoSrc) => {
@@ -481,6 +488,7 @@ exports.not = not;
 exports.onlyChanged = onlyChanged;
 exports.or = or;
 exports.path = path;
+exports.promised = promised;
 exports.record = record;
 exports.regexpMatch = regexpMatch;
 exports.regexpMatched = regexpMatched;

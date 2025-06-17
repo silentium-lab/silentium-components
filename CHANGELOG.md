@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.23](https://github.com/silentium-lab/silentium-components/compare/v0.0.22...v0.0.23) (2025-06-17)
+
+
+### Features
+
+* **release:** export promised component ([bbe0556](https://github.com/silentium-lab/silentium-components/commit/bbe0556e56efb2d63e3393f7be93774c87476ea1))
+
+### [0.0.22](https://github.com/silentium-lab/silentium-components/compare/v0.0.21...v0.0.22) (2025-06-17)
+
+
+### Features
+
+* **45-need-to-create-component-promised-which-will-turn-promis-into-source:** promised component ([e9a8149](https://github.com/silentium-lab/silentium-components/commit/e9a81496dcca6295f99a24142b552a1b2af583ee))
+* **main:** rename survey to polling ([313a280](https://github.com/silentium-lab/silentium-components/commit/313a280082f5eadc46701e4a7068fbbf1153c5bb))
+
 ### [0.0.21](https://github.com/silentium-lab/silentium-components/compare/v0.0.20...v0.0.21) (2025-06-16)
 
 

@@ -1,0 +1,36 @@
+<script class="page-title" type="text/template">
+  Promised
+</script>
+
+<a href="https://github.com/silentium-lab/silentium-components/blob/main/src/system/Promised.ts" target="_blank"
+    class="text-regular inline-flex gap-1 items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 mb-4">
+    <img src="./assets/img/github_16.jpg" width="16" height="16" />
+    Promised на GitHub
+</a>
+
+<h2 class="font-medium title-font text-gray-900 text-lg mb-2">
+    <span> Promised </span>
+</h2>
+
+<p class="text-gray-600 text-lg mb-4">
+    Иногда нужно представить промис в виде источника информации в таких случаях можно воспользоваться компонентом promised
+</p>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Пример 1.</p>
+<pre class="mb-4 w-full"><code class="language-js listing-1"></code></pre>
+
+<p class="text-gray-600 text-lg mb-0 font-bold">Результат 1.</p>
+<div class="example mb-4">
+  <span class="guest-result">Значение установится синхронно!</span>
+</div>
+<script type="module" data-listing=".listing-1">
+import { sourceOf, sourceSync } from "silentium";
+import { promised } from 'silentium-components';
+
+const errorSrc = sourceOf();
+const p = sourceSync(promised(Promise.resolve('promise result'), errorSrc));
+
+setTimeout(() => {
+    document.querySelector(".guest-result").textContent = p.syncValue();
+})
+</script>
