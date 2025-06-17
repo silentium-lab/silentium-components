@@ -427,6 +427,19 @@ const set = (baseSrc, keySrc, valueSrc) => {
   return baseSrc;
 };
 
+const promised = (promise, errorGuest) => {
+  const resultSrc = sourceOf();
+  const visited = firstVisit(() => {
+    promise.then(resultSrc.give).catch((e) => {
+      give(e, errorGuest);
+    });
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
+};
+
 const and = (oneSrc, twoSrc) => {
   return sourceCombined(
     oneSrc,
@@ -456,5 +469,5 @@ const not = (baseSrc) => {
   };
 };
 
-export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, lock, memo, moment, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick };
+export { and, branch, concatenated, deadline, deferred, dirty, fork, groupActiveClass, hashTable, loading, lock, memo, moment, not, onlyChanged, or, path, promised, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick };
 //# sourceMappingURL=silentium-components.mjs.map

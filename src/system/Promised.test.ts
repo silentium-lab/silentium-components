@@ -1,16 +1,10 @@
-import { patron, sourceOf, sourceSync, value } from "silentium";
-import { promised } from "../system/Promised";
+import { sourceOf, sourceSync } from "silentium";
 import { expect, test, vi } from "vitest";
+import { promised } from "../system/Promised";
 
 test("Promised.test", async () => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
   const errorSrc = sourceOf();
-  value(
-    errorSrc,
-    patron((v) => {
-      return v;
-    }),
-  );
   const p = sourceSync(promised(Promise.resolve(111), errorSrc));
   await vi.advanceTimersByTime(10);
 

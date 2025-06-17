@@ -429,6 +429,19 @@ const set = (baseSrc, keySrc, valueSrc) => {
   return baseSrc;
 };
 
+const promised = (promise, errorGuest) => {
+  const resultSrc = silentium.sourceOf();
+  const visited = silentium.firstVisit(() => {
+    promise.then(resultSrc.give).catch((e) => {
+      silentium.give(e, errorGuest);
+    });
+  });
+  return (g) => {
+    visited();
+    resultSrc.value(g);
+  };
+};
+
 const and = (oneSrc, twoSrc) => {
   return silentium.sourceCombined(
     oneSrc,
@@ -475,6 +488,7 @@ exports.not = not;
 exports.onlyChanged = onlyChanged;
 exports.or = or;
 exports.path = path;
+exports.promised = promised;
 exports.record = record;
 exports.regexpMatch = regexpMatch;
 exports.regexpMatched = regexpMatched;
