@@ -1,17 +1,16 @@
 import {
   firstVisit,
   GuestType,
-  patron,
   patronOnce,
   sourceOf,
   SourceType,
   systemPatron,
   value,
 } from "silentium";
-import { survey } from "../behaviors/Survey";
 import { branch } from "../behaviors";
-import { regexpMatched } from "../system/RegexpMatched";
+import { polling } from "../behaviors/Polling";
 import { priority } from "../behaviors/Priority";
+import { regexpMatched } from "../system/RegexpMatched";
 
 export interface Route<T> {
   pattern: string;
@@ -48,14 +47,8 @@ export const router = <T = "string">(
             ),
           ),
         ]);
-        const surveySrc = survey(prioritySrc, urlSrc);
-        value(surveySrc, patron(resultSrc));
-        value(
-          surveySrc,
-          patron((v) => {
-            return v;
-          }),
-        );
+        const pollingSrc = polling(prioritySrc, urlSrc);
+        value(pollingSrc, systemPatron(resultSrc));
       }),
     );
   });

@@ -1,11 +1,11 @@
 import { sourceOf, sourceSync } from "silentium";
 import { expect, test } from "vitest";
-import { survey } from "../behaviors/Survey";
+import { polling } from "./Polling";
 
-test("Survey.test", () => {
+test("Polling.test", () => {
   const src = sourceOf<number>(1);
   const triggerSrc = sourceOf(1);
-  const serveyResult = sourceSync(survey(src, triggerSrc));
+  const serveyResult = sourceSync(polling(src, triggerSrc));
 
   expect(serveyResult.syncValue()).toBe(1);
 

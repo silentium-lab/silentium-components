@@ -7,7 +7,7 @@ import {
   value,
 } from "silentium";
 
-export const survey = <T>(
+export const polling = <T>(
   targetSrc: SourceType<T>,
   triggerSrc: SourceType,
 ): SourceType<T> => {
