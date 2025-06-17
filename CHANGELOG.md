@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.23](https://github.com/silentium-lab/silentium-components/compare/v0.0.22...v0.0.23) (2025-06-17)
+
+
+### Features
+
+* **release:** export promised component ([bbe0556](https://github.com/silentium-lab/silentium-components/commit/bbe0556e56efb2d63e3393f7be93774c87476ea1))
+
 ### [0.0.22](https://github.com/silentium-lab/silentium-components/compare/v0.0.21...v0.0.22) (2025-06-17)
 
 
