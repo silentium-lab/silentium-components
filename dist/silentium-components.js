@@ -1,4 +1,4 @@
-import { value, sourceAll, systemPatron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, firstVisit, guestDisposable, destroy, guestSync, sourceSync, source, sourceCombined, patron } from 'silentium';
+import { value, sourceAll, systemPatron, sourceOf, patronOnce, guestCast, give, subSourceMany, sourceFiltered, subSource, sourceResettable, removePatronFromPools, firstVisit, guestDisposable, destroy, guestSync, sourceSync, source, sourceCombined } from 'silentium';
 
 const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
   value(
@@ -205,9 +205,9 @@ const branch = (conditionSrc, thenSrc, elseSrc) => {
       systemPatron((v) => {
         resetSrc.give(1);
         if (v === true) {
-          value(thenSrc, result.give);
+          value(thenSrc, patronOnce(result.give));
         } else if (elseSrc !== void 0) {
-          value(elseSrc, result.give);
+          value(elseSrc, patronOnce(result.give));
         }
       })
     );
@@ -326,7 +326,7 @@ const concatenated = (sources, joinPartSrc = "") => {
   return result;
 };
 
-const survey = (targetSrc, triggerSrc) => {
+const polling = (targetSrc, triggerSrc) => {
   const resultSrc = sourceOf();
   const visited = firstVisit(() => {
     value(
@@ -341,14 +341,6 @@ const survey = (targetSrc, triggerSrc) => {
     resultSrc.value(g);
   };
 };
-
-const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => sourceCombined(
-  patternSrc,
-  valueSrc,
-  flagsSrc
-)((g, pattern, value, flags) => {
-  give(new RegExp(pattern, flags).test(value), g);
-});
 
 const priority = (sources) => {
   return (g) => {
@@ -367,6 +359,14 @@ const priority = (sources) => {
     }
   };
 };
+
+const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => sourceCombined(
+  patternSrc,
+  valueSrc,
+  flagsSrc
+)((g, pattern, value, flags) => {
+  give(new RegExp(pattern, flags).test(value), g);
+});
 
 const router = (urlSrc, routesSrc, defaultSrc) => {
   const resultSrc = sourceOf();
@@ -388,14 +388,8 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
             )
           )
         ]);
-        const surveySrc = survey(prioritySrc, urlSrc);
-        value(surveySrc, patron(resultSrc));
-        value(
-          surveySrc,
-          patron((v) => {
-            return v;
-          })
-        );
+        const pollingSrc = polling(prioritySrc, urlSrc);
+        value(pollingSrc, systemPatron(resultSrc));
       })
     );
   });
