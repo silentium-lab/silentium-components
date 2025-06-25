@@ -1,14 +1,14 @@
-import { sourceOf, sourceSync } from "silentium";
-import { regexpMatched } from "../system/RegexpMatched";
+import { I, of, ownerSync } from "silentium";
 import { expect, test } from "vitest";
+import { regexpMatched } from "../system/RegexpMatched";
 
 test("RegexpMatched.test", () => {
-  const urlSrc = sourceOf<string>("http://domain.com/some/url/");
-  const matchedSrc = sourceSync(regexpMatched("/some/url", urlSrc));
+  const [urlI, urlO] = of<string>("http://domain.com/some/url/");
+  const matchedSrc = ownerSync(regexpMatched(I("/some/url"), urlI));
 
   expect(matchedSrc.syncValue()).toBe(true);
 
-  urlSrc.give("http://domain.com/changed");
+  urlO.give("http://domain.com/changed");
 
   expect(matchedSrc.syncValue()).toBe(false);
 });
