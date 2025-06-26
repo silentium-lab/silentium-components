@@ -8,12 +8,11 @@ export const regexpMatched = (
   patternSrc: Information<string>,
   valueSrc: Information<string>,
   flagsSrc: Information<string> = I(""),
-): Information<boolean> => {
-  return I((o) => {
+): Information<boolean> =>
+  I((o) => {
     all(patternSrc, valueSrc, flagsSrc).value(
       O(([pattern, value, flags]) => {
         o.give(new RegExp(pattern, flags).test(value));
       }),
     );
   });
-};
