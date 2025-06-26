@@ -1,12 +1,4 @@
-import {
-  give,
-  sourceAll,
-  sourceOf,
-  SourceType,
-  subSourceMany,
-  systemPatron,
-  value,
-} from "silentium";
+import { all, I, Information, O } from "silentium";
 
 /**
  * Return source of record path
@@ -16,26 +8,22 @@ export const path = <
   T extends Record<string, unknown> | Array<unknown>,
   K extends string,
 >(
-  baseSrc: SourceType<T>,
-  keySrc: SourceType<K>,
+  baseSrc: Information<T>,
+  keySrc: Information<K>,
 ) => {
-  const pathSrc = sourceOf<unknown>();
-  subSourceMany(pathSrc, [baseSrc, keySrc]);
+  return I((o) => {
+    all(baseSrc, keySrc).value(
+      O(([base, key]) => {
+        const keyChunks = key.split(".");
+        let value: unknown = base;
+        keyChunks.forEach((keyChunk) => {
+          value = (value as Record<string, unknown>)[keyChunk];
+        });
 
-  value(
-    sourceAll([baseSrc, keySrc]),
-    systemPatron(([base, key]) => {
-      const keyChunks = key.split(".");
-      let value: unknown = base;
-      keyChunks.forEach((keyChunk) => {
-        value = (value as Record<string, unknown>)[keyChunk];
-      });
-
-      if (value !== undefined && value !== base) {
-        give(value, pathSrc);
-      }
-    }),
-  );
-
-  return pathSrc.value;
+        if (value !== undefined && value !== base) {
+          o.give(value);
+        }
+      }),
+    );
+  });
 };
