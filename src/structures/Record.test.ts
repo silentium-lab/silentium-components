@@ -1,13 +1,13 @@
-import { source, sourceOf, sourceSync } from "silentium";
+import { I, of, ownerSync } from "silentium";
 import { expect, test } from "vitest";
 import { record } from "../structures/Record";
 
 test("Record.test", () => {
-  const three = sourceOf<string>("three");
-  const recordSrc = sourceSync(
+  const [three, o] = of<string>("three");
+  const recordSrc = ownerSync(
     record({
-      one: "one",
-      two: source("two"),
+      one: I("one"),
+      two: I("two"),
       three,
     }),
   );
@@ -18,7 +18,7 @@ test("Record.test", () => {
     three: "three",
   });
 
-  three.give("three-changed");
+  o.give("three-changed");
 
   expect(recordSrc.syncValue()).toStrictEqual({
     one: "one",
