@@ -1,16 +1,17 @@
-import { give, GuestType, sourceCombined, SourceType } from "silentium";
+import { all, I, Information, O } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/and
  */
 export const and = (
-  oneSrc: SourceType<boolean>,
-  twoSrc: SourceType<boolean>,
+  oneSrc: Information<boolean>,
+  twoSrc: Information<boolean>,
 ) => {
-  return sourceCombined(
-    oneSrc,
-    twoSrc,
-  )((guest: GuestType<boolean>, one, two) => {
-    give(one && two, guest);
+  return I((o) => {
+    all(oneSrc, twoSrc).value(
+      O(([one, two]) => {
+        o.give(one && two);
+      }),
+    );
   });
 };
