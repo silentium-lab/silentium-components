@@ -1,26 +1,17 @@
-import {
-  sourceOf,
-  SourceType,
-  subSource,
-  systemPatron,
-  value,
-} from "silentium";
+import { I, Information, O } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
-export const hashTable = (baseSource: SourceType<[string, unknown]>) => {
-  const result = sourceOf<Record<string, unknown>>({});
-  subSource(result, baseSource);
+export const hashTable = (base: Information<[string, unknown]>) => {
+  return I((o) => {
+    const record: Record<string, unknown> = {};
 
-  value(
-    baseSource,
-    systemPatron(([key, value]) => {
-      result.value((lastRecord) => {
-        lastRecord[key] = value;
-      });
-    }),
-  );
-
-  return result.value;
+    base.value(
+      O(([key, value]) => {
+        record[key] = value;
+        o.give(record);
+      }),
+    );
+  });
 };
