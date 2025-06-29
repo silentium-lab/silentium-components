@@ -1,42 +1,29 @@
-import {
-  firstVisit,
-  GuestType,
-  patronOnce,
-  sourceOf,
-  sourceResettable,
-  SourceType,
-  systemPatron,
-  value,
-} from "silentium";
+import { I, Information, infoSync, O, ownerSync } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
 export const branch = <Then, Else>(
-  conditionSrc: SourceType<boolean>,
-  thenSrc: SourceType<Then>,
-  elseSrc?: SourceType<Else>,
-): SourceType<Then | Else> => {
-  const resetSrc = sourceOf();
-  const result = sourceOf<Then | Else>();
-  const resultSrc = sourceResettable(result, resetSrc);
+  condition: Information<boolean>,
+  left: Information<Then>,
+  right?: Information<Else>,
+): Information<Then | Else> => {
+  return I((o) => {
+    const leftSync = ownerSync(left);
+    let rightSync: infoSync<Else> | undefined;
 
-  const visited = firstVisit(() => {
-    value(
-      conditionSrc,
-      systemPatron((v) => {
-        resetSrc.give(1);
-        if (v === true) {
-          value(thenSrc, patronOnce(result.give));
-        } else if (elseSrc !== undefined) {
-          value(elseSrc, patronOnce(result.give));
+    if (right !== undefined) {
+      rightSync = ownerSync(right);
+    }
+
+    condition.value(
+      O((v) => {
+        if (v) {
+          o.give(leftSync.syncValue());
+        } else if (rightSync) {
+          o.give(rightSync.syncValue());
         }
       }),
     );
   });
-
-  return (g: GuestType<Then | Else>) => {
-    visited();
-    resultSrc.value(g);
-  };
 };

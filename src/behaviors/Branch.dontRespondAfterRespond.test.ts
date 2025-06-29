@@ -1,32 +1,33 @@
-import { sourceApplied, sourceOf, sourceSync } from "silentium";
+import { applied, I, O, of, ownerSync, poolStateless } from "silentium";
 import { expect, test, vi } from "vitest";
 import { branch } from "../behaviors/Branch";
 
 test("Branch.dontRespondAfterRespond.test", () => {
-  const deliveryTypeSrc = sourceOf<number>(1);
-  const thenSrc = sourceOf<any>("then");
-  const boolSync = sourceSync(
+  const [dti, dto] = of<number>(1);
+  const ti = I<any>("then");
+  const [branchI] = poolStateless(
     branch(
-      sourceApplied(deliveryTypeSrc, (t) => t === 2),
-      thenSrc,
+      applied(dti, (t) => t === 2),
+      ti,
     ),
   );
+  const boolSync = ownerSync(branchI);
 
-  deliveryTypeSrc.give(2);
+  dto.give(2);
   expect(boolSync.syncValue()).toBe("then");
 
-  deliveryTypeSrc.give(1);
   const g = vi.fn();
-  boolSync.value(g);
+  branchI.value(O(g));
+  dto.give(1);
   expect(g).not.toHaveBeenCalled();
 
-  deliveryTypeSrc.give(2);
   const g1 = vi.fn();
-  boolSync.value(g1);
+  branchI.value(O(g1));
+  dto.give(2);
   expect(g1).toHaveBeenCalledWith("then");
 
-  deliveryTypeSrc.give(3);
   const g2 = vi.fn();
-  boolSync.value(g2);
+  branchI.value(O(g2));
+  dto.give(3);
   expect(g2).not.toHaveBeenCalled();
 });
