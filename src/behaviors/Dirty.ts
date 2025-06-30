@@ -1,14 +1,4 @@
-import {
-  give,
-  guestCast,
-  GuestType,
-  patronOnce,
-  sourceAll,
-  SourceChangeableType,
-  sourceOf,
-  SourceType,
-  value,
-} from "silentium";
+import { all, applied, I, Information, O, of } from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -16,50 +6,39 @@ import {
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
 export const dirty = <T extends object>(
-  baseEntitySource: SourceType<T>,
-  becomePatronAuto = false,
+  baseEntitySource: Information<T>,
   alwaysKeep: string[] = [],
   excludeKeys: string[] = [],
-): SourceChangeableType<Partial<T>> => {
-  const comparingSrc = sourceOf();
-  const all = sourceAll([comparingSrc, baseEntitySource]);
+) => {
+  const [comparing, co] = of<T>();
 
-  const result = {
-    give(value: T) {
-      give(JSON.parse(JSON.stringify(value)), comparingSrc);
-      return result;
-    },
-    value(guest: GuestType<Partial<T>>) {
-      value(
-        all,
-        guestCast(guest, ([comparing, base]) => {
-          if (!comparing) {
-            return;
-          }
+  const comparingDetached = applied(comparing, (value) =>
+    JSON.parse(JSON.stringify(value)),
+  );
 
-          give(
-            Object.fromEntries(
-              Object.entries(comparing).filter(([key, value]) => {
-                if (alwaysKeep.includes(key)) {
-                  return true;
-                }
-                if (excludeKeys.includes(key)) {
-                  return false;
-                }
-                return value !== (base as any)[key];
-              }),
-            ) as T,
-            guest,
-          );
-        }),
-      );
-      return result;
-    },
-  };
+  const i = I<Partial<T>>((o) => {
+    all(comparingDetached, baseEntitySource).value(
+      O(([comparing, base]) => {
+        if (!comparing) {
+          return;
+        }
 
-  if (becomePatronAuto) {
-    value(baseEntitySource, patronOnce(result));
-  }
+        o.give(
+          Object.fromEntries(
+            Object.entries(comparing).filter(([key, value]) => {
+              if (alwaysKeep.includes(key)) {
+                return true;
+              }
+              if (excludeKeys.includes(key)) {
+                return false;
+              }
+              return value !== (base as any)[key];
+            }),
+          ) as T,
+        );
+      }),
+    );
+  });
 
-  return result;
+  return [i, co] as const;
 };

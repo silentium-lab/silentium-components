@@ -1,21 +1,20 @@
-import { guestSync, sourceOf } from "silentium";
-import { expect, test } from "vitest";
+import { I, O } from "silentium";
+import { expect, test, vi } from "vitest";
 import { dirty } from "../behaviors/Dirty";
 
 test("Dirty.test", () => {
-  const form = sourceOf({
+  const form = I({
     name: "one",
     surname: "two",
   });
-  const dirtyForm = dirty(form);
-  dirtyForm.give({
+  const [dirtyForm, dfo] = dirty(form);
+  dfo.give({
     name: "new",
     surname: "two",
   });
 
-  const g = guestSync();
-  dirtyForm.value(g);
+  const g = vi.fn();
+  dirtyForm.value(O(g));
 
-  // only changed fields
-  expect(g.value()).toStrictEqual({ name: "new" });
+  expect(g).toBeCalledWith({ name: "new" });
 });
