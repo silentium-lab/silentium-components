@@ -1,4 +1,4 @@
-import { sourceOf, sourceSync } from "silentium";
+import { I, O, of, ownerSync } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { deadline } from "../behaviors/Deadline";
 
@@ -13,12 +13,12 @@ afterEach(() => {
 
 test("Deadline._value.test", () => {
   const errorGuest = vi.fn();
-  const source = sourceOf();
+  const [source, so] = of<number>();
 
   setTimeout(() => {
-    source.give(11);
+    so.give(11);
   }, 10);
-  const sync = sourceSync(deadline(errorGuest, source, 200));
+  const sync = ownerSync(deadline(O(errorGuest), source, I(200)));
 
   vi.runAllTimers();
 
