@@ -1,28 +1,29 @@
-import { sourceOf, sourceSync, value } from "silentium";
-import { deferred } from "../behaviors/Deferred";
+import { O, of, ownerSync, pool } from "silentium";
 import { expect, test, vi } from "vitest";
+import { deferred } from "../behaviors/Deferred";
 
 test("Deferred.test", () => {
-  const urlSrc = sourceOf<string>("http://hello.com");
-  const layoutSrc = sourceOf();
+  const [urlSrc, uo] = of<string>("http://hello.com");
+  const [layoutSrc, lo] = of<string>();
 
-  const urlWithLayoutSrc = sourceSync(deferred(urlSrc, layoutSrc));
+  const [urlWithLayoutSrc] = pool(deferred(urlSrc, layoutSrc));
 
   const g1 = vi.fn();
-  value(urlWithLayoutSrc, g1);
+  urlWithLayoutSrc.value(O(g1));
   expect(g1).not.toHaveBeenCalled();
 
-  layoutSrc.give("layout here");
+  lo.give("layout here");
 
   const g2 = vi.fn();
-  value(urlWithLayoutSrc, g2);
+  urlWithLayoutSrc.value(O(g2));
+  uo.give("http://new.com");
   expect(g2).toHaveBeenCalledWith("http://hello.com");
 
-  urlSrc.give("http://new.com");
+  const urlSync = ownerSync(urlWithLayoutSrc);
 
-  expect(urlWithLayoutSrc.syncValue()).toBe("http://hello.com");
+  expect(urlSync.syncValue()).toBe("http://hello.com");
 
-  layoutSrc.give("layout here again");
+  lo.give("layout here again");
 
-  expect(urlWithLayoutSrc.syncValue()).toBe("http://new.com");
+  expect(urlSync.syncValue()).toBe("http://new.com");
 });
