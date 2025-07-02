@@ -1,33 +1,27 @@
-import {
-  sourceOf,
-  SourceType,
-  subSourceMany,
-  systemPatron,
-  value,
-} from "silentium";
+import { Information, O, of } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
 export const loading = (
-  loadingStartSource: SourceType<unknown>,
-  loadingFinishSource: SourceType<unknown>,
+  loadingStartSource: Information<unknown>,
+  loadingFinishSource: Information<unknown>,
 ) => {
-  const loadingSrc = sourceOf<boolean>();
-  subSourceMany(loadingSrc, [loadingStartSource, loadingFinishSource]);
+  const [loadingSrc, lo] = of<boolean>();
 
-  value(
-    loadingStartSource,
-    systemPatron(() => {
-      loadingSrc.give(true);
-    }),
-  );
-  value(
-    loadingFinishSource,
-    systemPatron(() => {
-      loadingSrc.give(false);
-    }),
-  );
+  loadingSrc.executed(() => {
+    loadingStartSource.value(
+      O(() => {
+        lo.give(true);
+      }),
+    );
 
-  return loadingSrc.value;
+    loadingFinishSource.value(
+      O(() => {
+        lo.give(false);
+      }),
+    );
+  });
+
+  return loadingSrc;
 };

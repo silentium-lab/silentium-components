@@ -1,15 +1,15 @@
-import { sourceOf, sourceSync } from "silentium";
-import { loading } from "../behaviors/Loading";
+import { of, ownerSync } from "silentium";
 import { expect, test } from "vitest";
+import { loading } from "../behaviors/Loading";
 
 test("Loading.test", () => {
-  const loadingStartSource = sourceOf();
-  const loadingFinishSource = sourceOf();
-  const loadingSrc = sourceSync(
+  const [loadingStartSource, lso] = of();
+  const [loadingFinishSource, lfo] = of();
+  const loadingSrc = ownerSync(
     loading(loadingStartSource, loadingFinishSource),
   );
-  loadingStartSource.give({});
+  lso.give({});
   expect(loadingSrc.syncValue()).toBe(true);
-  loadingFinishSource.give({});
+  lfo.give({});
   expect(loadingSrc.syncValue()).toBe(false);
 });
