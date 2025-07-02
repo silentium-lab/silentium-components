@@ -1,4 +1,4 @@
-import { of, ownerSync, pool } from "silentium";
+import { of, ownerSync, poolStateless } from "silentium";
 import { expect, test } from "vitest";
 import { lock } from "../behaviors/Lock";
 
@@ -6,7 +6,7 @@ test("Lock.test", () => {
   const [source, so] = of<number>(1);
   const [lockSrc, lo] = of<boolean>(false);
 
-  const [lockedSrc] = pool(lock(source, lockSrc));
+  const [lockedSrc] = poolStateless(lock(source, lockSrc));
   const lockedSync = ownerSync(lockedSrc);
 
   expect(lockedSync.syncValue()).toBe(1);

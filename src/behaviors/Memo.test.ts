@@ -1,24 +1,30 @@
-import { patron, sourceOf, sourceSync, value } from "silentium";
-import { memo } from "../behaviors/Memo";
+import { O, of, ownerSync, pool } from "silentium";
 import { expect, test } from "vitest";
+import { memo } from "../behaviors/Memo";
 
 test("Memo.test", () => {
-  const src = sourceOf<number>(1);
-  const srcMemo = sourceSync(memo(src));
+  const [src, so] = of<number>(1);
+  const [mem] = pool(memo(src));
+  const srcMemo = ownerSync(mem);
   let counter = 0;
-  value(
-    srcMemo,
-    patron(() => {
+
+  mem.value(
+    O(() => {
       counter += 1;
     }),
   );
 
-  src.give(2);
-  src.give(2);
-  src.give(2);
-  src.give(2);
-  src.give(2);
+  so.give(2);
+  so.give(2);
+  so.give(2);
+  so.give(2);
+  so.give(2);
 
   expect(srcMemo.syncValue()).toBe(2);
   expect(counter).toBe(2);
+
+  so.give(3);
+
+  expect(srcMemo.syncValue()).toBe(3);
+  expect(counter).toBe(3);
 });
