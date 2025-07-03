@@ -7,6 +7,5 @@ export * from "./Deferred";
 export * from "./Branch";
 export * from "./Memo";
 export * from "./Lock";
-export * from "./Moment";
 export * from "./Shot";
 export * from "./OnlyChanged";
