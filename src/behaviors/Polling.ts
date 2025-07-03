@@ -1,29 +1,18 @@
-import {
-  firstVisit,
-  GuestType,
-  sourceOf,
-  SourceType,
-  systemPatron,
-  value,
-} from "silentium";
+import { I, Information, O, ownerSync } from "silentium";
 
 export const polling = <T>(
-  targetSrc: SourceType<T>,
-  triggerSrc: SourceType,
-): SourceType<T> => {
-  const resultSrc = sourceOf<T>();
+  targetSrc: Information<T>,
+  triggerSrc: Information,
+): Information<T> => {
+  return I((o) => {
+    const targetSync = ownerSync(targetSrc);
 
-  const visited = firstVisit(() => {
-    value(
-      triggerSrc,
-      systemPatron(() => {
-        value(targetSrc, resultSrc);
+    triggerSrc.value(
+      O(() => {
+        if (targetSync.filled()) {
+          o.give(targetSync.syncValue());
+        }
       }),
     );
   });
-
-  return (g: GuestType<T>) => {
-    visited();
-    resultSrc.value(g);
-  };
 };

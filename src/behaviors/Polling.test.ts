@@ -1,19 +1,19 @@
-import { sourceOf, sourceSync } from "silentium";
+import { of, ownerSync } from "silentium";
 import { expect, test } from "vitest";
 import { polling } from "./Polling";
 
 test("Polling.test", () => {
-  const src = sourceOf<number>(1);
-  const triggerSrc = sourceOf(1);
-  const serveyResult = sourceSync(polling(src, triggerSrc));
+  const [src, so] = of<number>(1);
+  const [triggerSrc, tso] = of(1);
+  const result = ownerSync(polling(src, triggerSrc));
 
-  expect(serveyResult.syncValue()).toBe(1);
+  expect(result.syncValue()).toBe(1);
 
-  src.give(2);
+  so.give(2);
 
-  expect(serveyResult.syncValue()).toBe(1);
+  expect(result.syncValue()).toBe(1);
 
-  triggerSrc.give(1);
+  tso.give(1);
 
-  expect(serveyResult.syncValue()).toBe(2);
+  expect(result.syncValue()).toBe(2);
 });
