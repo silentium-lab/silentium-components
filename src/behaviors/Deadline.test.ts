@@ -14,7 +14,7 @@ afterEach(() => {
 test("Deadline.test", () => {
   const errorGuest = vi.fn();
   const g = vi.fn();
-  deadline(O(errorGuest), I(100), I(20)).value(O(g));
+  deadline(O(errorGuest), I(), I(20)).value(O(g));
 
   vi.runAllTimers();
 
