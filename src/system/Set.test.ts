@@ -1,22 +1,20 @@
-import { sourceOf, sourceSync } from "silentium";
-import { set } from "../system/Set";
+import { I, of, ownerSync } from "silentium";
 import { expect, test } from "vitest";
+import { set } from "../system/Set";
 
 test("Set.test", () => {
-  const value = sourceOf();
-  const object = sourceSync(
-    set(
-      {
-        value: "hello",
-      },
-      "value",
-      value,
-    ),
+  const [value, o] = of<string>();
+  const object = {
+    value: "hello",
+  };
+  const obj = ownerSync<typeof object>(
+    set(I(object), I("value"), value),
+    object,
   );
 
-  expect(object.syncValue().value).toBe("hello");
+  expect(obj.syncValue().value).toBe("hello");
 
-  value.give("bue!");
+  o.give("bue!");
 
-  expect(object.syncValue().value).toBe("bue!");
+  expect(obj.syncValue().value).toBe("bue!");
 });

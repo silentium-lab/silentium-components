@@ -1,26 +1,28 @@
-import { sourceOf, sourceSync, value } from "silentium";
-import { expect, test, vi } from "vitest";
+import { of, ownerSync, poolStateless } from "silentium";
+import { expect, test } from "vitest";
 import { lock } from "../behaviors/Lock";
 
 test("Lock.test", () => {
-  const source = sourceOf<number>(1);
-  const lockSrc = sourceOf();
+  const [source, so] = of<number>(1);
+  const [lockSrc, lo] = of<boolean>(false);
 
-  const lockedSrc = lock(source, lockSrc);
-  const lockedSync = sourceSync(lockedSrc);
+  const [lockedSrc] = poolStateless(lock(source, lockSrc));
+  const lockedSync = ownerSync(lockedSrc);
 
   expect(lockedSync.syncValue()).toBe(1);
 
-  source.give(2);
+  so.give(2);
 
   expect(lockedSync.syncValue()).toBe(2);
 
-  lockSrc.give(1);
-  source.give(3);
-  source.give(4);
-  source.give(5);
+  lo.give(true);
+  so.give(3);
+  so.give(4);
+  so.give(5);
 
-  const g = vi.fn();
-  value(lockedSrc, g);
-  expect(g).not.toBeCalled();
+  expect(lockedSync.syncValue()).toBe(2);
+
+  lo.give(false);
+  so.give(6);
+  expect(lockedSync.syncValue()).toBe(6);
 });

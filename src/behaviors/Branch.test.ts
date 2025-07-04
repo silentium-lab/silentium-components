@@ -1,25 +1,22 @@
-import { patron, sourceApplied, sourceOf, sourceSync, value } from "silentium";
+import { applied, I, of, ownerSync } from "silentium";
 import { expect, test } from "vitest";
 import { branch } from "../behaviors/Branch";
 
 test("Branch.test", () => {
-  const deliveryTypeSrc = sourceOf<number>(2);
-  const boolSync = sourceSync(
-    value(
-      branch(
-        sourceApplied(deliveryTypeSrc, (t) => t === 2),
-        "Then ветка",
-        "Else ветка",
-      ),
-      patron((v) => {
-        return v;
+  const [dts, dto] = of<number>(2);
+  const boolSync = ownerSync(
+    branch(
+      applied(dts, (t) => {
+        return t === 2;
       }),
+      I("Then ветка"),
+      I("Else ветка"),
     ),
   );
 
   expect(boolSync.syncValue()).toBe("Then ветка");
 
-  deliveryTypeSrc.give(1);
+  dto.give(1);
 
   expect(boolSync.syncValue()).toBe("Else ветка");
 });

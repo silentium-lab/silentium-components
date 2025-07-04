@@ -1,30 +1,20 @@
-import {
-  give,
-  guestCast,
-  GuestType,
-  patronOnce,
-  sourceFiltered,
-  SourceType,
-  value,
-} from "silentium";
+import { filtered, I, Information, O, Owner, poolStateless } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
 export const deadline = <T>(
-  error: GuestType<Error>,
-  baseSrc: SourceType<T>,
-  timeoutSrc: SourceType<number>,
+  error: Owner<Error>,
+  baseSrc: Information<T>,
+  timeoutSrc: Information<number>,
 ) => {
   let timerHead: unknown = null;
-  return (g: GuestType<T>) => {
-    value(
-      timeoutSrc,
-      guestCast(g, (timeout) => {
+  return I((o) => {
+    timeoutSrc.value(
+      O((timeout) => {
         if (timerHead) {
           clearTimeout(timerHead as number);
         }
-
         let timeoutReached = false;
 
         timerHead = setTimeout(() => {
@@ -32,21 +22,18 @@ export const deadline = <T>(
             return;
           }
           timeoutReached = true;
-          give(new Error("Timeout reached in Deadline class"), error);
+          error.give(new Error("Timeout reached in Deadline class"));
         }, timeout);
 
-        value(
-          sourceFiltered(baseSrc, () => !timeoutReached),
-          g,
-        );
+        const [basePool] = poolStateless(baseSrc);
+        filtered(basePool, () => !timeoutReached).value(o);
 
-        value(
-          baseSrc,
-          patronOnce(() => {
+        basePool.value(
+          O(() => {
             timeoutReached = true;
           }),
         );
       }),
     );
-  };
+  });
 };

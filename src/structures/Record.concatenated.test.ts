@@ -1,22 +1,23 @@
-import { patron, source, sourceOf, sourceSync } from "silentium";
+import { I, O, of, ownerSync, pool } from "silentium";
 import { expect, test } from "vitest";
-import { record } from "./Record";
 import { concatenated } from "../strings";
+import { record } from "./Record";
 
 test("Record.concatenated.test", () => {
-  const three = sourceOf<string>("three");
-  const concatPart = sourceOf<string>("part");
-  const recordSrc = sourceSync(
+  const three = I<string>("three");
+  const [concatPart, cpo] = of<string>("part");
+  const [r] = pool(
     record({
-      one: "one",
-      two: source("two"),
+      one: I("one"),
+      two: I("two"),
       three,
-      nested: concatenated(["one", concatPart]),
+      nested: concatenated([I("one"), concatPart]),
     }),
   );
+  const recordSrc = ownerSync(r);
   let counter = 0;
-  recordSrc.value(
-    patron(() => {
+  r.value(
+    O(() => {
       counter += 1;
     }),
   );
@@ -28,7 +29,7 @@ test("Record.concatenated.test", () => {
     nested: "onepart",
   });
 
-  concatPart.give("changed");
+  cpo.give("changed");
 
   expect(recordSrc.syncValue()).toStrictEqual({
     one: "one",

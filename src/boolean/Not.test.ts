@@ -1,12 +1,12 @@
-import { sourceOf, sourceSync } from "silentium";
+import { of, ownerSync } from "silentium";
 import { expect, test } from "vitest";
 import { not } from "../boolean/Not";
 
 test("Not.test", () => {
-  const one = sourceOf<boolean>(false);
-  const result = sourceSync(not(one));
+  const [one, oo] = of<boolean>(false);
+  const result = ownerSync(not(one));
   expect(result.syncValue()).toBe(true);
 
-  one.give(true);
+  oo.give(true);
   expect(result.syncValue()).toBe(false);
 });

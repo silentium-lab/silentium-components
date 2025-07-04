@@ -1,15 +1,14 @@
-import { give, guestCast, GuestType, SourceType, value } from "silentium";
+import { I, Information, O } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/not
  */
-export const not = (baseSrc: SourceType<boolean>) => {
-  return (g: GuestType<boolean>) => {
-    value(
-      baseSrc,
-      guestCast(g, (base) => {
-        give(!base, g);
+export const not = (baseSrc: Information<boolean>) => {
+  return I((o) => {
+    baseSrc.value(
+      O((v) => {
+        o.give(!v);
       }),
     );
-  };
+  });
 };

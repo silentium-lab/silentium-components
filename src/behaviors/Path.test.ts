@@ -1,4 +1,4 @@
-import { sourceSync } from "silentium";
+import { I, ownerSync } from "silentium";
 import { expect, test } from "vitest";
 import { path } from "../behaviors/Path";
 
@@ -7,6 +7,6 @@ test("Path.test", () => {
     name: "Peter",
     surname: "Parker",
   };
-  const name = sourceSync(path(record, "name"));
+  const name = ownerSync(path(I(record), I("name")));
   expect(name.syncValue()).toBe("Peter");
 });

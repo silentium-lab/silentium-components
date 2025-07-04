@@ -1,34 +1,25 @@
-import {
-  firstVisit,
-  GuestType,
-  sourceOf,
-  sourceResettable,
-  SourceType,
-  systemPatron,
-  value,
-} from "silentium";
+import { I, Information, O, ownerSync } from "silentium";
 
 /**
  * Defer one source after another, gives values of baseSrc only once when triggerSrc responds
  * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
  */
 export const deferred = <T>(
-  baseSrc: SourceType<T>,
-  triggerSrc: SourceType<unknown>,
+  baseSrc: Information<T>,
+  triggerSrc: Information<unknown>,
 ) => {
-  const result = sourceResettable<T>(sourceOf(), baseSrc as SourceType);
+  return I((o) => {
+    const baseSync = ownerSync(baseSrc);
 
-  const visited = firstVisit(() => {
-    value(
-      triggerSrc,
-      systemPatron(() => {
-        value(baseSrc, result);
+    triggerSrc.value(
+      O(() => {
+        if (
+          baseSync.syncValue() !== null &&
+          baseSync.syncValue() !== undefined
+        ) {
+          o.give(baseSync.syncValue());
+        }
       }),
     );
   });
-
-  return (g: GuestType<T>) => {
-    visited();
-    value(result, g);
-  };
 };

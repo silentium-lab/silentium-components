@@ -1,4 +1,4 @@
-import { sourceSync } from "silentium";
+import { I, ownerSync } from "silentium";
 import { expect, test } from "vitest";
 import { path } from "./Path";
 
@@ -11,6 +11,6 @@ test("Path.index.test", () => {
       name: "spider-man",
     },
   };
-  const bestColor = sourceSync(path(record, "colors.0"));
+  const bestColor = ownerSync(path(I(record), I("colors.0")));
   expect(bestColor.syncValue()).toBe("blue");
 });

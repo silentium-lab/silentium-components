@@ -1,17 +1,17 @@
-import { source, sourceOf, sourceSync } from "silentium";
+import { I, ownerSync } from "silentium";
 import { expect, test } from "vitest";
 import { record } from "./Record";
 
 test("Record.nested.test", () => {
-  const three = sourceOf<string>("three");
-  const recordSrc = sourceSync(
+  const three = I<string>("three");
+  const recordSrc = ownerSync(
     record({
-      one: "one",
-      two: source("two"),
+      one: I("one"),
+      two: I("two"),
       three,
       nested: record({
-        four: "four",
-        five: source("five"),
+        four: I("four"),
+        five: I("five"),
       }),
     }),
   );

@@ -1,18 +1,18 @@
-import { sourceOf, value } from "silentium";
-import { onlyChanged } from "../behaviors/OnlyChanged";
+import { O, of, pool } from "silentium";
 import { expect, test, vi } from "vitest";
+import { onlyChanged } from "../behaviors/OnlyChanged";
 
 test("OnlyChanged.test", () => {
-  const src = sourceOf<number>(1);
-  const changedSrc = onlyChanged(src);
+  const [src, so] = of<number>(1);
+  const [changedSrc] = pool(onlyChanged(src));
 
   const g = vi.fn();
-  value(changedSrc, g);
+  changedSrc.value(O(g));
   expect(g).not.toBeCalled();
 
-  src.give(2);
+  so.give(2);
 
   const g2 = vi.fn();
-  value(changedSrc, g2);
+  changedSrc.value(O(g2));
   expect(g2).toBeCalledWith(2);
 });

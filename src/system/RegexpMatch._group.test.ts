@@ -1,11 +1,13 @@
-import { sourceOf, sourceSync } from "silentium";
-import { regexpMatch } from "./RegexpMatch";
+import { I, ownerSync } from "silentium";
 import { expect, test } from "vitest";
 import { path } from "../behaviors";
+import { regexpMatch } from "./RegexpMatch";
 
 test("RegexpMatch._group.test", () => {
-  const urlSrc = sourceOf<string>("http://domain.com/some/url/");
-  const matchedSrc = sourceSync(path(regexpMatch("/(s\\w+)/", urlSrc), "1"));
+  const urlSrc = I<string>("http://domain.com/some/url/");
+  const matchedSrc = ownerSync(
+    path(regexpMatch(I("/(s\\w+)/"), urlSrc), I("1")),
+  );
 
   expect(matchedSrc.syncValue()).toBe("some");
 });
