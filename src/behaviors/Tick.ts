@@ -1,43 +1,35 @@
-import {
-  give,
-  sourceOf,
-  SourceType,
-  subSource,
-  systemPatron,
-  value,
-} from "silentium";
+import { I, Information, O } from "silentium";
 
 /**
  * Accumulates the last value of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-export const tick = <T>(baseSrc: SourceType<T>) => {
-  const result = sourceOf<T>();
-  subSource(result, baseSrc);
+export const tick = <T>(baseSrc: Information<T>) => {
+  const i = I((o) => {
+    let microtaskScheduled = false;
+    let lastValue: T | null = null;
 
-  let microtaskScheduled = false;
-  let lastValue: T | null = null;
+    const scheduleMicrotask = () => {
+      microtaskScheduled = true;
+      queueMicrotask(() => {
+        microtaskScheduled = false;
+        if (lastValue !== null) {
+          o.give(lastValue);
+          lastValue = null;
+        }
+      });
+    };
 
-  const scheduleMicrotask = () => {
-    microtaskScheduled = true;
-    queueMicrotask(() => {
-      microtaskScheduled = false;
-      if (lastValue !== null) {
-        give(lastValue, result);
-        lastValue = null;
-      }
-    });
-  };
+    baseSrc.value(
+      O((v) => {
+        lastValue = v;
+        if (!microtaskScheduled) {
+          scheduleMicrotask();
+        }
+      }),
+    );
+  });
+  i.subInfo(baseSrc);
 
-  value(
-    baseSrc,
-    systemPatron((v) => {
-      lastValue = v;
-      if (!microtaskScheduled) {
-        scheduleMicrotask();
-      }
-    }),
-  );
-
-  return result;
+  return i;
 };

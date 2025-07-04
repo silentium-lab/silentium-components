@@ -1,36 +1,36 @@
-import { patron, sourceOf, value } from "silentium";
+import { O, of, poolStateless } from "silentium";
 import { expect, test } from "vitest";
 import { onlyChanged } from "../behaviors/OnlyChanged";
 import { shot } from "../behaviors/Shot";
 
 test("Shot._onlyChanged.test", () => {
-  const baseSrc = sourceOf<number>(123);
-  const resultSrc = shot(baseSrc, onlyChanged(baseSrc));
+  const [baseSrc, bo] = of<number>(123);
+  const [sharedBase] = poolStateless(baseSrc);
+  const resultSrc = shot(sharedBase, onlyChanged(sharedBase));
 
   const vals: number[] = [];
 
-  value(
-    resultSrc,
-    patron((v) => {
+  resultSrc.value(
+    O((v) => {
       vals.push(v);
     }),
   );
 
   expect(vals).toStrictEqual([]);
 
-  baseSrc.give(222);
+  bo.give(222);
+
+  expect(vals).toStrictEqual([]);
+
+  bo.give(222);
 
   expect(vals).toStrictEqual([222]);
 
-  baseSrc.give(222);
+  bo.give(333);
 
-  expect(vals).toStrictEqual([222, 222]);
+  expect(vals).toStrictEqual([222, 333]);
 
-  baseSrc.give(333);
+  bo.give(123);
 
-  expect(vals).toStrictEqual([222, 222, 333]);
-
-  baseSrc.give(123);
-
-  expect(vals).toStrictEqual([222, 222, 333, 123]);
+  expect(vals).toStrictEqual([222, 333, 123]);
 });

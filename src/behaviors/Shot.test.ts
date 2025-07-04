@@ -1,30 +1,30 @@
-import { patron, sourceOf, sourceSync, value } from "silentium";
-import { shot } from "../behaviors/Shot";
+import { O, of, ownerSync, poolStateless } from "silentium";
 import { expect, test, vi } from "vitest";
+import { shot } from "../behaviors/Shot";
 
 test("Shot.test", () => {
-  const baseSrc = sourceOf();
-  const shotSrc = sourceOf();
-  const result = sourceOf();
-  const resultSync = sourceSync(result);
+  const [baseSrc, bo] = of();
+  const [shotSrc, so] = of();
+  const [result, ro] = of();
+  const resultSync = ownerSync(result);
 
-  const shotResult = shot(baseSrc, shotSrc);
-  value(shotResult, patron(result));
+  const [shotResult] = poolStateless(shot(baseSrc, shotSrc));
+  shotResult.value(ro);
 
-  baseSrc.give(1);
-  shotSrc.give(1);
-
-  expect(resultSync.syncValue()).toBe(1);
-
-  baseSrc.give(2);
+  bo.give(1);
+  so.give(1);
 
   expect(resultSync.syncValue()).toBe(1);
 
-  shotSrc.give(1);
+  bo.give(2);
+
+  expect(resultSync.syncValue()).toBe(1);
+
+  so.give(1);
 
   expect(resultSync.syncValue()).toBe(2);
 
   const g = vi.fn();
-  value(shotResult, g);
+  shotResult.value(O(g));
   expect(g).not.toBeCalled();
 });
