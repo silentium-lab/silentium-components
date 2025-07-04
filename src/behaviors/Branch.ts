@@ -1,4 +1,4 @@
-import { I, Information, infoSync, O, ownerSync } from "silentium";
+import { I, Information, InfoSync, O, ownerSync } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
@@ -10,7 +10,7 @@ export const branch = <Then, Else>(
 ): Information<Then | Else> => {
   return I((o) => {
     const leftSync = ownerSync(left);
-    let rightSync: infoSync<Else> | undefined;
+    let rightSync: InfoSync<Else> | undefined;
 
     if (right !== undefined) {
       rightSync = ownerSync(right);
