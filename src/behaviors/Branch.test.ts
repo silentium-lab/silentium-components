@@ -1,22 +1,22 @@
-import { applied, I, of, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { applied, i, of } from "silentium";
+import { expect, test, vi } from "vitest";
 import { branch } from "../behaviors/Branch";
 
 test("Branch.test", () => {
   const [dts, dto] = of<number>(2);
-  const boolSync = ownerSync(
-    branch(
-      applied(dts, (t) => {
-        return t === 2;
-      }),
-      I("Then ветка"),
-      I("Else ветка"),
-    ),
+  const res = branch(
+    applied(dts, (t) => {
+      return t === 2;
+    }),
+    i("Then ветка"),
+    i("Else ветка"),
   );
 
-  expect(boolSync.syncValue()).toBe("Then ветка");
+  const g = vi.fn();
+  res(g);
+  expect(g).toBeCalledWith("Then ветка");
 
-  dto.give(1);
+  dto(1);
 
-  expect(boolSync.syncValue()).toBe("Else ветка");
+  expect(g).toBeCalledWith("Else ветка");
 });
