@@ -15,6 +15,8 @@ export const deadline = <T>(
 ): InformationType<T> => {
   let timerHead: unknown = null;
   return (o) => {
+    const [baseShared, pool] = sharedStateless(baseSrc);
+
     timeoutSrc((timeout) => {
       if (timerHead) {
         clearTimeout(timerHead as number);
@@ -29,13 +31,16 @@ export const deadline = <T>(
         error(new Error("Timeout reached in Deadline class"));
       }, timeout);
 
-      const [basePool] = sharedStateless(baseSrc);
-      const f = filtered(basePool, () => !timeoutReached);
+      const f = filtered(baseShared, () => !timeoutReached);
       f(o);
 
-      basePool(() => {
+      baseShared(() => {
         timeoutReached = true;
       });
     });
+
+    return () => {
+      pool.destroy();
+    };
   };
 };

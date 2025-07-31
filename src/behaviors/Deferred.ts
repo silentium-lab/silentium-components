@@ -1,25 +1,21 @@
-import { I, Information, O, ownerSync } from "silentium";
+import { InformationType, isFilled } from "silentium";
+import { sync } from "./Sync";
 
 /**
  * Defer one source after another, gives values of baseSrc only once when triggerSrc responds
  * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
  */
 export const deferred = <T>(
-  baseSrc: Information<T>,
-  triggerSrc: Information<unknown>,
-) => {
-  return I((o) => {
-    const baseSync = ownerSync(baseSrc);
+  baseSrc: InformationType<T>,
+  triggerSrc: InformationType<unknown>,
+): InformationType<T> => {
+  return (o) => {
+    const baseSync = sync(baseSrc);
 
-    triggerSrc.value(
-      O(() => {
-        if (
-          baseSync.syncValue() !== null &&
-          baseSync.syncValue() !== undefined
-        ) {
-          o.give(baseSync.syncValue());
-        }
-      }),
-    );
-  });
+    triggerSrc(() => {
+      if (isFilled(baseSync.value())) {
+        o(baseSync.value());
+      }
+    });
+  };
 };
