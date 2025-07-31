@@ -1,4 +1,4 @@
-import { I, O, of, ownerSync } from "silentium";
+import { i, of } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { deadline } from "../behaviors/Deadline";
 
@@ -16,12 +16,15 @@ test("Deadline._value.test", () => {
   const [source, so] = of<number>();
 
   setTimeout(() => {
-    so.give(11);
+    so(11);
   }, 10);
-  const sync = ownerSync(deadline(O(errorGuest), source, I(200)));
+
+  const dl = deadline(errorGuest, source, i(200));
+  const g = vi.fn();
+  dl(g);
 
   vi.runAllTimers();
 
   expect(errorGuest).not.toHaveBeenCalled();
-  expect(sync.syncValue()).toBe(11);
+  expect(g).toHaveBeenCalledWith(11);
 });
