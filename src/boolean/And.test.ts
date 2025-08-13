@@ -1,22 +1,24 @@
-import { of, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { of } from "silentium";
+import { expect, test, vi } from "vitest";
 import { and } from "../boolean/And";
 
 test("And.test", () => {
   const [one, oo] = of<boolean>(false);
   const [two, to] = of<boolean>(false);
-  const result = ownerSync(and(one, two));
-  expect(result.syncValue()).toBe(false);
+  const result = and(one, two);
+  const g = vi.fn();
+  result(g);
+  expect(g).toHaveBeenLastCalledWith(false);
 
-  oo.give(true);
-  to.give(false);
-  expect(result.syncValue()).toBe(false);
+  oo(true);
+  to(false);
+  expect(g).toHaveBeenLastCalledWith(false);
 
-  oo.give(false);
-  to.give(true);
-  expect(result.syncValue()).toBe(false);
+  oo(false);
+  to(true);
+  expect(g).toHaveBeenLastCalledWith(false);
 
-  oo.give(true);
-  to.give(true);
-  expect(result.syncValue()).toBe(true);
+  oo(true);
+  to(true);
+  expect(g).toHaveBeenLastCalledWith(true);
 });
