@@ -1,5 +1,5 @@
-import { applied, I, of, ownerSync, pool } from "silentium";
-import { expect, test } from "vitest";
+import { applied, i, of, shared } from "silentium";
+import { expect, test, vi } from "vitest";
 import { router } from "../navigation/Router";
 
 const drop = (dropPart: string) => (value: string) => {
@@ -8,38 +8,39 @@ const drop = (dropPart: string) => (value: string) => {
 
 test("Router.test", () => {
   const [urlSrc, uo] = of<string>("http://domain.com/");
-  const [urlPathSrc] = pool(applied(urlSrc, drop("http://domain.com")));
-  const urlPathSync = ownerSync(urlPathSrc);
+  const [urlPathSrc] = shared(applied(urlSrc, drop("http://domain.com")));
+  const g = vi.fn();
+  urlPathSrc(g);
 
-  const responseSrc = ownerSync(
-    router(
-      urlPathSrc,
-      I([
-        {
-          pattern: "^/$",
-          template: I("page/home.html"),
-        },
-        {
-          pattern: "/some/contacts",
-          template: "page/contacts.html",
-        },
-      ]),
-      I("page/404.html"),
-    ),
+  const routerSrc = router(
+    urlPathSrc,
+    i([
+      {
+        pattern: "^/$",
+        template: i("page/home.html"),
+      },
+      {
+        pattern: "/some/contacts",
+        template: "page/contacts.html",
+      },
+    ]),
+    i("page/404.html"),
   );
+  const g2 = vi.fn();
+  routerSrc(g2);
 
-  expect(responseSrc.syncValue()).toBe("page/home.html");
+  expect(g2).toHaveBeenLastCalledWith("page/home.html");
 
-  uo.give("http://domain.com/some/contacts");
+  uo("http://domain.com/some/contacts");
 
-  expect(urlPathSync.syncValue()).toBe("/some/contacts");
-  expect(responseSrc.syncValue()).toBe("page/contacts.html");
+  expect(g).toHaveBeenLastCalledWith("/some/contacts");
+  expect(g2).toHaveBeenLastCalledWith("page/contacts.html");
 
-  uo.give("http://domain.com/some/unknown/");
+  uo("http://domain.com/some/unknown/");
 
-  expect(responseSrc.syncValue()).toBe("page/404.html");
+  expect(g2).toHaveBeenLastCalledWith("page/404.html");
 
-  uo.give("http://domain.com/");
+  uo("http://domain.com/");
 
-  expect(responseSrc.syncValue()).toBe("page/home.html");
+  expect(g2).toHaveBeenLastCalledWith("page/home.html");
 });
