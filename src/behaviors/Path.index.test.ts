@@ -1,5 +1,5 @@
-import { I, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i } from "silentium";
+import { expect, test, vi } from "vitest";
 import { path } from "./Path";
 
 test("Path.index.test", () => {
@@ -11,6 +11,8 @@ test("Path.index.test", () => {
       name: "spider-man",
     },
   };
-  const bestColor = ownerSync(path(I(record), I("colors.0")));
-  expect(bestColor.syncValue()).toBe("blue");
+  const bestColor = path(i(record), i("colors.0"));
+  const g = vi.fn();
+  bestColor(g);
+  expect(g).toHaveBeenLastCalledWith("blue");
 });

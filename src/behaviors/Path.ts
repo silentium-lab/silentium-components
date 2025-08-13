@@ -1,29 +1,31 @@
-import { all, I, Information, O } from "silentium";
+import { all, InformationType } from "silentium";
 
 /**
  * Return source of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
 export const path = <
-  T extends Record<string, unknown> | Array<unknown>,
-  K extends string,
+  R,
+  T extends Record<string, unknown> | Array<unknown> = any,
+  K extends string = any,
 >(
-  baseSrc: Information<T>,
-  keySrc: Information<K>,
-) => {
-  return I((o) => {
-    all(baseSrc, keySrc).value(
-      O(([base, key]) => {
-        const keyChunks = key.split(".");
-        let value: unknown = base;
-        keyChunks.forEach((keyChunk) => {
-          value = (value as Record<string, unknown>)[keyChunk];
-        });
+  baseSrc: InformationType<T>,
+  keySrc: InformationType<K>,
+): InformationType<R> => {
+  return (o) => {
+    all(
+      baseSrc,
+      keySrc,
+    )(([base, key]) => {
+      const keyChunks = key.split(".");
+      let value: unknown = base;
+      keyChunks.forEach((keyChunk) => {
+        value = (value as Record<string, unknown>)[keyChunk];
+      });
 
-        if (value !== undefined && value !== base) {
-          o.give(value);
-        }
-      }),
-    );
-  });
+      if (value !== undefined && value !== base) {
+        o(value as R);
+      }
+    });
+  };
 };
