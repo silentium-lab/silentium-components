@@ -1,11 +1,11 @@
-import { I, Information, O } from "silentium";
+import { InformationType } from "silentium";
 
 /**
  * Accumulates the last value of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-export const tick = <T>(baseSrc: Information<T>) => {
-  const i = I((o) => {
+export const tick = <T>(baseSrc: InformationType<T>): InformationType<T> => {
+  return (o) => {
     let microtaskScheduled = false;
     let lastValue: T | null = null;
 
@@ -14,22 +14,17 @@ export const tick = <T>(baseSrc: Information<T>) => {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          o.give(lastValue);
+          o(lastValue);
           lastValue = null;
         }
       });
     };
 
-    baseSrc.value(
-      O((v) => {
-        lastValue = v;
-        if (!microtaskScheduled) {
-          scheduleMicrotask();
-        }
-      }),
-    );
-  });
-  i.subInfo(baseSrc);
-
-  return i;
+    baseSrc((v) => {
+      lastValue = v;
+      if (!microtaskScheduled) {
+        scheduleMicrotask();
+      }
+    });
+  };
 };
