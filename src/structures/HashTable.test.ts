@@ -1,14 +1,16 @@
-import { of, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { of } from "silentium";
+import { expect, test, vi } from "vitest";
 import { hashTable } from "../structures/HashTable";
 
 test("HashTable.test", () => {
   const [entrySource, eo] = of<[string, string]>();
-  const hashTableSrc = ownerSync(hashTable(entrySource));
-  eo.give(["key-one", "value-one"]);
-  eo.give(["key-two", "value-two"]);
+  const hashTableSrc = hashTable(entrySource);
+  const g = vi.fn();
+  hashTableSrc(g);
+  eo(["key-one", "value-one"]);
+  eo(["key-two", "value-two"]);
 
-  expect(hashTableSrc.syncValue()).toStrictEqual({
+  expect(g).toHaveBeenLastCalledWith({
     "key-one": "value-one",
     "key-two": "value-two",
   });
