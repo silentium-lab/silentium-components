@@ -1,33 +1,34 @@
-import { applied, I, O, of, ownerSync, poolStateless } from "silentium";
+import { applied, i, of, sharedStateless } from "silentium";
 import { expect, test, vi } from "vitest";
 import { branch } from "../behaviors/Branch";
 
 test("Branch.dontRespondAfterRespond.test", () => {
   const [dti, dto] = of<number>(1);
-  const ti = I<any>("then");
-  const [branchI] = poolStateless(
+  const ti = i<any>("then");
+  const [branchI] = sharedStateless(
     branch(
       applied(dti, (t) => t === 2),
       ti,
     ),
   );
-  const boolSync = ownerSync(branchI);
-
-  dto.give(2);
-  expect(boolSync.syncValue()).toBe("then");
-
   const g = vi.fn();
-  branchI.value(O(g));
-  dto.give(1);
-  expect(g).not.toHaveBeenCalled();
+  branchI(g);
 
-  const g1 = vi.fn();
-  branchI.value(O(g1));
-  dto.give(2);
-  expect(g1).toHaveBeenCalledWith("then");
+  dto(2);
+  expect(g).toHaveBeenLastCalledWith("then");
 
   const g2 = vi.fn();
-  branchI.value(O(g2));
-  dto.give(3);
+  branchI(g2);
+  dto(1);
   expect(g2).not.toHaveBeenCalled();
+
+  const g3 = vi.fn();
+  branchI(g3);
+  dto(2);
+  expect(g3).toHaveBeenLastCalledWith("then");
+
+  const g4 = vi.fn();
+  branchI(g4);
+  dto(3);
+  expect(g4).not.toHaveBeenCalled();
 });
