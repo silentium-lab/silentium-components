@@ -1,22 +1,22 @@
-import { I, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i } from "silentium";
+import { expect, test, vi } from "vitest";
 import { record } from "./Record";
 
 test("Record.nested.test", () => {
-  const three = I<string>("three");
-  const recordSrc = ownerSync(
-    record({
-      one: I("one"),
-      two: I("two"),
-      three,
-      nested: record({
-        four: I("four"),
-        five: I("five"),
-      }),
+  const three = i<string>("three");
+  const recordSrc = record({
+    one: i("one"),
+    two: i("two"),
+    three,
+    nested: record({
+      four: i("four"),
+      five: i("five"),
     }),
-  );
+  });
+  const g = vi.fn();
+  recordSrc(g);
 
-  expect(recordSrc.syncValue()).toStrictEqual({
+  expect(g).toHaveBeenLastCalledWith({
     one: "one",
     two: "two",
     three: "three",
