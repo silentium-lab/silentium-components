@@ -2,472 +2,334 @@
 
 var silentium = require('silentium');
 
-const groupActiveClass = (activeClassSrc, activeElementSrc, groupElementsSrc) => {
-  silentium.value(
-    silentium.sourceAll([activeClassSrc, activeElementSrc, groupElementsSrc]),
-    silentium.systemPatron(([activeClass, activeElement, groupElements]) => {
-      groupElements.forEach((el) => {
-        if (el.classList) {
-          el.classList.remove(activeClass);
-        }
-      });
-      activeElement.classList.add(activeClass);
-    })
+const dirty = (baseEntitySource, alwaysKeep = [], excludeKeys = []) => {
+  const [comparing, co] = silentium.of();
+  const comparingDetached = silentium.applied(
+    comparing,
+    (value) => JSON.parse(JSON.stringify(value))
   );
-  return groupElementsSrc;
-};
-
-const dirty = (baseEntitySource, becomePatronAuto = false, alwaysKeep = [], excludeKeys = []) => {
-  const comparingSrc = silentium.sourceOf();
-  const all = silentium.sourceAll([comparingSrc, baseEntitySource]);
-  const result = {
-    give(value2) {
-      silentium.give(JSON.parse(JSON.stringify(value2)), comparingSrc);
-      return result;
-    },
-    value(guest) {
-      silentium.value(
-        all,
-        silentium.guestCast(guest, ([comparing, base]) => {
-          if (!comparing) {
-            return;
-          }
-          silentium.give(
-            Object.fromEntries(
-              Object.entries(comparing).filter(([key, value2]) => {
-                if (alwaysKeep.includes(key)) {
-                  return true;
-                }
-                if (excludeKeys.includes(key)) {
-                  return false;
-                }
-                return value2 !== base[key];
-              })
-            ),
-            guest
-          );
-        })
+  const i = (o) => {
+    silentium.all(
+      comparingDetached,
+      baseEntitySource
+    )(([comparing2, base]) => {
+      if (!comparing2) {
+        return;
+      }
+      o(
+        Object.fromEntries(
+          Object.entries(comparing2).filter(([key, value]) => {
+            if (alwaysKeep.includes(key)) {
+              return true;
+            }
+            if (excludeKeys.includes(key)) {
+              return false;
+            }
+            return value !== base[key];
+          })
+        )
       );
-      return result;
-    }
+    });
   };
-  if (becomePatronAuto) {
-    silentium.value(baseEntitySource, silentium.patronOnce(result));
-  }
-  return result;
+  return [i, co];
 };
 
 const loading = (loadingStartSource, loadingFinishSource) => {
-  const loadingSrc = silentium.sourceOf();
-  silentium.subSourceMany(loadingSrc, [loadingStartSource, loadingFinishSource]);
-  silentium.value(
-    loadingStartSource,
-    silentium.systemPatron(() => {
-      loadingSrc.give(true);
-    })
-  );
-  silentium.value(
-    loadingFinishSource,
-    silentium.systemPatron(() => {
-      loadingSrc.give(false);
-    })
-  );
-  return loadingSrc.value;
+  return (o) => {
+    loadingStartSource(() => {
+      o(true);
+    });
+    loadingFinishSource(() => {
+      o(false);
+    });
+  };
 };
 
 const path = (baseSrc, keySrc) => {
-  const pathSrc = silentium.sourceOf();
-  silentium.subSourceMany(pathSrc, [baseSrc, keySrc]);
-  silentium.value(
-    silentium.sourceAll([baseSrc, keySrc]),
-    silentium.systemPatron(([base, key]) => {
+  return (o) => {
+    silentium.all(
+      baseSrc,
+      keySrc
+    )(([base, key]) => {
       const keyChunks = key.split(".");
-      let value2 = base;
+      let value = base;
       keyChunks.forEach((keyChunk) => {
-        value2 = value2[keyChunk];
+        value = value[keyChunk];
       });
-      if (value2 !== void 0 && value2 !== base) {
-        silentium.give(value2, pathSrc);
+      if (value !== void 0 && value !== base) {
+        o(value);
       }
-    })
-  );
-  return pathSrc.value;
+    });
+  };
 };
 
 const deadline = (error, baseSrc, timeoutSrc) => {
   let timerHead = null;
-  return (g) => {
-    silentium.value(
-      timeoutSrc,
-      silentium.guestCast(g, (timeout) => {
-        if (timerHead) {
-          clearTimeout(timerHead);
+  return (o) => {
+    const [baseShared, pool] = silentium.sharedStateless(baseSrc);
+    timeoutSrc((timeout) => {
+      if (timerHead) {
+        clearTimeout(timerHead);
+      }
+      let timeoutReached = false;
+      timerHead = setTimeout(() => {
+        if (timeoutReached) {
+          return;
         }
-        let timeoutReached = false;
-        timerHead = setTimeout(() => {
-          if (timeoutReached) {
-            return;
-          }
-          timeoutReached = true;
-          silentium.give(new Error("Timeout reached in Deadline class"), error);
-        }, timeout);
-        silentium.value(
-          silentium.sourceFiltered(baseSrc, () => !timeoutReached),
-          g
-        );
-        silentium.value(
-          baseSrc,
-          silentium.patronOnce(() => {
-            timeoutReached = true;
-          })
-        );
-      })
-    );
+        timeoutReached = true;
+        error(new Error("Timeout reached in Deadline class"));
+      }, timeout);
+      const f = silentium.filtered(baseShared, () => !timeoutReached);
+      f(o);
+      baseShared(() => {
+        timeoutReached = true;
+      });
+    });
+    return () => {
+      pool.destroy();
+    };
   };
 };
 
 const tick = (baseSrc) => {
-  const result = silentium.sourceOf();
-  silentium.subSource(result, baseSrc);
-  let microtaskScheduled = false;
-  let lastValue = null;
-  const scheduleMicrotask = () => {
-    microtaskScheduled = true;
-    queueMicrotask(() => {
-      microtaskScheduled = false;
-      if (lastValue !== null) {
-        silentium.give(lastValue, result);
-        lastValue = null;
-      }
-    });
-  };
-  silentium.value(
-    baseSrc,
-    silentium.systemPatron((v) => {
+  return (o) => {
+    let microtaskScheduled = false;
+    let lastValue = null;
+    const scheduleMicrotask = () => {
+      microtaskScheduled = true;
+      queueMicrotask(() => {
+        microtaskScheduled = false;
+        if (lastValue !== null) {
+          o(lastValue);
+          lastValue = null;
+        }
+      });
+    };
+    baseSrc((v) => {
       lastValue = v;
       if (!microtaskScheduled) {
         scheduleMicrotask();
       }
-    })
-  );
-  return result;
-};
-
-const fork = (conditionSrc, predicate, thenSrc, elseSrc) => {
-  const result = silentium.sourceOf();
-  const reset = silentium.sourceOf();
-  const resultResettable = silentium.sourceResettable(result, reset);
-  let thenPatron;
-  let elsePatron;
-  silentium.value(
-    conditionSrc,
-    silentium.systemPatron((v) => {
-      reset.give(1);
-      if (thenPatron) {
-        silentium.removePatronFromPools(thenPatron);
-      }
-      if (elsePatron) {
-        silentium.removePatronFromPools(elsePatron);
-      }
-      if (predicate(v)) {
-        thenPatron = silentium.patronOnce(result);
-        silentium.value(thenSrc, thenPatron);
-      } else if (elseSrc) {
-        elsePatron = silentium.patronOnce(result);
-        silentium.value(elseSrc, elsePatron);
-      }
-    })
-  );
-  return resultResettable;
-};
-
-const deferred = (baseSrc, triggerSrc) => {
-  const result = silentium.sourceResettable(silentium.sourceOf(), baseSrc);
-  const visited = silentium.firstVisit(() => {
-    silentium.value(
-      triggerSrc,
-      silentium.systemPatron(() => {
-        silentium.value(baseSrc, result);
-      })
-    );
-  });
-  return (g) => {
-    visited();
-    silentium.value(result, g);
+    });
   };
 };
 
-const branch = (conditionSrc, thenSrc, elseSrc) => {
-  const resetSrc = silentium.sourceOf();
-  const result = silentium.sourceOf();
-  const resultSrc = silentium.sourceResettable(result, resetSrc);
-  const visited = silentium.firstVisit(() => {
-    silentium.value(
-      conditionSrc,
-      silentium.systemPatron((v) => {
-        resetSrc.give(1);
-        if (v === true) {
-          silentium.value(thenSrc, silentium.patronOnce(result.give));
-        } else if (elseSrc !== void 0) {
-          silentium.value(elseSrc, silentium.patronOnce(result.give));
-        }
-      })
-    );
+const sync = (base) => {
+  let value;
+  base((v) => {
+    value = v;
   });
-  return (g) => {
-    visited();
-    resultSrc.value(g);
+  return {
+    value() {
+      if (value === void 0) {
+        throw new Error("no value in sync");
+      }
+      return value;
+    }
+  };
+};
+
+const deferred = (baseSrc, triggerSrc) => {
+  return (o) => {
+    const baseSync = sync(baseSrc);
+    triggerSrc(() => {
+      if (silentium.isFilled(baseSync.value())) {
+        o(baseSync.value());
+      }
+    });
+  };
+};
+
+const branch = (condition, left, right) => {
+  return (o) => {
+    const leftSync = sync(left);
+    let rightSync;
+    if (right !== void 0) {
+      rightSync = sync(right);
+    }
+    condition((v) => {
+      if (v) {
+        o(leftSync.value());
+      } else if (rightSync) {
+        o(rightSync.value());
+      }
+    });
   };
 };
 
 const memo = (baseSrc) => {
-  const result = silentium.sourceOf();
   let lastValue = null;
-  silentium.value(
-    baseSrc,
-    silentium.systemPatron((v) => {
+  return (o) => {
+    baseSrc((v) => {
       if (v !== lastValue) {
-        result.give(v);
+        o(v);
         lastValue = v;
       }
-    })
-  );
-  return result.value;
-};
-
-const lock = (baseSrc, lockSrc) => {
-  const result = silentium.sourceOf();
-  const resultResettable = silentium.sourceResettable(result, lockSrc);
-  let locked = false;
-  silentium.subSource(result, baseSrc);
-  silentium.value(baseSrc, silentium.systemPatron(silentium.guestDisposable(result.give, () => locked)));
-  silentium.value(
-    lockSrc,
-    silentium.patronOnce(() => {
-      locked = true;
-      silentium.destroy([result]);
-    })
-  );
-  return resultResettable;
-};
-
-const moment = (baseSrc, defaultValue) => {
-  const guest = silentium.guestSync(defaultValue);
-  silentium.value(baseSrc, guest);
-  return (g) => {
-    silentium.give(guest.value(), g);
+    });
   };
 };
 
-const shot = (baseSrc, shotSrc) => {
-  const resetResult = silentium.sourceOf();
-  const result = silentium.sourceOf();
-  const baseSrcSync = silentium.sourceSync(baseSrc, null);
-  silentium.value(
-    shotSrc,
-    silentium.systemPatron(() => {
-      if (baseSrcSync.syncValue() !== null) {
-        result.give(baseSrcSync.syncValue());
-        resetResult.give(1);
+const lock = (baseSrc, lockSrc) => {
+  let locked = false;
+  const i = silentium.filtered(baseSrc, () => !locked);
+  return (o) => {
+    lockSrc((newLock) => {
+      locked = newLock;
+    });
+    i(o);
+  };
+};
+
+const shot = (targetSrc, triggerSrc) => {
+  return (o) => {
+    const targetSync = sync(targetSrc);
+    triggerSrc(() => {
+      if (silentium.isFilled(targetSync.value())) {
+        o(targetSync.value());
       }
-    })
-  );
-  return silentium.sourceResettable(result, resetResult);
+    });
+  };
 };
 
 const onlyChanged = (baseSrc) => {
   let firstValue = false;
-  return silentium.source((g) => {
-    silentium.value(
-      baseSrc,
-      silentium.guestCast(g, (v) => {
-        if (firstValue === false) {
-          firstValue = true;
-        } else {
-          silentium.give(v, g);
-        }
-      })
-    );
-  });
+  return (o) => {
+    baseSrc((v) => {
+      if (firstValue === false) {
+        firstValue = true;
+      } else {
+        o(v);
+      }
+    });
+  };
 };
 
-const hashTable = (baseSource) => {
-  const result = silentium.sourceOf({});
-  silentium.subSource(result, baseSource);
-  silentium.value(
-    baseSource,
-    silentium.systemPatron(([key, value2]) => {
-      result.value((lastRecord) => {
-        lastRecord[key] = value2;
-      });
-    })
-  );
-  return result.value;
+const hashTable = (base) => {
+  return (o) => {
+    const record = {};
+    base(([key, value]) => {
+      record[key] = value;
+      o(record);
+    });
+  };
 };
 
 const record = (recordSrc) => {
-  const keys = Object.keys(recordSrc);
-  return silentium.sourceCombined(...Object.values(recordSrc))(
-    (g, ...entries) => {
+  return (o) => {
+    const keys = Object.keys(recordSrc);
+    silentium.all(...Object.values(recordSrc))((entries) => {
       const record2 = {};
       entries.forEach((entry, index) => {
         record2[keys[index]] = entry;
       });
-      silentium.give(record2, g);
-    }
-  );
-};
-
-const concatenated = (sources, joinPartSrc = "") => {
-  const result = silentium.sourceCombined(
-    joinPartSrc,
-    ...sources
-  )((g, joinPart, ...strings) => {
-    silentium.give(strings.join(joinPart), g);
-  });
-  return result;
-};
-
-const polling = (targetSrc, triggerSrc) => {
-  const resultSrc = silentium.sourceOf();
-  const visited = silentium.firstVisit(() => {
-    silentium.value(
-      triggerSrc,
-      silentium.systemPatron(() => {
-        silentium.value(targetSrc, resultSrc);
-      })
-    );
-  });
-  return (g) => {
-    visited();
-    resultSrc.value(g);
-  };
-};
-
-const priority = (sources) => {
-  return (g) => {
-    let highestPriorityIndex = 0;
-    let highestPriorityResult;
-    sources.forEach((source, index) => {
-      silentium.value(source, (v) => {
-        if (highestPriorityIndex <= index) {
-          highestPriorityIndex = index;
-          highestPriorityResult = v;
-        }
-      });
+      o(record2);
     });
-    if (highestPriorityResult !== void 0) {
-      silentium.give(highestPriorityResult, g);
-    }
   };
 };
 
-const regexpMatched = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCombined(
-  patternSrc,
-  valueSrc,
-  flagsSrc
-)((g, pattern, value, flags) => {
-  silentium.give(new RegExp(pattern, flags).test(value), g);
-});
+const concatenated = (sources, joinPartSrc = silentium.i("")) => {
+  return (o) => {
+    silentium.all(
+      joinPartSrc,
+      ...sources
+    )(([joinPart, ...strings]) => {
+      o(strings.join(joinPart));
+    });
+  };
+};
+
+const regexpMatched = (patternSrc, valueSrc, flagsSrc = silentium.i("")) => (o) => {
+  silentium.all(
+    patternSrc,
+    valueSrc,
+    flagsSrc
+  )(([pattern, value, flags]) => {
+    o(new RegExp(pattern, flags).test(value));
+  });
+};
 
 const router = (urlSrc, routesSrc, defaultSrc) => {
-  const resultSrc = silentium.sourceOf();
-  const visited = silentium.firstVisit(() => {
-    silentium.value(
-      routesSrc,
-      silentium.patronOnce((routes) => {
-        const prioritySrc = priority([
-          defaultSrc,
-          ...routes.map(
-            (r) => silentium.value(
-              branch(
-                regexpMatched(r.pattern, urlSrc, r.patternFlags),
-                r.template
-              ),
-              silentium.systemPatron((v) => {
-                return v;
-              })
-            )
-          )
-        ]);
-        const pollingSrc = polling(prioritySrc, urlSrc);
-        silentium.value(pollingSrc, silentium.systemPatron(resultSrc));
-      })
-    );
-  });
-  return (g) => {
-    visited();
-    resultSrc.value(g);
+  return (o) => {
+    routesSrc((routes) => {
+      silentium.any(
+        silentium.chain(urlSrc, defaultSrc),
+        ...routes.map((r) => {
+          return branch(
+            regexpMatched(
+              silentium.i(r.pattern),
+              urlSrc,
+              r.patternFlags ? silentium.i(r.patternFlags) : void 0
+            ),
+            typeof r.template === "function" ? r.template : silentium.i(r.template)
+          );
+        })
+      )(o);
+    });
   };
 };
 
-const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") => silentium.sourceCombined(
-  patternSrc,
-  valueSrc,
-  replaceValueSrc,
-  flagsSrc
-)((g, pattern, value, replaceValue, flags) => {
-  silentium.give(String(value).replace(new RegExp(pattern, flags), replaceValue), g);
-});
-
-const regexpMatch = (patternSrc, valueSrc, flagsSrc = "") => silentium.sourceCombined(
-  patternSrc,
-  valueSrc,
-  flagsSrc
-)((g, pattern, value, flags) => {
-  const result = new RegExp(pattern, flags).exec(value);
-  silentium.give(result ?? [], g);
-});
-
-const set = (baseSrc, keySrc, valueSrc) => {
-  silentium.value(
-    silentium.sourceAll([baseSrc, keySrc, valueSrc]),
-    silentium.systemPatron(([base, key, value2]) => {
-      base[key] = value2;
-    })
-  );
-  return baseSrc;
+const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = silentium.i("")) => (o) => {
+  silentium.all(
+    patternSrc,
+    valueSrc,
+    replaceValueSrc,
+    flagsSrc
+  )(([pattern, value, replaceValue, flags]) => {
+    o(String(value).replace(new RegExp(pattern, flags), replaceValue));
+  });
 };
 
-const promised = (promise, errorGuest) => {
-  const resultSrc = silentium.sourceOf();
-  const visited = silentium.firstVisit(() => {
-    promise.then(resultSrc.give).catch((e) => {
-      silentium.give(e, errorGuest);
-    });
+const regexpMatch = (patternSrc, valueSrc, flagsSrc = silentium.i("")) => (o) => {
+  silentium.all(
+    patternSrc,
+    valueSrc,
+    flagsSrc
+  )(([pattern, value, flags]) => {
+    const result = new RegExp(pattern, flags).exec(value);
+    o(result ?? []);
   });
-  return (g) => {
-    visited();
-    resultSrc.value(g);
+};
+
+const set = (baseSrc, keySrc, valueSrc) => {
+  return (o) => {
+    silentium.all(
+      baseSrc,
+      keySrc,
+      valueSrc
+    )(([base, key, value]) => {
+      base[key] = value;
+      o(base);
+    });
   };
 };
 
 const and = (oneSrc, twoSrc) => {
-  return silentium.sourceCombined(
-    oneSrc,
-    twoSrc
-  )((guest, one, two) => {
-    silentium.give(one && two, guest);
-  });
+  return (o) => {
+    silentium.all(
+      oneSrc,
+      twoSrc
+    )(([one, two]) => {
+      o(one && two);
+    });
+  };
 };
 
 const or = (oneSrc, twoSrc) => {
-  return silentium.sourceCombined(
-    oneSrc,
-    twoSrc
-  )((guest, one, two) => {
-    silentium.give(one || two, guest);
-  });
+  return (o) => {
+    silentium.all(
+      oneSrc,
+      twoSrc
+    )(([one, two]) => {
+      o(one || two);
+    });
+  };
 };
 
 const not = (baseSrc) => {
-  return (g) => {
-    silentium.value(
-      baseSrc,
-      silentium.guestCast(g, (base) => {
-        silentium.give(!base, g);
-      })
-    );
+  return (o) => {
+    baseSrc((v) => {
+      o(!v);
+    });
   };
 };
 
@@ -477,18 +339,14 @@ exports.concatenated = concatenated;
 exports.deadline = deadline;
 exports.deferred = deferred;
 exports.dirty = dirty;
-exports.fork = fork;
-exports.groupActiveClass = groupActiveClass;
 exports.hashTable = hashTable;
 exports.loading = loading;
 exports.lock = lock;
 exports.memo = memo;
-exports.moment = moment;
 exports.not = not;
 exports.onlyChanged = onlyChanged;
 exports.or = or;
 exports.path = path;
-exports.promised = promised;
 exports.record = record;
 exports.regexpMatch = regexpMatch;
 exports.regexpMatched = regexpMatched;
