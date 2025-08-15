@@ -1,27 +1,22 @@
-import { Information, O, of } from "silentium";
+import { InformationType } from "silentium";
 
 /**
+ * Representation of loading process
+ * first informatin source begins loading
+ * second information source stops loading
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
 export const loading = (
-  loadingStartSource: Information<unknown>,
-  loadingFinishSource: Information<unknown>,
-) => {
-  const [loadingSrc, lo] = of<boolean>();
+  loadingStartSource: InformationType<unknown>,
+  loadingFinishSource: InformationType<unknown>,
+): InformationType<boolean> => {
+  return (o) => {
+    loadingStartSource(() => {
+      o(true);
+    });
 
-  loadingSrc.executed(() => {
-    loadingStartSource.value(
-      O(() => {
-        lo.give(true);
-      }),
-    );
-
-    loadingFinishSource.value(
-      O(() => {
-        lo.give(false);
-      }),
-    );
-  });
-
-  return loadingSrc;
+    loadingFinishSource(() => {
+      o(false);
+    });
+  };
 };

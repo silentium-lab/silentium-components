@@ -1,11 +1,14 @@
-import { I, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i } from "silentium";
+import { expect, test, vi } from "vitest";
 import { concatenated } from "../strings/Concatenated";
 
 test("Concatenated.test", () => {
-  const concatenatedSrc = ownerSync(
-    concatenated([I("one"), I("two"), I("three")], I("-")),
+  const concatenatedSrc = concatenated(
+    [i("one"), i("two"), i("three")],
+    i("-"),
   );
+  const g = vi.fn();
+  concatenatedSrc(g);
 
-  expect(concatenatedSrc.syncValue()).toBe("one-two-three");
+  expect(g).toHaveBeenLastCalledWith("one-two-three");
 });

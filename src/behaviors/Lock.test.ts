@@ -1,28 +1,30 @@
-import { of, ownerSync, poolStateless } from "silentium";
-import { expect, test } from "vitest";
+import { of, sharedStateless } from "silentium";
+import { expect, test, vi } from "vitest";
 import { lock } from "../behaviors/Lock";
 
 test("Lock.test", () => {
   const [source, so] = of<number>(1);
   const [lockSrc, lo] = of<boolean>(false);
 
-  const [lockedSrc] = poolStateless(lock(source, lockSrc));
-  const lockedSync = ownerSync(lockedSrc);
+  const ls = lock(source, lockSrc);
+  const [lockedSrc] = sharedStateless(ls);
+  const g = vi.fn();
+  lockedSrc(g);
 
-  expect(lockedSync.syncValue()).toBe(1);
+  expect(g).toHaveBeenLastCalledWith(1);
 
-  so.give(2);
+  so(2);
 
-  expect(lockedSync.syncValue()).toBe(2);
+  expect(g).toHaveBeenLastCalledWith(2);
 
-  lo.give(true);
-  so.give(3);
-  so.give(4);
-  so.give(5);
+  lo(true);
+  so(3);
+  so(4);
+  so(5);
 
-  expect(lockedSync.syncValue()).toBe(2);
+  expect(g).toHaveBeenLastCalledWith(2);
 
-  lo.give(false);
-  so.give(6);
-  expect(lockedSync.syncValue()).toBe(6);
+  lo(false);
+  so(6);
+  expect(g).toHaveBeenLastCalledWith(6);
 });

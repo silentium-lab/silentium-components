@@ -1,5 +1,5 @@
-import { I, of, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i, of } from "silentium";
+import { expect, test, vi } from "vitest";
 import { set } from "../system/Set";
 
 test("Set.test", () => {
@@ -7,14 +7,13 @@ test("Set.test", () => {
   const object = {
     value: "hello",
   };
-  const obj = ownerSync<typeof object>(
-    set(I(object), I("value"), value),
-    object,
-  );
+  const obj = set(i(object), i("value"), value);
+  const g = vi.fn();
+  obj(g);
 
-  expect(obj.syncValue().value).toBe("hello");
+  expect(object.value).toBe("hello");
 
-  o.give("bue!");
+  o("bue!");
 
-  expect(obj.syncValue().value).toBe("bue!");
+  expect(object.value).toBe("bue!");
 });

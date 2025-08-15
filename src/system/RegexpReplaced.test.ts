@@ -1,14 +1,16 @@
-import { I, of, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i, of } from "silentium";
+import { expect, test, vi } from "vitest";
 import { regexpReplaced } from "../system/RegexpReplaced";
 
 test("RegexpReplaced.test", () => {
   const [urlSrc, urlO] = of<string>("http://domain.com/some/url/");
-  const matchedSrc = ownerSync(regexpReplaced(urlSrc, I("some/url/"), I("")));
+  const matchedSrc = regexpReplaced(urlSrc, i("some/url/"), i(""));
+  const g = vi.fn();
+  matchedSrc(g);
 
-  expect(matchedSrc.syncValue()).toBe("http://domain.com/");
+  expect(g).toHaveBeenLastCalledWith("http://domain.com/");
 
-  urlO.give("http://domain.com/some/url/changed/");
+  urlO("http://domain.com/some/url/changed/");
 
-  expect(matchedSrc.syncValue()).toBe("http://domain.com/changed/");
+  expect(g).toHaveBeenLastCalledWith("http://domain.com/changed/");
 });

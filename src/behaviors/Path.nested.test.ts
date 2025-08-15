@@ -1,5 +1,5 @@
-import { I, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i } from "silentium";
+import { expect, test, vi } from "vitest";
 import { path } from "./Path";
 
 test("Path.nested.test", () => {
@@ -10,6 +10,8 @@ test("Path.nested.test", () => {
       name: "spider-man",
     },
   };
-  const typeName = ownerSync(path(I(record), I("type.name")));
-  expect(typeName.syncValue()).toBe("spider-man");
+  const typeName = path(i(record), i("type.name"));
+  const g = vi.fn();
+  typeName(g);
+  expect(g).toHaveBeenLastCalledWith("spider-man");
 });

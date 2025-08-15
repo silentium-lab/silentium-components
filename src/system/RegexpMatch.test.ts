@@ -1,13 +1,13 @@
-import { I, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i } from "silentium";
+import { expect, test, vi } from "vitest";
 import { path } from "../behaviors";
 import { regexpMatch } from "../system/RegexpMatch";
 
 test("RegexpMatch.test", () => {
-  const urlSrc = I<string>("http://domain.com/some/url/");
-  const matchedSrc = ownerSync(
-    path(regexpMatch(I("/(s\\w+)/"), urlSrc), I("0")),
-  );
+  const urlSrc = i<string>("http://domain.com/some/url/");
+  const matchedSrc = path(regexpMatch(i("/(s\\w+)/"), urlSrc), i("0"));
+  const g = vi.fn();
+  matchedSrc(g);
 
-  expect(matchedSrc.syncValue()).toBe("/some/");
+  expect(g).toHaveBeenLastCalledWith("/some/");
 });

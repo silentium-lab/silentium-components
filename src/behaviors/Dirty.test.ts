@@ -1,20 +1,20 @@
-import { I, O } from "silentium";
+import { i } from "silentium";
 import { expect, test, vi } from "vitest";
 import { dirty } from "../behaviors/Dirty";
 
 test("Dirty.test", () => {
-  const form = I({
+  const form = i({
     name: "one",
     surname: "two",
   });
   const [dirtyForm, dfo] = dirty(form);
-  dfo.give({
+  dfo({
     name: "new",
     surname: "two",
   });
 
   const g = vi.fn();
-  dirtyForm.value(O(g));
+  dirtyForm(g);
 
   expect(g).toBeCalledWith({ name: "new" });
 });

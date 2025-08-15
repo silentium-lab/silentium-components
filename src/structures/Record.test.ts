@@ -1,28 +1,28 @@
-import { I, of, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i, of } from "silentium";
+import { expect, test, vi } from "vitest";
 import { record } from "../structures/Record";
 
 test("Record.test", () => {
   const [three, o] = of<string>("three");
-  const recordSrc = ownerSync(
-    record({
-      one: I("one"),
-      two: I("two"),
-      three,
-    }),
-  );
+  const recordSrc = record({
+    one: i("one"),
+    two: i(2),
+    three,
+  });
+  const g = vi.fn();
+  recordSrc(g);
 
-  expect(recordSrc.syncValue()).toStrictEqual({
+  expect(g).toHaveBeenLastCalledWith({
     one: "one",
-    two: "two",
+    two: 2,
     three: "three",
   });
 
-  o.give("three-changed");
+  o("three-changed");
 
-  expect(recordSrc.syncValue()).toStrictEqual({
+  expect(g).toHaveBeenLastCalledWith({
     one: "one",
-    two: "two",
+    two: 2,
     three: "three-changed",
   });
 });

@@ -1,37 +1,36 @@
-import { I, O, of, ownerSync, pool } from "silentium";
-import { expect, test } from "vitest";
+import { i, of, shared } from "silentium";
+import { expect, test, vi } from "vitest";
 import { concatenated } from "../strings";
 import { record } from "./Record";
 
 test("Record.concatenated.test", () => {
-  const three = I<string>("three");
+  const three = i<string>("three");
   const [concatPart, cpo] = of<string>("part");
-  const [r] = pool(
+  const [r] = shared(
     record({
-      one: I("one"),
-      two: I("two"),
+      one: i("one"),
+      two: i("two"),
       three,
-      nested: concatenated([I("one"), concatPart]),
+      nested: concatenated([i("one"), concatPart]),
     }),
   );
-  const recordSrc = ownerSync(r);
+  const g = vi.fn();
+  r(g);
   let counter = 0;
-  r.value(
-    O(() => {
-      counter += 1;
-    }),
-  );
+  r(() => {
+    counter += 1;
+  });
 
-  expect(recordSrc.syncValue()).toStrictEqual({
+  expect(g).toHaveBeenLastCalledWith({
     one: "one",
     two: "two",
     three: "three",
     nested: "onepart",
   });
 
-  cpo.give("changed");
+  cpo("changed");
 
-  expect(recordSrc.syncValue()).toStrictEqual({
+  expect(g).toHaveBeenLastCalledWith({
     one: "one",
     two: "two",
     three: "three",

@@ -1,4 +1,4 @@
-import { all, applied, I, Information, O, of } from "silentium";
+import { all, applied, InformationType, of } from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -6,7 +6,7 @@ import { all, applied, I, Information, O, of } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
 export const dirty = <T extends object>(
-  baseEntitySource: Information<T>,
+  baseEntitySource: InformationType<T>,
   alwaysKeep: string[] = [],
   excludeKeys: string[] = [],
 ) => {
@@ -16,29 +16,30 @@ export const dirty = <T extends object>(
     JSON.parse(JSON.stringify(value)),
   );
 
-  const i = I<Partial<T>>((o) => {
-    all(comparingDetached, baseEntitySource).value(
-      O(([comparing, base]) => {
-        if (!comparing) {
-          return;
-        }
+  const i: InformationType<Partial<T>> = (o) => {
+    all(
+      comparingDetached,
+      baseEntitySource,
+    )(([comparing, base]) => {
+      if (!comparing) {
+        return;
+      }
 
-        o.give(
-          Object.fromEntries(
-            Object.entries(comparing).filter(([key, value]) => {
-              if (alwaysKeep.includes(key)) {
-                return true;
-              }
-              if (excludeKeys.includes(key)) {
-                return false;
-              }
-              return value !== (base as any)[key];
-            }),
-          ) as T,
-        );
-      }),
-    );
-  });
+      o(
+        Object.fromEntries(
+          Object.entries(comparing).filter(([key, value]) => {
+            if (alwaysKeep.includes(key)) {
+              return true;
+            }
+            if (excludeKeys.includes(key)) {
+              return false;
+            }
+            return value !== (base as any)[key];
+          }),
+        ) as T,
+      );
+    });
+  };
 
   return [i, co] as const;
 };

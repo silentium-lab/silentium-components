@@ -1,29 +1,28 @@
-import { I, Information, InfoSync, O, ownerSync } from "silentium";
+import { InformationType } from "silentium";
+import { sync } from "./Sync";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
 export const branch = <Then, Else>(
-  condition: Information<boolean>,
-  left: Information<Then>,
-  right?: Information<Else>,
-): Information<Then | Else> => {
-  return I((o) => {
-    const leftSync = ownerSync(left);
-    let rightSync: InfoSync<Else> | undefined;
+  condition: InformationType<boolean>,
+  left: InformationType<Then>,
+  right?: InformationType<Else>,
+): InformationType<Then | Else> => {
+  return (o) => {
+    const leftSync = sync(left);
+    let rightSync: { value: () => Else };
 
     if (right !== undefined) {
-      rightSync = ownerSync(right);
+      rightSync = sync(right);
     }
 
-    condition.value(
-      O((v) => {
-        if (v) {
-          o.give(leftSync.syncValue());
-        } else if (rightSync) {
-          o.give(rightSync.syncValue());
-        }
-      }),
-    );
-  });
+    condition((v) => {
+      if (v) {
+        o(leftSync.value());
+      } else if (rightSync) {
+        o(rightSync.value());
+      }
+    });
+  };
 };

@@ -1,5 +1,5 @@
-import { I, ownerSync } from "silentium";
-import { expect, test } from "vitest";
+import { i } from "silentium";
+import { expect, test, vi } from "vitest";
 import { path } from "../behaviors/Path";
 
 test("Path.test", () => {
@@ -7,6 +7,8 @@ test("Path.test", () => {
     name: "Peter",
     surname: "Parker",
   };
-  const name = ownerSync(path(I(record), I("name")));
-  expect(name.syncValue()).toBe("Peter");
+  const name = path<string>(i(record), i("name"));
+  const g = vi.fn();
+  name(g);
+  expect(g).toHaveBeenLastCalledWith("Peter");
 });
