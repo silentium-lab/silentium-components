@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.25](https://github.com/silentium-lab/silentium-components/compare/v0.0.23...v0.0.25) (2025-08-16)
+
+
+### Features
+
+* **49:** boolean modules and reexport ([e6aacb8](https://github.com/silentium-lab/silentium-components/commit/e6aacb8fa2ac03e18a676b98c41c605ad032fa88))
+* **49:** component dirty ([2a4122b](https://github.com/silentium-lab/silentium-components/commit/2a4122bc7fc1d82ce77546738ff5fe773ef36d5d))
+* **49:** deadline component ([870a791](https://github.com/silentium-lab/silentium-components/commit/870a7911a687387cb2dc7875e36f1f6b39f4ae0f))
+* **49:** defered component done ([5c7906f](https://github.com/silentium-lab/silentium-components/commit/5c7906fd1e1950d9dc20d56fae8f55812e888ee1))
+* **49:** loading component fix ([e3b912f](https://github.com/silentium-lab/silentium-components/commit/e3b912fb323fcffe470f3822dce5fd0163b26ac0))
+* **49:** lock component ([f1cb19e](https://github.com/silentium-lab/silentium-components/commit/f1cb19ef71e718e32c0160018e5f1d2289307ce7))
+* **49:** only changed component fixed ([b9eb676](https://github.com/silentium-lab/silentium-components/commit/b9eb676aa33cc9db2111192c13c3d991fb9d4625))
+* **49:** polling component done ([d4e4f9e](https://github.com/silentium-lab/silentium-components/commit/d4e4f9e449853c640a5b44bd64749df24bf4fd3c))
+* **49:** reg match ([bf352fa](https://github.com/silentium-lab/silentium-components/commit/bf352fa2bf16eb3a1956b243071719d9f5e93141))
+* **49:** regexp adaptation to oi ([a02926a](https://github.com/silentium-lab/silentium-components/commit/a02926a58424baee75c3cf4aa708928bcfcf363a))
+* **49:** regexpReplaced io ([07019a6](https://github.com/silentium-lab/silentium-components/commit/07019a65b530820bb2763c0e94b466c685d56560))
+* **49:** set component updated ([9d57f70](https://github.com/silentium-lab/silentium-components/commit/9d57f70ee59c8f1fc49728da09c1dc4f9e1be656))
+* **main:** json format comopnents ([d1094b7](https://github.com/silentium-lab/silentium-components/commit/d1094b75b6735e59f3f93f33f3912c4c75e83e13))
+* **pure:** branch component done ([7f9f606](https://github.com/silentium-lab/silentium-components/commit/7f9f60630236ff8b5fd3f59cd4f7ce6a97a8ef4e))
+* **release:** documentation about promised ([45ea9b8](https://github.com/silentium-lab/silentium-components/commit/45ea9b8725f4767ea722c1b5b6b0854fe88bfd5d))
+
+
+### Bug Fixes
+
+* **49:** boolean comps fixed ([c4fe1a1](https://github.com/silentium-lab/silentium-components/commit/c4fe1a1a0a922408e2ec6509248ec74f63e74029))
+* **49:** branch fixed ([d2429c4](https://github.com/silentium-lab/silentium-components/commit/d2429c44e30ad1c3b49599147450f2872ea645ee))
+* **49:** branch infoSync type fixed ([a9e7c62](https://github.com/silentium-lab/silentium-components/commit/a9e7c62c0f0ad7f394374e56be7fbb0cf2326a33))
+* **49:** fixes are main option ([e53fc0a](https://github.com/silentium-lab/silentium-components/commit/e53fc0aaf49906f5b8f0a605896428334d486c3e))
+* **49:** hash table fixed ([54515ee](https://github.com/silentium-lab/silentium-components/commit/54515eeb6bb20750d6d44e6af1281c520aff151c))
+* **49:** memo component fixed ([5c96a77](https://github.com/silentium-lab/silentium-components/commit/5c96a773cbf35b58f4a78141b8adc71a8486966e))
+* **49:** moment component not needed ([211f371](https://github.com/silentium-lab/silentium-components/commit/211f371e5d812a31c182bffa8709a8f3fd99219e))
+* **49:** no need in controls group ([8925923](https://github.com/silentium-lab/silentium-components/commit/89259233fa3ff8a8d0a72bd7577f4afca9b16e36))
+* **49:** no need in polling ([8441ed9](https://github.com/silentium-lab/silentium-components/commit/8441ed96125e15ad7dc710e2d7ae5f018757ba8e)), closes [#52](https://github.com/silentium-lab/silentium-components/issues/52)
+* **49:** no need in priority ([074a1db](https://github.com/silentium-lab/silentium-components/commit/074a1dbb1cdf548a6c3c10c66963be19515d8757)), closes [#52](https://github.com/silentium-lab/silentium-components/issues/52)
+* **49:** path tests fixed ([96a5c8f](https://github.com/silentium-lab/silentium-components/commit/96a5c8fef6f075f4823b497c4fff6ffc12bdd25a))
+* **49:** record fixed ([0f88ee6](https://github.com/silentium-lab/silentium-components/commit/0f88ee63cc8630352512e21be28661214e631eff))
+* **49:** router fixed ([204a6f4](https://github.com/silentium-lab/silentium-components/commit/204a6f4b854a9adc88c201398aa515729691f47a))
+* **49:** test on deadline fiexed ([a1735e8](https://github.com/silentium-lab/silentium-components/commit/a1735e890eeb59f39dad0d086aecc15e68659cc1))
+* **49:** tick and shot fixed ([c8b7926](https://github.com/silentium-lab/silentium-components/commit/c8b7926c512730f9165affd4c583b64e9cc6d828)), closes [#53](https://github.com/silentium-lab/silentium-components/issues/53)
+* **49:** version update and moment clean up ([e212104](https://github.com/silentium-lab/silentium-components/commit/e212104406b7f4a06f1107e101c9ebf0f5db4d25))
+* **main:** before release script ([56bad1b](https://github.com/silentium-lab/silentium-components/commit/56bad1b2e97f504930b714848af54d22e03a00ae))
+* **pure:** all done ([7b56810](https://github.com/silentium-lab/silentium-components/commit/7b56810cbd36b96bdc19ec0983d1ffca5083c24f))
+* **pure:** boolean components ([4e15cf0](https://github.com/silentium-lab/silentium-components/commit/4e15cf0e94c61f6a2c7009ea7d0defab4d74b309))
+* **pure:** concatenated component ([9889221](https://github.com/silentium-lab/silentium-components/commit/9889221343ba487103a1c055c049008e1c40c25b))
+* **pure:** deadline component fixed ([f5daf23](https://github.com/silentium-lab/silentium-components/commit/f5daf2314efb12f6f4c230f1fa90fd5952dae0a4))
+* **pure:** deferred component ([50474e3](https://github.com/silentium-lab/silentium-components/commit/50474e33cd1f0978ca6a0bbed55d6e4294444483))
+* **pure:** hashTable component done ([a7168f8](https://github.com/silentium-lab/silentium-components/commit/a7168f8b97be3dbd611e000b762f767b423fadb6))
+* **pure:** lock done ([9f8d25f](https://github.com/silentium-lab/silentium-components/commit/9f8d25f2175edf1a53515e9f1c3d27832cbac0d8))
+* **pure:** memo component ([622de17](https://github.com/silentium-lab/silentium-components/commit/622de17d7038faf4f6b6bcb2ef9cce7dd3250b21))
+* **pure:** only changed done ([eded110](https://github.com/silentium-lab/silentium-components/commit/eded1103a9ce6f542d1640773cb200de0aa0c99c))
+* **pure:** path component done ([dec89d0](https://github.com/silentium-lab/silentium-components/commit/dec89d08e01e7c05123b495fa3c87e936ba9c125))
+* **pure:** record done ([2b036fe](https://github.com/silentium-lab/silentium-components/commit/2b036feae9503b74dcf9003be700231f8f64b322))
+* **pure:** regexp replaced ([e514b23](https://github.com/silentium-lab/silentium-components/commit/e514b23b56cc0f0c6a8b1fb8a86f291fba74d6f8))
+* **pure:** regexpMatch done ([77bd069](https://github.com/silentium-lab/silentium-components/commit/77bd06991a1a626f6c5c681d12ebabb996dcefbb))
+* **pure:** router component done ([229bede](https://github.com/silentium-lab/silentium-components/commit/229bedea16035ecbd13a82d4bf61cc20d5d40c4c))
+* **pure:** shot component fixed ([cf8f0d3](https://github.com/silentium-lab/silentium-components/commit/cf8f0d3cc7cd23ecbeabbf27adb28288ee64c919))
+* **pure:** tick component fixed ([5854f07](https://github.com/silentium-lab/silentium-components/commit/5854f071e542915d352af74a93806b14746487e5))
+
 ### [0.0.24](https://github.com/silentium-lab/silentium-components/compare/v0.0.21...v0.0.24) (2025-08-15)
 
 
