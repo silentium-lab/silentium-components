@@ -333,12 +333,37 @@ const not = (baseSrc) => {
   };
 };
 
+const fromJson = (jsonSrc, errorOwner) => {
+  return (o) => {
+    jsonSrc((json) => {
+      try {
+        o(JSON.parse(json));
+      } catch (error) {
+        errorOwner?.(new Error(`Failed to parse JSON: ${error}`));
+      }
+    });
+  };
+};
+
+const toJson = (dataSrc, errorOwner) => {
+  return (o) => {
+    dataSrc((data) => {
+      try {
+        o(JSON.stringify(data));
+      } catch {
+        errorOwner?.(new Error("Failed to convert to JSON"));
+      }
+    });
+  };
+};
+
 exports.and = and;
 exports.branch = branch;
 exports.concatenated = concatenated;
 exports.deadline = deadline;
 exports.deferred = deferred;
 exports.dirty = dirty;
+exports.fromJson = fromJson;
 exports.hashTable = hashTable;
 exports.loading = loading;
 exports.lock = lock;
@@ -355,4 +380,5 @@ exports.router = router;
 exports.set = set;
 exports.shot = shot;
 exports.tick = tick;
+exports.toJson = toJson;
 //# sourceMappingURL=silentium-components.cjs.map

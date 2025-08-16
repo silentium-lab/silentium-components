@@ -331,5 +331,29 @@ const not = (baseSrc) => {
   };
 };
 
-export { and, branch, concatenated, deadline, deferred, dirty, hashTable, loading, lock, memo, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick };
+const fromJson = (jsonSrc, errorOwner) => {
+  return (o) => {
+    jsonSrc((json) => {
+      try {
+        o(JSON.parse(json));
+      } catch (error) {
+        errorOwner?.(new Error(`Failed to parse JSON: ${error}`));
+      }
+    });
+  };
+};
+
+const toJson = (dataSrc, errorOwner) => {
+  return (o) => {
+    dataSrc((data) => {
+      try {
+        o(JSON.stringify(data));
+      } catch {
+        errorOwner?.(new Error("Failed to convert to JSON"));
+      }
+    });
+  };
+};
+
+export { and, branch, concatenated, deadline, deferred, dirty, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick, toJson };
 //# sourceMappingURL=silentium-components.js.map

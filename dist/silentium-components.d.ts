@@ -134,5 +134,15 @@ declare const or: (oneSrc: InformationType<boolean>, twoSrc: InformationType<boo
  */
 declare const not: (baseSrc: InformationType<boolean>) => InformationType<boolean>;
 
-export { and, branch, concatenated, deadline, deferred, dirty, hashTable, loading, lock, memo, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick };
+/**
+ * Represents object from json
+ */
+declare const fromJson: <T>(jsonSrc: InformationType<string>, errorOwner?: OwnerType) => InformationType<T>;
+
+/**
+ * Repreresents json from object
+ */
+declare const toJson: (dataSrc: InformationType, errorOwner?: OwnerType) => InformationType<string>;
+
+export { and, branch, concatenated, deadline, deferred, dirty, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick, toJson };
 export type { Route };
