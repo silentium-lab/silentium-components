@@ -357,12 +357,17 @@ const toJson = (dataSrc, errorOwner) => {
   };
 };
 
+const first = (baseSrc) => {
+  return silentium.applied(baseSrc, (a) => a[0]);
+};
+
 exports.and = and;
 exports.branch = branch;
 exports.concatenated = concatenated;
 exports.deadline = deadline;
 exports.deferred = deferred;
 exports.dirty = dirty;
+exports.first = first;
 exports.fromJson = fromJson;
 exports.hashTable = hashTable;
 exports.loading = loading;

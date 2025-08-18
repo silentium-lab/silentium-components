@@ -355,5 +355,9 @@ const toJson = (dataSrc, errorOwner) => {
   };
 };
 
-export { and, branch, concatenated, deadline, deferred, dirty, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick, toJson };
+const first = (baseSrc) => {
+  return applied(baseSrc, (a) => a[0]);
+};
+
+export { and, branch, concatenated, deadline, deferred, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick, toJson };
 //# sourceMappingURL=silentium-components.js.map

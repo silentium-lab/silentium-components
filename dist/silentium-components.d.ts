@@ -144,5 +144,10 @@ declare const fromJson: <T>(jsonSrc: InformationType<string>, errorOwner?: Owner
  */
 declare const toJson: (dataSrc: InformationType, errorOwner?: OwnerType) => InformationType<string>;
 
-export { and, branch, concatenated, deadline, deferred, dirty, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick, toJson };
+/**
+ * Represents the first element of an array.
+ */
+declare const first: <T extends Array<unknown>>(baseSrc: InformationType<T>) => InformationType<T[0]>;
+
+export { and, branch, concatenated, deadline, deferred, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, path, record, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, tick, toJson };
 export type { Route };
