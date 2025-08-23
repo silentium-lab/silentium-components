@@ -1,46 +1,50 @@
-import {
-  filtered,
-  InformationType,
-  OwnerType,
-  sharedStateless,
-} from "silentium";
+import { Filtered, From, Shared, TheInformation, TheOwner } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-export const deadline = <T>(
-  error: OwnerType<Error>,
-  baseSrc: InformationType<T>,
-  timeoutSrc: InformationType<number>,
-): InformationType<T> => {
-  let timerHead: unknown = null;
-  return (o) => {
-    const [baseShared, pool] = sharedStateless(baseSrc);
+export class Deadline<T> extends TheInformation<T> {
+  public constructor(
+    private error: TheOwner<Error>,
+    private baseSrc: TheInformation<T>,
+    private timeoutSrc: TheInformation<number>,
+  ) {
+    super([error, baseSrc, timeoutSrc]);
+  }
 
-    timeoutSrc((timeout) => {
-      if (timerHead) {
-        clearTimeout(timerHead as number);
-      }
-      let timeoutReached = false;
+  public value(o: TheOwner<T>) {
+    let timerHead: unknown = null;
 
-      timerHead = setTimeout(() => {
-        if (timeoutReached) {
-          return;
+    const s = new Shared(this.baseSrc, true);
+    this.addDep(s);
+
+    this.timeoutSrc.value(
+      new From((timeout) => {
+        if (timerHead) {
+          clearTimeout(timerHead as number);
         }
-        timeoutReached = true;
-        error(new Error("Timeout reached in Deadline class"));
-      }, timeout);
+        let timeoutReached = false;
 
-      const f = filtered(baseShared, () => !timeoutReached);
-      f(o);
+        timerHead = setTimeout(() => {
+          if (timeoutReached) {
+            return;
+          }
+          timeoutReached = true;
+          this.error.give(new Error("Timeout reached in Deadline class"));
+        }, timeout);
 
-      baseShared(() => {
-        timeoutReached = true;
-      });
-    });
+        const f = new Filtered(s, () => !timeoutReached);
+        this.addDep(f);
+        f.value(o);
 
-    return () => {
-      pool.destroy();
-    };
-  };
-};
+        s.value(
+          new From(() => {
+            timeoutReached = true;
+          }),
+        );
+      }),
+    );
+
+    return this;
+  }
+}
