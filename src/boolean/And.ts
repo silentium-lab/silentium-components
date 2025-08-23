@@ -1,4 +1,4 @@
-import { all, InformationType } from "silentium";
+import { all, InformationType, TheInformation } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/and
@@ -16,3 +16,5 @@ export const and = (
     });
   };
 };
+
+export class And<T> extends TheInformation<T> {}

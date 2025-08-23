@@ -1,4 +1,4 @@
-import { InformationType } from "silentium";
+import { InformationType, TheInformation } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/not
@@ -12,3 +12,5 @@ export const not = (
     });
   };
 };
+
+export class Not<T> extends TheInformation<T> {}

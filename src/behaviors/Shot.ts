@@ -1,4 +1,4 @@
-import { InformationType, isFilled } from "silentium";
+import { InformationType, isFilled, TheInformation } from "silentium";
 import { sync } from "./Sync";
 
 /**
@@ -19,3 +19,5 @@ export const shot = <T>(
     });
   };
 };
+
+export class Shot<T> extends TheInformation<T> {}

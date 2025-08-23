@@ -1,4 +1,4 @@
-import { all, i, InformationType } from "silentium";
+import { all, i, InformationType, TheInformation } from "silentium";
 
 /**
  * Join sources of strings to one source
@@ -17,3 +17,5 @@ export const concatenated = (
     });
   };
 };
+
+export class Concatenated<T> extends TheInformation<T> {}

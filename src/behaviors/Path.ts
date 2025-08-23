@@ -1,4 +1,4 @@
-import { all, InformationType } from "silentium";
+import { all, InformationType, TheInformation } from "silentium";
 
 /**
  * Return source of record path
@@ -29,3 +29,5 @@ export const path = <
     });
   };
 };
+
+export class Path<T> extends TheInformation<T> {}

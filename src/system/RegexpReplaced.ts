@@ -1,4 +1,4 @@
-import { all, i, InformationType } from "silentium";
+import { all, i, InformationType, TheInformation } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
@@ -21,3 +21,5 @@ export const regexpReplaced =
       o(String(value).replace(new RegExp(pattern, flags), replaceValue));
     });
   };
+
+export class RegexpReplaced<T> extends TheInformation<T> {}

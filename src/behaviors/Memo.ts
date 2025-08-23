@@ -1,4 +1,4 @@
-import { InformationType } from "silentium";
+import { InformationType, TheInformation } from "silentium";
 
 /**
  * Didn't respond if new value of baseSrc equals to old value
@@ -16,3 +16,5 @@ export const memo = <T>(baseSrc: InformationType<T>): InformationType<T> => {
     });
   };
 };
+
+export class Memo<T> extends TheInformation<T> {}

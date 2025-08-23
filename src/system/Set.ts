@@ -1,4 +1,4 @@
-import { all, InformationType } from "silentium";
+import { all, InformationType, TheInformation } from "silentium";
 
 /**
  * Ability to mutate some object, helpful when integrate to procedure systems
@@ -20,3 +20,5 @@ export const set = <T extends Record<string, unknown>>(
     });
   };
 };
+
+export class Set<T> extends TheInformation<T> {}

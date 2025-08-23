@@ -1,4 +1,4 @@
-import { all, i, InformationType } from "silentium";
+import { all, i, InformationType, TheInformation } from "silentium";
 
 /**
  * First match of regexp
@@ -20,3 +20,5 @@ export const regexpMatch =
       o(result ?? []);
     });
   };
+
+export class RegexpMatch<T> extends TheInformation<T> {}

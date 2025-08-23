@@ -1,4 +1,4 @@
-import { InformationType } from "silentium";
+import { InformationType, TheInformation } from "silentium";
 
 /**
  * Representation of loading process
@@ -20,3 +20,5 @@ export const loading = (
     });
   };
 };
+
+export class Loading<T> extends TheInformation<T> {}

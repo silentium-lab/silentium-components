@@ -1,4 +1,4 @@
-import { applied, InformationType } from "silentium";
+import { applied, InformationType, TheInformation } from "silentium";
 
 /**
  * Represents the first element of an array.
@@ -8,3 +8,5 @@ export const first = <T extends Array<unknown>>(
 ): InformationType<T[0]> => {
   return applied(baseSrc, (a) => a[0]);
 };
+
+export class First<T> extends TheInformation<T> {}

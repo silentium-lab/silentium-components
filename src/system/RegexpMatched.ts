@@ -1,4 +1,4 @@
-import { all, i, InformationType } from "silentium";
+import { all, i, InformationType, TheInformation } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
@@ -19,3 +19,5 @@ export const regexpMatched =
       o(new RegExp(pattern, flags).test(value));
     });
   };
+
+export class RegexpMatched<T> extends TheInformation<T> {}

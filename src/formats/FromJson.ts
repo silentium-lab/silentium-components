@@ -1,4 +1,4 @@
-import { InformationType, OwnerType } from "silentium";
+import { InformationType, OwnerType, TheInformation } from "silentium";
 
 /**
  * Represents object from json
@@ -17,3 +17,5 @@ export const fromJson = <T>(
     });
   };
 };
+
+export class FromJson<T> extends TheInformation<T> {}

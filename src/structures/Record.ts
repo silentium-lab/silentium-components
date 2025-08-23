@@ -1,4 +1,4 @@
-import { all, InformationType } from "silentium";
+import { all, InformationType, TheInformation } from "silentium";
 
 type UnInformation<T> = T extends InformationType<infer U> ? U : never;
 
@@ -20,3 +20,5 @@ export const record = <T extends InformationType>(
     });
   };
 };
+
+export class Record<T> extends TheInformation<T> {}

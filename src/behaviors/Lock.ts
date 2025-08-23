@@ -1,4 +1,4 @@
-import { filtered, InformationType } from "silentium";
+import { filtered, InformationType, TheInformation } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
@@ -17,3 +17,5 @@ export const lock = <T>(
     i(o);
   };
 };
+
+export class Lock<T> extends TheInformation<T> {}

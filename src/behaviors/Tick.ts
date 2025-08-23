@@ -1,4 +1,4 @@
-import { InformationType } from "silentium";
+import { InformationType, TheInformation } from "silentium";
 
 /**
  * Accumulates the last value of the source and returns one result once per tick
@@ -28,3 +28,5 @@ export const tick = <T>(baseSrc: InformationType<T>): InformationType<T> => {
     });
   };
 };
+
+export class Tick<T> extends TheInformation<T> {}

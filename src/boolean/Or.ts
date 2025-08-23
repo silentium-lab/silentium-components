@@ -1,4 +1,4 @@
-import { all, InformationType } from "silentium";
+import { all, InformationType, TheInformation } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/or
@@ -16,3 +16,5 @@ export const or = (
     });
   };
 };
+
+export class Or<T> extends TheInformation<T> {}

@@ -1,4 +1,4 @@
-import { InformationType } from "silentium";
+import { InformationType, TheInformation } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
@@ -15,3 +15,5 @@ export const hashTable = <T>(
     });
   };
 };
+
+export class HashTable<T> extends TheInformation<T> {}

@@ -1,4 +1,4 @@
-import { InformationType } from "silentium";
+import { InformationType, TheInformation } from "silentium";
 
 /**
  * Represents source what was changed at least once
@@ -18,3 +18,5 @@ export const onlyChanged = <T>(
     });
   };
 };
+
+export class OnlyChanged<T> extends TheInformation<T> {}
