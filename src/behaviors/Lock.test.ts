@@ -1,30 +1,30 @@
-import { of, sharedStateless } from "silentium";
+import { From, Late, Shared } from "silentium";
+import { Lock } from "../behaviors/Lock";
 import { expect, test, vi } from "vitest";
-import { lock } from "../behaviors/Lock";
 
 test("Lock.test", () => {
-  const [source, so] = of<number>(1);
-  const [lockSrc, lo] = of<boolean>(false);
+  const source = new Late<number>(1);
+  const lockSrc = new Late<boolean>(false);
 
-  const ls = lock(source, lockSrc);
-  const [lockedSrc] = sharedStateless(ls);
+  const ls = new Lock(source, lockSrc);
+  const lockedSrc = new Shared(ls);
   const g = vi.fn();
-  lockedSrc(g);
+  lockedSrc.value(new From(g));
 
   expect(g).toHaveBeenLastCalledWith(1);
 
-  so(2);
+  source.owner().give(2);
 
   expect(g).toHaveBeenLastCalledWith(2);
 
-  lo(true);
-  so(3);
-  so(4);
-  so(5);
+  lockSrc.owner().give(true);
+  source.owner().give(3);
+  source.owner().give(4);
+  source.owner().give(5);
 
   expect(g).toHaveBeenLastCalledWith(2);
 
-  lo(false);
-  so(6);
+  lockSrc.owner().give(false);
+  source.owner().give(6);
   expect(g).toHaveBeenLastCalledWith(6);
 });
