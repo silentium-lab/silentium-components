@@ -1,19 +1,32 @@
-import { InformationType } from "silentium";
+import { From, TheInformation, TheOwner } from "silentium";
 
-export const sync = <T>(base: InformationType<T>) => {
-  let value: T | undefined;
+export class Sync<T> extends TheInformation<T> {
+  private theValue: T | undefined;
+  private isInit = false;
 
-  base((v) => {
-    value = v;
-  });
+  public constructor(private baseSrc: TheInformation<T>) {
+    super([baseSrc]);
+  }
 
-  return {
-    value() {
-      if (value === undefined) {
-        throw new Error("no value in sync");
-      }
+  public value(o: TheOwner<T>): this {
+    this.baseSrc.value(o);
+    return this;
+  }
 
-      return value;
-    },
-  };
-};
+  public valueSync(): T {
+    if (!this.isInit) {
+      this.isInit = true;
+      this.value(
+        new From((v) => {
+          this.theValue = v;
+        }),
+      );
+    }
+
+    if (this.theValue === undefined) {
+      throw new Error("no value in sync");
+    }
+
+    return this.theValue;
+  }
+}

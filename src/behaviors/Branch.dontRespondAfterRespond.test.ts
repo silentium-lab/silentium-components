@@ -1,34 +1,32 @@
-import { applied, i, of, sharedStateless } from "silentium";
+import { Applied, From, Late, Of, Shared } from "silentium";
 import { expect, test, vi } from "vitest";
-import { branch } from "../behaviors/Branch";
+import { Branch } from "../behaviors/Branch";
 
 test("Branch.dontRespondAfterRespond.test", () => {
-  const [dti, dto] = of<number>(1);
-  const ti = i<any>("then");
-  const [branchI] = sharedStateless(
-    branch(
-      applied(dti, (t) => t === 2),
-      ti,
-    ),
+  const l = new Late<number>(1);
+  const ti = new Of<any>("then");
+  const branchI = new Shared(
+    new Branch(new Applied(l, (t) => t === 2), ti),
+    true,
   );
   const g = vi.fn();
-  branchI(g);
+  branchI.value(new From(g));
 
-  dto(2);
+  l.owner().give(2);
   expect(g).toHaveBeenLastCalledWith("then");
 
   const g2 = vi.fn();
-  branchI(g2);
-  dto(1);
+  branchI.value(new From(g2));
+  l.owner().give(1);
   expect(g2).not.toHaveBeenCalled();
 
   const g3 = vi.fn();
-  branchI(g3);
-  dto(2);
+  branchI.value(new From(g3));
+  l.owner().give(2);
   expect(g3).toHaveBeenLastCalledWith("then");
 
   const g4 = vi.fn();
-  branchI(g4);
-  dto(3);
+  branchI.value(new From(g4));
+  l.owner().give(3);
   expect(g4).not.toHaveBeenCalled();
 });

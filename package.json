@@ -60,6 +60,6 @@
     }
   },
   "dependencies": {
-    "silentium": "^0.0.63"
+    "silentium": "^0.0.66"
   }
 }
