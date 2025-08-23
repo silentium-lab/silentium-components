@@ -1,15 +1,15 @@
-import { of } from "silentium";
+import { From, Late } from "silentium";
 import { expect, test, vi } from "vitest";
-import { loading } from "../behaviors/Loading";
+import { Loading } from "../behaviors/Loading";
 
 test("Loading.test", () => {
-  const [loadingStartSource, lso] = of();
-  const [loadingFinishSource, lfo] = of();
-  const loadingSrc = loading(loadingStartSource, loadingFinishSource);
+  const loadingStartSource = new Late();
+  const loadingFinishSource = new Late();
+  const loadingSrc = new Loading(loadingStartSource, loadingFinishSource);
   const g = vi.fn();
-  loadingSrc(g);
-  lso({});
+  loadingSrc.value(new From(g));
+  loadingStartSource.owner().give({});
   expect(g).toHaveBeenLastCalledWith(true);
-  lfo({});
+  loadingFinishSource.owner().give({});
   expect(g).toHaveBeenLastCalledWith(false);
 });

@@ -6,7 +6,7 @@ import { All, Applied, From, Late, TheInformation, TheOwner } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
 export class Dirty<T> extends TheInformation<T> {
-  private compoaringSrc = new Late<T>();
+  private comparingSrc = new Late<T>();
 
   public constructor(
     private baseEntitySource: TheInformation<T>,
@@ -17,7 +17,7 @@ export class Dirty<T> extends TheInformation<T> {
   }
 
   public value(o: TheOwner<T>): this {
-    const comparingDetached = new Applied(this.compoaringSrc, (value) =>
+    const comparingDetached = new Applied(this.comparingSrc, (value) =>
       JSON.parse(JSON.stringify(value)),
     );
 
@@ -48,6 +48,6 @@ export class Dirty<T> extends TheInformation<T> {
   }
 
   public owner() {
-    return this.compoaringSrc.owner();
+    return this.comparingSrc.owner();
   }
 }

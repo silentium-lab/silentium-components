@@ -1,4 +1,4 @@
-import { InformationType, TheInformation } from "silentium";
+import { From, TheInformation, TheOwner } from "silentium";
 
 /**
  * Representation of loading process
@@ -6,19 +6,27 @@ import { InformationType, TheInformation } from "silentium";
  * second information source stops loading
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
-export const loading = (
-  loadingStartSource: InformationType<unknown>,
-  loadingFinishSource: InformationType<unknown>,
-): InformationType<boolean> => {
-  return (o) => {
-    loadingStartSource(() => {
-      o(true);
-    });
+export class Loading extends TheInformation<boolean> {
+  public constructor(
+    private loadingStartSrc: TheInformation<unknown>,
+    private loadingFinishSrc: TheInformation<unknown>,
+  ) {
+    super(loadingFinishSrc, loadingStartSrc);
+  }
 
-    loadingFinishSource(() => {
-      o(false);
-    });
-  };
-};
+  public value(o: TheOwner<boolean>): this {
+    this.loadingStartSrc.value(
+      new From(() => {
+        o.give(true);
+      }),
+    );
 
-export class Loading<T> extends TheInformation<T> {}
+    this.loadingFinishSrc.value(
+      new From(() => {
+        o.give(false);
+      }),
+    );
+
+    return this;
+  }
+}
