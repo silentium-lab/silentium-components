@@ -1,22 +1,27 @@
-import { InformationType, TheInformation } from "silentium";
+import { From, TheInformation, TheOwner } from "silentium";
 
 /**
  * Represents source what was changed at least once
  * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
  */
-export const onlyChanged = <T>(
-  baseSrc: InformationType<T>,
-): InformationType<T> => {
-  let firstValue = false;
-  return (o) => {
-    baseSrc((v) => {
-      if (firstValue === false) {
-        firstValue = true;
-      } else {
-        o(v);
-      }
-    });
-  };
-};
+export class OnlyChanged<T> extends TheInformation<T> {
+  public constructor(private baseSrc: TheInformation<T>) {
+    super(baseSrc);
+  }
 
-export class OnlyChanged<T> extends TheInformation<T> {}
+  public value(o: TheOwner<T>): this {
+    let firstValue = false;
+
+    this.baseSrc.value(
+      new From((v) => {
+        if (firstValue === false) {
+          firstValue = true;
+        } else {
+          o.give(v);
+        }
+      }),
+    );
+
+    return this;
+  }
+}

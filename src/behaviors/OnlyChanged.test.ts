@@ -1,18 +1,18 @@
-import { of, shared } from "silentium";
+import { From, Late, Shared } from "silentium";
 import { expect, test, vi } from "vitest";
-import { onlyChanged } from "../behaviors/OnlyChanged";
+import { OnlyChanged } from "../behaviors/OnlyChanged";
 
 test("OnlyChanged.test", () => {
-  const [src, so] = of<number>(1);
-  const [changedSrc] = shared(onlyChanged(src));
+  const src = new Late<number>(1);
+  const changedSrc = new Shared(new OnlyChanged(src));
 
   const g = vi.fn();
-  changedSrc(g);
+  changedSrc.value(new From(g));
   expect(g).not.toBeCalled();
 
-  so(2);
+  src.owner().give(2);
 
   const g2 = vi.fn();
-  changedSrc(g2);
+  changedSrc.value(new From(g2));
   expect(g2).toBeCalledWith(2);
 });
