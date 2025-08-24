@@ -14,7 +14,7 @@ export class Deferred<T> extends TheInformation<T> {
   }
 
   public value(o: TheOwner<T>): this {
-    const baseSync = new Sync(this.baseSrc);
+    const baseSync = new Sync(this.baseSrc).initOwner();
     this.triggerSrc.value(
       new From(() => {
         if (isFilled(baseSync.valueSync())) {

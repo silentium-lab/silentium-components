@@ -1,23 +1,30 @@
-import { InformationType, isFilled, TheInformation } from "silentium";
-import { sync } from "./Sync";
+import { From, TheInformation, TheOwner } from "silentium";
+import { Sync } from "./Sync";
 
 /**
  * Helps to represent only last fresh value of some source, refreshing controls by shotSrc
  * https://silentium-lab.github.io/silentium-components/#/behaviors/shot
  */
-export const shot = <T>(
-  targetSrc: InformationType<T>,
-  triggerSrc: InformationType,
-): InformationType<T> => {
-  return (o) => {
-    const targetSync = sync(targetSrc);
+export class Shot<T> extends TheInformation<T> {
+  public constructor(
+    private targetSrc: TheInformation<T>,
+    private triggerSrc: TheInformation,
+  ) {
+    super(targetSrc, triggerSrc);
+  }
 
-    triggerSrc(() => {
-      if (isFilled(targetSync.value())) {
-        o(targetSync.value());
-      }
-    });
-  };
-};
+  public value(o: TheOwner<T>): this {
+    const targetSync = new Sync(this.targetSrc);
+    targetSync.initOwner();
 
-export class Shot<T> extends TheInformation<T> {}
+    this.triggerSrc.value(
+      new From(() => {
+        if (targetSync.valueExisted()) {
+          o.give(targetSync.valueSync());
+        }
+      }),
+    );
+
+    return this;
+  }
+}

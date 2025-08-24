@@ -13,11 +13,11 @@ export class Branch<Then, Else> extends TheInformation<Then | Else> {
     super([conditionSrc, leftSrc, rightSrc]);
   }
   public value(o: TheOwner<Then | Else>): this {
-    const leftSync = new Sync(this.leftSrc);
+    const leftSync = new Sync(this.leftSrc).initOwner();
     let rightSync: Sync<Else>;
 
     if (this.rightSrc !== undefined) {
-      rightSync = new Sync(this.rightSrc);
+      rightSync = new Sync(this.rightSrc).initOwner();
     }
 
     this.conditionSrc.value(

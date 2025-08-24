@@ -1,11 +1,11 @@
-import { From, TheInformation, TheOwner } from "silentium";
+import { From, isFilled, TheInformation, TheOwner } from "silentium";
 
 export class Sync<T> extends TheInformation<T> {
   private theValue: T | undefined;
   private isInit = false;
 
   public constructor(private baseSrc: TheInformation<T>) {
-    super([baseSrc]);
+    super(baseSrc);
   }
 
   public value(o: TheOwner<T>): this {
@@ -13,7 +13,22 @@ export class Sync<T> extends TheInformation<T> {
     return this;
   }
 
+  public valueExisted() {
+    this.initOwner();
+    return isFilled(this.theValue);
+  }
+
   public valueSync(): T {
+    this.initOwner();
+
+    if (!isFilled(this.theValue)) {
+      throw new Error("no value in sync");
+    }
+
+    return this.theValue;
+  }
+
+  public initOwner() {
     if (!this.isInit) {
       this.isInit = true;
       this.value(
@@ -22,11 +37,6 @@ export class Sync<T> extends TheInformation<T> {
         }),
       );
     }
-
-    if (this.theValue === undefined) {
-      throw new Error("no value in sync");
-    }
-
-    return this.theValue;
+    return this;
   }
 }
