@@ -1,9 +1,16 @@
-import { applied, InformationType, TheInformation } from "silentium";
+import { Applied, TheInformation, TheOwner } from "silentium";
 
 /**
  * Convert any source to boolean source
  * https://silentium-lab.github.io/silentium-components/#/boolean/bool
  */
-export const bool = (baseSrc: InformationType) => applied(baseSrc, Boolean);
+export class Bool extends TheInformation<boolean> {
+  public constructor(private baseSrc: TheInformation) {
+    super(baseSrc);
+  }
 
-export class Bool<T> extends TheInformation<T> {}
+  public value(o: TheOwner<boolean>): this {
+    new Applied(this.baseSrc, Boolean).value(o);
+    return this;
+  }
+}

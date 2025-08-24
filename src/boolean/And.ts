@@ -1,20 +1,22 @@
-import { all, InformationType, TheInformation } from "silentium";
+import { All, From, TheInformation, TheOwner } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/and
  */
-export const and = (
-  oneSrc: InformationType<boolean>,
-  twoSrc: InformationType<boolean>,
-): InformationType<boolean> => {
-  return (o) => {
-    all(
-      oneSrc,
-      twoSrc,
-    )(([one, two]) => {
-      o(one && two);
-    });
-  };
-};
+export class And extends TheInformation<boolean> {
+  public constructor(
+    private oneSrc: TheInformation<boolean>,
+    private twoSrc: TheInformation<boolean>,
+  ) {
+    super(oneSrc, twoSrc);
+  }
 
-export class And<T> extends TheInformation<T> {}
+  public value(o: TheOwner<boolean>): this {
+    new All(this.oneSrc, this.twoSrc).value(
+      new From(([one, two]) => {
+        o.give(one && two);
+      }),
+    );
+    return this;
+  }
+}

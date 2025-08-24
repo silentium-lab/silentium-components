@@ -1,14 +1,14 @@
-import { of } from "silentium";
+import { From, Late } from "silentium";
 import { expect, test, vi } from "vitest";
-import { not } from "../boolean/Not";
+import { Not } from "../boolean/Not";
 
 test("Not.test", () => {
-  const [one, oo] = of<boolean>(false);
-  const result = not(one);
+  const one = new Late<boolean>(false);
+  const result = new Not(one);
   const g = vi.fn();
-  result(g);
+  result.value(new From(g));
   expect(g).toHaveBeenLastCalledWith(true);
 
-  oo(true);
+  one.owner().give(true);
   expect(g).toHaveBeenLastCalledWith(false);
 });

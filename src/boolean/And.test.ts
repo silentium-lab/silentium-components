@@ -1,24 +1,24 @@
-import { of } from "silentium";
+import { From, Late } from "silentium";
 import { expect, test, vi } from "vitest";
-import { and } from "../boolean/And";
+import { And } from "../boolean/And";
 
 test("And.test", () => {
-  const [one, oo] = of<boolean>(false);
-  const [two, to] = of<boolean>(false);
-  const result = and(one, two);
+  const one = new Late<boolean>(false);
+  const two = new Late<boolean>(false);
+  const result = new And(one, two);
   const g = vi.fn();
-  result(g);
+  result.value(new From(g));
   expect(g).toHaveBeenLastCalledWith(false);
 
-  oo(true);
-  to(false);
+  one.owner().give(true);
+  two.owner().give(false);
   expect(g).toHaveBeenLastCalledWith(false);
 
-  oo(false);
-  to(true);
+  one.owner().give(false);
+  two.owner().give(true);
   expect(g).toHaveBeenLastCalledWith(false);
 
-  oo(true);
-  to(true);
+  one.owner().give(true);
+  two.owner().give(true);
   expect(g).toHaveBeenLastCalledWith(true);
 });

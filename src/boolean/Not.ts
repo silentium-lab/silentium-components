@@ -1,16 +1,19 @@
-import { InformationType, TheInformation } from "silentium";
+import { From, TheInformation, TheOwner } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/not
  */
-export const not = (
-  baseSrc: InformationType<boolean>,
-): InformationType<boolean> => {
-  return (o) => {
-    baseSrc((v) => {
-      o(!v);
-    });
-  };
-};
+export class Not extends TheInformation<boolean> {
+  public constructor(private baseSrc: TheInformation<boolean>) {
+    super(baseSrc);
+  }
 
-export class Not<T> extends TheInformation<T> {}
+  public value(o: TheOwner<boolean>): this {
+    this.baseSrc.value(
+      new From((v) => {
+        o.give(!v);
+      }),
+    );
+    return this;
+  }
+}
