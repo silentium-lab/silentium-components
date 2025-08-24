@@ -154,6 +154,13 @@ declare class Concatenated extends TheInformation<string> {
     value(o: OwnerType<string>): this;
 }
 
+declare class Template extends TheInformation<string> {
+    private rules;
+    private source;
+    constructor(theSrc: InformationType<string> | string, rules: InformationType<Record<string, unknown>>);
+    value(guest: OwnerType<string>): this;
+}
+
 interface Route<T> {
     pattern: string;
     patternFlags?: string;
@@ -288,5 +295,5 @@ declare class First<T extends Array<unknown>> extends TheInformation<T[0]> {
     value(o: OwnerType<T[0]>): this;
 }
 
-export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Template, Tick, ToJson };
 export type { Route };

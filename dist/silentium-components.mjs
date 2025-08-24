@@ -1,15 +1,15 @@
 import { TheInformation, Late, Applied, All, From, Shared, Filtered, isFilled, Of, Any, Chain } from 'silentium';
 
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, key + "" , value);
+var __defProp$2 = Object.defineProperty;
+var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$2 = (obj, key, value) => __defNormalProp$2(obj, key + "" , value);
 class Dirty extends TheInformation {
   constructor(baseEntitySource, alwaysKeep = [], excludeKeys = []) {
     super([baseEntitySource]);
     this.baseEntitySource = baseEntitySource;
     this.alwaysKeep = alwaysKeep;
     this.excludeKeys = excludeKeys;
-    __publicField$1(this, "comparingSrc", new Late());
+    __publicField$2(this, "comparingSrc", new Late());
   }
   value(o) {
     const comparingDetached = new Applied(
@@ -157,15 +157,15 @@ class Tick extends TheInformation {
   }
 }
 
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
 class Sync extends TheInformation {
   constructor(baseSrc) {
     super(baseSrc);
     this.baseSrc = baseSrc;
-    __publicField(this, "theValue");
-    __publicField(this, "isInit", false);
+    __publicField$1(this, "theValue");
+    __publicField$1(this, "isInit", false);
   }
   value(o) {
     this.baseSrc.value(o);
@@ -368,6 +368,28 @@ class Concatenated extends TheInformation {
         o.give(strings.join(joinPart));
       })
     );
+    return this;
+  }
+}
+
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, key + "" , value);
+class Template extends TheInformation {
+  constructor(theSrc, rules) {
+    const source = typeof theSrc === "string" ? new Of(theSrc) : theSrc;
+    super(source, rules);
+    this.rules = rules;
+    __publicField(this, "source");
+    this.source = source;
+  }
+  value(guest) {
+    new Applied(new All(this.source, this.rules), ([base, rules]) => {
+      Object.entries(rules).forEach(([ph, val]) => {
+        base = base.replaceAll(ph, String(val));
+      });
+      return base;
+    }).value(guest);
     return this;
   }
 }
@@ -586,5 +608,5 @@ class First extends TheInformation {
   }
 }
 
-export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Template, Tick, ToJson };
 //# sourceMappingURL=silentium-components.mjs.map
