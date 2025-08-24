@@ -1,4 +1,4 @@
-import { TheInformation, TheOwner, From } from 'silentium';
+import { TheInformation, InformationType, OwnerType, From } from 'silentium';
 
 /**
  * Takes source and remember it first value
@@ -10,8 +10,8 @@ declare class Dirty<T> extends TheInformation<T> {
     private alwaysKeep;
     private excludeKeys;
     private comparingSrc;
-    constructor(baseEntitySource: TheInformation<T>, alwaysKeep?: string[], excludeKeys?: string[]);
-    value(o: TheOwner<T>): this;
+    constructor(baseEntitySource: InformationType<T>, alwaysKeep?: string[], excludeKeys?: string[]);
+    value(o: OwnerType<T>): this;
     owner(): From<T>;
 }
 
@@ -24,8 +24,8 @@ declare class Dirty<T> extends TheInformation<T> {
 declare class Loading extends TheInformation<boolean> {
     private loadingStartSrc;
     private loadingFinishSrc;
-    constructor(loadingStartSrc: TheInformation<unknown>, loadingFinishSrc: TheInformation<unknown>);
-    value(o: TheOwner<boolean>): this;
+    constructor(loadingStartSrc: InformationType<unknown>, loadingFinishSrc: InformationType<unknown>);
+    value(o: OwnerType<boolean>): this;
 }
 
 /**
@@ -35,8 +35,8 @@ declare class Loading extends TheInformation<boolean> {
 declare class Path<R, T extends Record<string, unknown> | Array<unknown> = any, K extends string = any> extends TheInformation<R> {
     private baseSrc;
     private keySrc;
-    constructor(baseSrc: TheInformation<T>, keySrc: TheInformation<K>);
-    value(o: TheOwner<R>): this;
+    constructor(baseSrc: InformationType<T>, keySrc: InformationType<K>);
+    value(o: OwnerType<R>): this;
 }
 
 /**
@@ -46,8 +46,8 @@ declare class Deadline<T> extends TheInformation<T> {
     private error;
     private baseSrc;
     private timeoutSrc;
-    constructor(error: TheOwner<Error>, baseSrc: TheInformation<T>, timeoutSrc: TheInformation<number>);
-    value(o: TheOwner<T>): this;
+    constructor(error: OwnerType<Error>, baseSrc: InformationType<T>, timeoutSrc: InformationType<number>);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -56,8 +56,8 @@ declare class Deadline<T> extends TheInformation<T> {
  */
 declare class Tick<T> extends TheInformation<T> {
     private baseSrc;
-    constructor(baseSrc: TheInformation<T>);
-    value(o: TheOwner<T>): this;
+    constructor(baseSrc: InformationType<T>);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -67,8 +67,8 @@ declare class Tick<T> extends TheInformation<T> {
 declare class Deferred<T> extends TheInformation<T> {
     private baseSrc;
     private triggerSrc;
-    constructor(baseSrc: TheInformation<T>, triggerSrc: TheInformation<unknown>);
-    value(o: TheOwner<T>): this;
+    constructor(baseSrc: InformationType<T>, triggerSrc: InformationType<unknown>);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -78,8 +78,8 @@ declare class Branch<Then, Else> extends TheInformation<Then | Else> {
     private conditionSrc;
     private leftSrc;
     private rightSrc?;
-    constructor(conditionSrc: TheInformation<boolean>, leftSrc: TheInformation<Then>, rightSrc?: TheInformation<Else> | undefined);
-    value(o: TheOwner<Then | Else>): this;
+    constructor(conditionSrc: InformationType<boolean>, leftSrc: InformationType<Then>, rightSrc?: InformationType<Else> | undefined);
+    value(o: OwnerType<Then | Else>): this;
 }
 
 /**
@@ -88,8 +88,8 @@ declare class Branch<Then, Else> extends TheInformation<Then | Else> {
  */
 declare class Memo<T> extends TheInformation<T> {
     private baseSrc;
-    constructor(baseSrc: TheInformation<T>);
-    value(o: TheOwner<T>): this;
+    constructor(baseSrc: InformationType<T>);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -98,8 +98,8 @@ declare class Memo<T> extends TheInformation<T> {
 declare class Lock<T> extends TheInformation<T> {
     private baseSrc;
     private lockSrc;
-    constructor(baseSrc: TheInformation<T>, lockSrc: TheInformation<boolean>);
-    value(o: TheOwner<T>): this;
+    constructor(baseSrc: InformationType<T>, lockSrc: InformationType<boolean>);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -109,8 +109,8 @@ declare class Lock<T> extends TheInformation<T> {
 declare class Shot<T> extends TheInformation<T> {
     private targetSrc;
     private triggerSrc;
-    constructor(targetSrc: TheInformation<T>, triggerSrc: TheInformation);
-    value(o: TheOwner<T>): this;
+    constructor(targetSrc: InformationType<T>, triggerSrc: InformationType);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -119,8 +119,8 @@ declare class Shot<T> extends TheInformation<T> {
  */
 declare class OnlyChanged<T> extends TheInformation<T> {
     private baseSrc;
-    constructor(baseSrc: TheInformation<T>);
-    value(o: TheOwner<T>): this;
+    constructor(baseSrc: InformationType<T>);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -128,19 +128,19 @@ declare class OnlyChanged<T> extends TheInformation<T> {
  */
 declare class HashTable<T> extends TheInformation<T> {
     private baseSrc;
-    constructor(baseSrc: TheInformation<[string, unknown]>);
-    value(o: TheOwner<T>): this;
+    constructor(baseSrc: InformationType<[string, unknown]>);
+    value(o: OwnerType<T>): this;
 }
 
-type UnInformation<T> = T extends TheInformation<infer U> ? U : never;
+type UnInformation<T> = T extends InformationType<infer U> ? U : never;
 /**
  * Returns record of data from record of sources
  * https://silentium-lab.github.io/silentium-components/#/structures/record
  */
-declare class RecordOf<T extends TheInformation> extends TheInformation<Record<string, UnInformation<T>>> {
+declare class RecordOf<T extends InformationType> extends TheInformation<Record<string, UnInformation<T>>> {
     private recordSrc;
     constructor(recordSrc: Record<string, T>);
-    value(o: TheOwner<Record<string, UnInformation<T>>>): this;
+    value(o: OwnerType<Record<string, UnInformation<T>>>): this;
 }
 
 /**
@@ -150,8 +150,8 @@ declare class RecordOf<T extends TheInformation> extends TheInformation<Record<s
 declare class Concatenated extends TheInformation<string> {
     private sources;
     private joinPartSrc;
-    constructor(sources: TheInformation<string>[], joinPartSrc?: TheInformation<string>);
-    value(o: TheOwner<string>): this;
+    constructor(sources: InformationType<string>[], joinPartSrc?: InformationType<string>);
+    value(o: OwnerType<string>): this;
 }
 
 interface Route<T> {
@@ -167,8 +167,8 @@ declare class Router<T = "string"> extends TheInformation<T> {
     private urlSrc;
     private routesSrc;
     private defaultSrc;
-    constructor(urlSrc: TheInformation<string>, routesSrc: TheInformation<Route<T>[]>, defaultSrc: TheInformation<T>);
-    value(o: TheOwner<T>): this;
+    constructor(urlSrc: InformationType<string>, routesSrc: InformationType<Route<T>[]>, defaultSrc: InformationType<T>);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -179,8 +179,8 @@ declare class RegexpMatched extends TheInformation<boolean> {
     private patternSrc;
     private valueSrc;
     private flagsSrc;
-    constructor(patternSrc: TheInformation<string>, valueSrc: TheInformation<string>, flagsSrc?: TheInformation<string>);
-    value(o: TheOwner<boolean>): this;
+    constructor(patternSrc: InformationType<string>, valueSrc: InformationType<string>, flagsSrc?: InformationType<string>);
+    value(o: OwnerType<boolean>): this;
 }
 
 /**
@@ -192,8 +192,8 @@ declare class RegexpReplaced extends TheInformation<string> {
     private patternSrc;
     private replaceValueSrc;
     private flagsSrc;
-    constructor(valueSrc: TheInformation<string>, patternSrc: TheInformation<string>, replaceValueSrc: TheInformation<string>, flagsSrc?: TheInformation<string>);
-    value(o: TheOwner<string>): this;
+    constructor(valueSrc: InformationType<string>, patternSrc: InformationType<string>, replaceValueSrc: InformationType<string>, flagsSrc?: InformationType<string>);
+    value(o: OwnerType<string>): this;
 }
 
 /**
@@ -204,8 +204,8 @@ declare class RegexpMatch extends TheInformation<string[]> {
     private patternSrc;
     private valueSrc;
     private flagsSrc;
-    constructor(patternSrc: TheInformation<string>, valueSrc: TheInformation<string>, flagsSrc?: TheInformation<string>);
-    value(o: TheOwner<string[]>): this;
+    constructor(patternSrc: InformationType<string>, valueSrc: InformationType<string>, flagsSrc?: InformationType<string>);
+    value(o: OwnerType<string[]>): this;
 }
 
 /**
@@ -216,8 +216,8 @@ declare class Set<T extends Record<string, unknown>> extends TheInformation<T> {
     private baseSrc;
     private keySrc;
     private valueSrc;
-    constructor(baseSrc: TheInformation<T>, keySrc: TheInformation<string>, valueSrc: TheInformation<unknown>);
-    value(o: TheOwner<T>): this;
+    constructor(baseSrc: InformationType<T>, keySrc: InformationType<string>, valueSrc: InformationType<unknown>);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -226,8 +226,8 @@ declare class Set<T extends Record<string, unknown>> extends TheInformation<T> {
 declare class And extends TheInformation<boolean> {
     private oneSrc;
     private twoSrc;
-    constructor(oneSrc: TheInformation<boolean>, twoSrc: TheInformation<boolean>);
-    value(o: TheOwner<boolean>): this;
+    constructor(oneSrc: InformationType<boolean>, twoSrc: InformationType<boolean>);
+    value(o: OwnerType<boolean>): this;
 }
 
 /**
@@ -236,8 +236,8 @@ declare class And extends TheInformation<boolean> {
 declare class Or extends TheInformation<boolean> {
     private oneSrc;
     private twoSrc;
-    constructor(oneSrc: TheInformation<boolean>, twoSrc: TheInformation<boolean>);
-    value(o: TheOwner<boolean>): this;
+    constructor(oneSrc: InformationType<boolean>, twoSrc: InformationType<boolean>);
+    value(o: OwnerType<boolean>): this;
 }
 
 /**
@@ -245,8 +245,8 @@ declare class Or extends TheInformation<boolean> {
  */
 declare class Not extends TheInformation<boolean> {
     private baseSrc;
-    constructor(baseSrc: TheInformation<boolean>);
-    value(o: TheOwner<boolean>): this;
+    constructor(baseSrc: InformationType<boolean>);
+    value(o: OwnerType<boolean>): this;
 }
 
 /**
@@ -255,8 +255,8 @@ declare class Not extends TheInformation<boolean> {
  */
 declare class Bool extends TheInformation<boolean> {
     private baseSrc;
-    constructor(baseSrc: TheInformation);
-    value(o: TheOwner<boolean>): this;
+    constructor(baseSrc: InformationType);
+    value(o: OwnerType<boolean>): this;
 }
 
 /**
@@ -265,8 +265,8 @@ declare class Bool extends TheInformation<boolean> {
 declare class FromJson<T> extends TheInformation<T> {
     private jsonSrc;
     private errorOwner?;
-    constructor(jsonSrc: TheInformation<string>, errorOwner?: TheOwner | undefined);
-    value(o: TheOwner<T>): this;
+    constructor(jsonSrc: InformationType<string>, errorOwner?: OwnerType | undefined);
+    value(o: OwnerType<T>): this;
 }
 
 /**
@@ -275,8 +275,8 @@ declare class FromJson<T> extends TheInformation<T> {
 declare class ToJson extends TheInformation<string> {
     private dataSrc;
     private errorOwner?;
-    constructor(dataSrc: TheInformation, errorOwner?: TheOwner | undefined);
-    value(o: TheOwner<string>): this;
+    constructor(dataSrc: InformationType, errorOwner?: OwnerType | undefined);
+    value(o: OwnerType<string>): this;
 }
 
 /**
@@ -284,8 +284,8 @@ declare class ToJson extends TheInformation<string> {
  */
 declare class First<T extends Array<unknown>> extends TheInformation<T[0]> {
     private baseSrc;
-    constructor(baseSrc: TheInformation<T>);
-    value(o: TheOwner<T[0]>): this;
+    constructor(baseSrc: InformationType<T>);
+    value(o: OwnerType<T[0]>): this;
 }
 
 export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Tick, ToJson };
