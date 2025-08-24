@@ -1,10 +1,10 @@
-import { i } from "silentium";
+import { From, Of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { first } from "./First";
+import { First } from "./First";
 
 test("first", () => {
-  const f = first(i([1, 2, 3]));
+  const f = new First(new Of([1, 2, 3]));
   const g = vi.fn();
-  f(g);
+  f.value(new From(g));
   expect(g).toHaveBeenCalledWith(1);
 });
