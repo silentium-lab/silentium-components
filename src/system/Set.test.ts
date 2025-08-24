@@ -1,19 +1,19 @@
-import { i, of } from "silentium";
+import { From, Late, Of } from "silentium";
+import { Set } from "../system/Set";
 import { expect, test, vi } from "vitest";
-import { set } from "../system/Set";
 
 test("Set.test", () => {
-  const [value, o] = of<string>();
+  const value = new Late<string>();
   const object = {
     value: "hello",
   };
-  const obj = set(i(object), i("value"), value);
+  const obj = new Set(new Of(object), new Of("value"), value);
   const g = vi.fn();
-  obj(g);
+  obj.value(new From(g));
 
   expect(object.value).toBe("hello");
 
-  o("bue!");
+  value.owner().give("bue!");
 
   expect(object.value).toBe("bue!");
 });
