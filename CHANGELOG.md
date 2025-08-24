@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.28](https://github.com/silentium-lab/silentium-components/compare/v0.0.27...v0.0.28) (2025-08-24)
+
+
+### Bug Fixes
+
+* **main:** aLl done ([b577ba9](https://github.com/silentium-lab/silentium-components/commit/b577ba9078f92bc97d7e4aba3befcf20331af24d))
+* **main:** boolean components ([b598e93](https://github.com/silentium-lab/silentium-components/commit/b598e93fd34a9b187678714ee03967c60dc8d03a))
+* **main:** branch component ([75e75df](https://github.com/silentium-lab/silentium-components/commit/75e75df8b4a3f282e8b6850029baf9f53ca59796))
+* **main:** concatenated done ([15c6254](https://github.com/silentium-lab/silentium-components/commit/15c62549d730398dcd79e7b721650bd55e304e30))
+* **main:** deadline component ([e61435c](https://github.com/silentium-lab/silentium-components/commit/e61435c2a77a23d93bd71f27a94de239fe957538))
+* **main:** deffered ([5eb7026](https://github.com/silentium-lab/silentium-components/commit/5eb7026763c02cafae566bc1922f87d640cdc45d))
+* **main:** dirty component done ([af218e1](https://github.com/silentium-lab/silentium-components/commit/af218e1b7040d8c9db47c6f2e257d79c460a2f7f))
+* **main:** first component done ([78ea4b7](https://github.com/silentium-lab/silentium-components/commit/78ea4b77113f4013cbf8508b751aaed205daf9bd))
+* **main:** formats components ([d573e4d](https://github.com/silentium-lab/silentium-components/commit/d573e4d0f939d3783076e20f3a148f418ce8af67))
+* **main:** hash table component ([aac9e94](https://github.com/silentium-lab/silentium-components/commit/aac9e943af02372ca17dbe0a9a2f01a6fd60a703))
+* **main:** loading component ([ea953e6](https://github.com/silentium-lab/silentium-components/commit/ea953e696d47086f67e838fcd3f7ea1559b5f77e))
+* **main:** lock component done ([578116c](https://github.com/silentium-lab/silentium-components/commit/578116cacdd28dd80d099f8d0a97646ff4c02a36))
+* **main:** memo ([849c5b3](https://github.com/silentium-lab/silentium-components/commit/849c5b334edf15fc86cacbda71d84c511b73e37c))
+* **main:** only changed component ([cd4fbfb](https://github.com/silentium-lab/silentium-components/commit/cd4fbfb4fcd1b17af55eec82cf97783c5d172cba))
+* **main:** path component ([2397cfc](https://github.com/silentium-lab/silentium-components/commit/2397cfc98900075046530fe59f26744ecca2d2b5))
+* **main:** record done ([e79a925](https://github.com/silentium-lab/silentium-components/commit/e79a925bf05361735071421497ece0d6bc2b3da5))
+* **main:** regexpMatch component ([73a2d36](https://github.com/silentium-lab/silentium-components/commit/73a2d369f7e6b037b52f8e0b510a2cd87162ec79))
+* **main:** set done ([3891f98](https://github.com/silentium-lab/silentium-components/commit/3891f98727b1a73cc4c301857287b67fc13c3049))
+* **main:** shot component ([e76d73e](https://github.com/silentium-lab/silentium-components/commit/e76d73efdb86ce8b11315fbb864c4aa68bd4e90d))
+* **main:** system components ([4996f22](https://github.com/silentium-lab/silentium-components/commit/4996f2292827e1313059042fd5a826e73ba0c8de))
+* **main:** tick component ([b7f90fa](https://github.com/silentium-lab/silentium-components/commit/b7f90fa79ead459fec5cf83040718f8767f21201))
+
 ### [0.0.27](https://github.com/silentium-lab/silentium-components/compare/v0.0.26...v0.0.27) (2025-08-19)
 
 
