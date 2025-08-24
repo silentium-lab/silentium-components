@@ -1,19 +1,23 @@
-import { InformationType, TheInformation } from "silentium";
+import { From, TheInformation, TheOwner } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
-export const hashTable = <T>(
-  base: InformationType<[string, unknown]>,
-): InformationType<T> => {
-  return (o) => {
+export class HashTable<T> extends TheInformation<T> {
+  public constructor(private baseSrc: TheInformation<[string, unknown]>) {
+    super(baseSrc);
+  }
+
+  public value(o: TheOwner<T>): this {
     const record: Record<string, unknown> = {};
 
-    base(([key, value]) => {
-      record[key] = value;
-      o(record as T);
-    });
-  };
-};
+    this.baseSrc.value(
+      new From(([key, value]) => {
+        record[key] = value;
+        o.give(record as T);
+      }),
+    );
 
-export class HashTable<T> extends TheInformation<T> {}
+    return this;
+  }
+}

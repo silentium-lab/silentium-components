@@ -1,14 +1,14 @@
-import { of } from "silentium";
+import { From, Late } from "silentium";
 import { expect, test, vi } from "vitest";
-import { hashTable } from "../structures/HashTable";
+import { HashTable } from "../structures/HashTable";
 
 test("HashTable.test", () => {
-  const [entrySource, eo] = of<[string, string]>();
-  const hashTableSrc = hashTable(entrySource);
+  const entrySource = new Late<[string, string]>();
+  const hashTableSrc = new HashTable(entrySource);
   const g = vi.fn();
-  hashTableSrc(g);
-  eo(["key-one", "value-one"]);
-  eo(["key-two", "value-two"]);
+  hashTableSrc.value(new From(g));
+  entrySource.owner().give(["key-one", "value-one"]);
+  entrySource.owner().give(["key-two", "value-two"]);
 
   expect(g).toHaveBeenLastCalledWith({
     "key-one": "value-one",
