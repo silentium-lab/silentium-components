@@ -1,24 +1,25 @@
-import { all, i, InformationType, TheInformation } from "silentium";
+import { All, From, Of, TheInformation, TheOwner } from "silentium";
 
 /**
  * First match of regexp
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
  */
-export const regexpMatch =
-  (
-    patternSrc: InformationType<string>,
-    valueSrc: InformationType<string>,
-    flagsSrc: InformationType<string> = i(""),
-  ): InformationType<string[]> =>
-  (o) => {
-    all(
-      patternSrc,
-      valueSrc,
-      flagsSrc,
-    )(([pattern, value, flags]) => {
-      const result = new RegExp(pattern, flags).exec(value);
-      o(result ?? []);
-    });
-  };
+export class RegexpMatch extends TheInformation<string[]> {
+  public constructor(
+    private patternSrc: TheInformation<string>,
+    private valueSrc: TheInformation<string>,
+    private flagsSrc: TheInformation<string> = new Of(""),
+  ) {
+    super(patternSrc, valueSrc, flagsSrc);
+  }
 
-export class RegexpMatch<T> extends TheInformation<T> {}
+  public value(o: TheOwner<string[]>): this {
+    new All(this.patternSrc, this.valueSrc, this.flagsSrc).value(
+      new From(([pattern, value, flags]) => {
+        const result = new RegExp(pattern, flags).exec(value);
+        o.give(result ?? []);
+      }),
+    );
+    return this;
+  }
+}
