@@ -1,23 +1,24 @@
-import { all, i, InformationType, TheInformation } from "silentium";
+import { All, From, Of, TheInformation, TheOwner } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
  */
-export const regexpMatched =
-  (
-    patternSrc: InformationType<string>,
-    valueSrc: InformationType<string>,
-    flagsSrc: InformationType<string> = i(""),
-  ): InformationType<boolean> =>
-  (o) => {
-    all(
-      patternSrc,
-      valueSrc,
-      flagsSrc,
-    )(([pattern, value, flags]) => {
-      o(new RegExp(pattern, flags).test(value));
-    });
-  };
+export class RegexpMatched extends TheInformation<boolean> {
+  public constructor(
+    private patternSrc: TheInformation<string>,
+    private valueSrc: TheInformation<string>,
+    private flagsSrc: TheInformation<string> = new Of(""),
+  ) {
+    super(patternSrc, valueSrc, flagsSrc);
+  }
 
-export class RegexpMatched<T> extends TheInformation<T> {}
+  public value(o: TheOwner<boolean>): this {
+    new All(this.patternSrc, this.valueSrc, this.flagsSrc).value(
+      new From(([pattern, value, flags]) => {
+        o.give(new RegExp(pattern, flags).test(value));
+      }),
+    );
+    return this;
+  }
+}

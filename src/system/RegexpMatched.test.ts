@@ -1,16 +1,16 @@
-import { i, of } from "silentium";
+import { From, Late, Of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { regexpMatched } from "../system/RegexpMatched";
+import { RegexpMatched } from "../system/RegexpMatched";
 
 test("RegexpMatched.test", () => {
-  const [urlI, urlO] = of<string>("http://domain.com/some/url/");
-  const matchedSrc = regexpMatched(i("/some/url"), urlI);
+  const urlI = new Late<string>("http://domain.com/some/url/");
+  const matchedSrc = new RegexpMatched(new Of("/some/url"), urlI);
   const g = vi.fn();
-  matchedSrc(g);
+  matchedSrc.value(new From(g));
 
   expect(g).toHaveBeenLastCalledWith(true);
 
-  urlO("http://domain.com/changed");
+  urlI.owner().give("http://domain.com/changed");
 
   expect(g).toHaveBeenLastCalledWith(false);
 });

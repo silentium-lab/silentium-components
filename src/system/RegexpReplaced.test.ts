@@ -1,16 +1,20 @@
-import { i, of } from "silentium";
+import { From, Late, Of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { regexpReplaced } from "../system/RegexpReplaced";
+import { RegexpReplaced } from "../system/RegexpReplaced";
 
 test("RegexpReplaced.test", () => {
-  const [urlSrc, urlO] = of<string>("http://domain.com/some/url/");
-  const matchedSrc = regexpReplaced(urlSrc, i("some/url/"), i(""));
+  const urlSrc = new Late<string>("http://domain.com/some/url/");
+  const matchedSrc = new RegexpReplaced(
+    urlSrc,
+    new Of("some/url/"),
+    new Of(""),
+  );
   const g = vi.fn();
-  matchedSrc(g);
+  matchedSrc.value(new From(g));
 
   expect(g).toHaveBeenLastCalledWith("http://domain.com/");
 
-  urlO("http://domain.com/some/url/changed/");
+  urlSrc.owner().give("http://domain.com/some/url/changed/");
 
   expect(g).toHaveBeenLastCalledWith("http://domain.com/changed/");
 });
