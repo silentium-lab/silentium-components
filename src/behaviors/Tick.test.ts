@@ -1,6 +1,6 @@
-import { any, of, sharedStateless } from "silentium";
+import { Any, From, Late, Shared } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { tick } from "../behaviors/Tick";
+import { Tick } from "../behaviors/Tick";
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -12,15 +12,15 @@ afterEach(() => {
 });
 
 test("Tick.test", async () => {
-  const [s1, s1o] = of<number>(1);
-  const [s2, s2o] = of<number>(2);
-  const [tickSrc] = sharedStateless(tick(any(s1, s2)));
+  const s1 = new Late<number>(1);
+  const s2 = new Late<number>(2);
+  const tickSrc = new Shared(new Tick(new Any(s1, s2)), true);
 
   const g = vi.fn();
-  tickSrc(g);
+  tickSrc.value(new From(g));
 
-  s1o(3);
-  s2o(4);
+  s1.owner().give(3);
+  s2.owner().give(4);
 
   await vi.advanceTimersByTimeAsync(10);
   vi.runAllTicks();

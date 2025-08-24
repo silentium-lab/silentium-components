@@ -1,11 +1,15 @@
-import { InformationType, TheInformation } from "silentium";
+import { From, TheInformation, TheOwner } from "silentium";
 
 /**
  * Accumulates the last value of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-export const tick = <T>(baseSrc: InformationType<T>): InformationType<T> => {
-  return (o) => {
+export class Tick<T> extends TheInformation<T> {
+  public constructor(private baseSrc: TheInformation<T>) {
+    super(baseSrc);
+  }
+
+  public value(o: TheOwner<T>): this {
     let microtaskScheduled = false;
     let lastValue: T | null = null;
 
@@ -14,19 +18,21 @@ export const tick = <T>(baseSrc: InformationType<T>): InformationType<T> => {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          o(lastValue);
+          o.give(lastValue);
           lastValue = null;
         }
       });
     };
 
-    baseSrc((v) => {
-      lastValue = v;
-      if (!microtaskScheduled) {
-        scheduleMicrotask();
-      }
-    });
-  };
-};
+    this.baseSrc.value(
+      new From((v) => {
+        lastValue = v;
+        if (!microtaskScheduled) {
+          scheduleMicrotask();
+        }
+      }),
+    );
 
-export class Tick<T> extends TheInformation<T> {}
+    return this;
+  }
+}
