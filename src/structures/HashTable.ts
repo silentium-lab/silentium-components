@@ -1,14 +1,14 @@
-import { From, TheInformation, TheOwner } from "silentium";
+import { From, InformationType, OwnerType, TheInformation } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 export class HashTable<T> extends TheInformation<T> {
-  public constructor(private baseSrc: TheInformation<[string, unknown]>) {
+  public constructor(private baseSrc: InformationType<[string, unknown]>) {
     super(baseSrc);
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     const record: Record<string, unknown> = {};
 
     this.baseSrc.value(

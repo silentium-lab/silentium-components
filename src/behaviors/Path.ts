@@ -1,4 +1,10 @@
-import { All, From, TheInformation, TheOwner } from "silentium";
+import {
+  All,
+  From,
+  InformationType,
+  OwnerType,
+  TheInformation,
+} from "silentium";
 
 /**
  * Return source of record path
@@ -10,13 +16,13 @@ export class Path<
   K extends string = any,
 > extends TheInformation<R> {
   public constructor(
-    private baseSrc: TheInformation<T>,
-    private keySrc: TheInformation<K>,
+    private baseSrc: InformationType<T>,
+    private keySrc: InformationType<K>,
   ) {
     super(baseSrc, keySrc);
   }
 
-  public value(o: TheOwner<R>): this {
+  public value(o: OwnerType<R>): this {
     const allSrc = new All(this.baseSrc, this.keySrc).value(
       new From(([base, key]) => {
         const keyChunks = key.split(".");

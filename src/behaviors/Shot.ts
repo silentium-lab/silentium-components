@@ -1,4 +1,4 @@
-import { From, TheInformation, TheOwner } from "silentium";
+import { From, InformationType, OwnerType, TheInformation } from "silentium";
 import { Sync } from "./Sync";
 
 /**
@@ -7,13 +7,13 @@ import { Sync } from "./Sync";
  */
 export class Shot<T> extends TheInformation<T> {
   public constructor(
-    private targetSrc: TheInformation<T>,
-    private triggerSrc: TheInformation,
+    private targetSrc: InformationType<T>,
+    private triggerSrc: InformationType,
   ) {
     super(targetSrc, triggerSrc);
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     const targetSync = new Sync(this.targetSrc);
     targetSync.initOwner();
 

@@ -1,4 +1,13 @@
-import { Any, Chain, From, Of, TheInformation, TheOwner } from "silentium";
+import {
+  Any,
+  Chain,
+  From,
+  InformationType,
+  Of,
+  OwnerType,
+  TheInformation,
+  TheOwner,
+} from "silentium";
 import { Branch } from "../behaviors";
 import { RegexpMatched } from "../system";
 
@@ -14,14 +23,14 @@ export interface Route<T> {
  */
 export class Router<T = "string"> extends TheInformation<T> {
   public constructor(
-    private urlSrc: TheInformation<string>,
-    private routesSrc: TheInformation<Route<T>[]>,
-    private defaultSrc: TheInformation<T>,
+    private urlSrc: InformationType<string>,
+    private routesSrc: InformationType<Route<T>[]>,
+    private defaultSrc: InformationType<T>,
   ) {
     super(urlSrc, routesSrc, defaultSrc);
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     this.routesSrc.value(
       new From((routes) => {
         new Any(

@@ -1,4 +1,10 @@
-import { From, isFilled, TheInformation, TheOwner } from "silentium";
+import {
+  From,
+  InformationType,
+  isFilled,
+  OwnerType,
+  TheInformation,
+} from "silentium";
 import { Sync } from "./Sync";
 
 /**
@@ -7,13 +13,13 @@ import { Sync } from "./Sync";
  */
 export class Deferred<T> extends TheInformation<T> {
   public constructor(
-    private baseSrc: TheInformation<T>,
-    private triggerSrc: TheInformation<unknown>,
+    private baseSrc: InformationType<T>,
+    private triggerSrc: InformationType<unknown>,
   ) {
     super();
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     const baseSync = new Sync(this.baseSrc).initOwner();
     this.triggerSrc.value(
       new From(() => {

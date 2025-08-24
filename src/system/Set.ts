@@ -1,4 +1,10 @@
-import { All, From, TheInformation, TheOwner } from "silentium";
+import {
+  All,
+  From,
+  InformationType,
+  OwnerType,
+  TheInformation,
+} from "silentium";
 
 /**
  * Ability to mutate some object, helpful when integrate to procedure systems
@@ -6,14 +12,14 @@ import { All, From, TheInformation, TheOwner } from "silentium";
  */
 export class Set<T extends Record<string, unknown>> extends TheInformation<T> {
   public constructor(
-    private baseSrc: TheInformation<T>,
-    private keySrc: TheInformation<string>,
-    private valueSrc: TheInformation<unknown>,
+    private baseSrc: InformationType<T>,
+    private keySrc: InformationType<string>,
+    private valueSrc: InformationType<unknown>,
   ) {
     super(baseSrc, keySrc, valueSrc);
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     new All(this.baseSrc, this.keySrc, this.valueSrc).value(
       new From(([base, key, value]) => {
         (base as Record<string, unknown>)[key] = value;

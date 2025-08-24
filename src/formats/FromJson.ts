@@ -1,17 +1,17 @@
-import { From, TheInformation, TheOwner } from "silentium";
+import { From, InformationType, OwnerType, TheInformation } from "silentium";
 
 /**
  * Represents object from json
  */
 export class FromJson<T> extends TheInformation<T> {
   public constructor(
-    private jsonSrc: TheInformation<string>,
-    private errorOwner?: TheOwner,
+    private jsonSrc: InformationType<string>,
+    private errorOwner?: OwnerType,
   ) {
     super(jsonSrc);
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     this.jsonSrc.value(
       new From((json) => {
         try {

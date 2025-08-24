@@ -1,4 +1,11 @@
-import { All, From, Of, TheInformation, TheOwner } from "silentium";
+import {
+  All,
+  From,
+  InformationType,
+  Of,
+  OwnerType,
+  TheInformation,
+} from "silentium";
 
 /**
  * Join sources of strings to one source
@@ -6,13 +13,13 @@ import { All, From, Of, TheInformation, TheOwner } from "silentium";
  */
 export class Concatenated extends TheInformation<string> {
   public constructor(
-    private sources: TheInformation<string>[],
-    private joinPartSrc: TheInformation<string> = new Of(""),
+    private sources: InformationType<string>[],
+    private joinPartSrc: InformationType<string> = new Of(""),
   ) {
     super(...sources, joinPartSrc);
   }
 
-  public value(o: TheOwner<string>): this {
+  public value(o: OwnerType<string>): this {
     new All(this.joinPartSrc, ...this.sources).value(
       new From(([joinPart, ...strings]) => {
         o.give(strings.join(joinPart));

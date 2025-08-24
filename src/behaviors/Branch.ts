@@ -1,4 +1,4 @@
-import { From, TheInformation, TheOwner } from "silentium";
+import { From, InformationType, OwnerType, TheInformation } from "silentium";
 import { Sync } from "./Sync";
 
 /**
@@ -6,13 +6,13 @@ import { Sync } from "./Sync";
  */
 export class Branch<Then, Else> extends TheInformation<Then | Else> {
   public constructor(
-    private conditionSrc: TheInformation<boolean>,
-    private leftSrc: TheInformation<Then>,
-    private rightSrc?: TheInformation<Else>,
+    private conditionSrc: InformationType<boolean>,
+    private leftSrc: InformationType<Then>,
+    private rightSrc?: InformationType<Else>,
   ) {
     super([conditionSrc, leftSrc, rightSrc]);
   }
-  public value(o: TheOwner<Then | Else>): this {
+  public value(o: OwnerType<Then | Else>): this {
     const leftSync = new Sync(this.leftSrc).initOwner();
     let rightSync: Sync<Else>;
 

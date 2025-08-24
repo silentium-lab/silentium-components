@@ -1,18 +1,25 @@
-import { Filtered, From, Shared, TheInformation, TheOwner } from "silentium";
+import {
+  Filtered,
+  From,
+  InformationType,
+  OwnerType,
+  Shared,
+  TheInformation,
+} from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
 export class Deadline<T> extends TheInformation<T> {
   public constructor(
-    private error: TheOwner<Error>,
-    private baseSrc: TheInformation<T>,
-    private timeoutSrc: TheInformation<number>,
+    private error: OwnerType<Error>,
+    private baseSrc: InformationType<T>,
+    private timeoutSrc: InformationType<number>,
   ) {
     super([error, baseSrc, timeoutSrc]);
   }
 
-  public value(o: TheOwner<T>) {
+  public value(o: OwnerType<T>) {
     let timerHead: unknown = null;
 
     const s = new Shared(this.baseSrc, true);

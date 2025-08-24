@@ -1,4 +1,12 @@
-import { All, Applied, From, Late, TheInformation, TheOwner } from "silentium";
+import {
+  All,
+  Applied,
+  From,
+  InformationType,
+  Late,
+  OwnerType,
+  TheInformation,
+} from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -9,14 +17,14 @@ export class Dirty<T> extends TheInformation<T> {
   private comparingSrc = new Late<T>();
 
   public constructor(
-    private baseEntitySource: TheInformation<T>,
+    private baseEntitySource: InformationType<T>,
     private alwaysKeep: string[] = [],
     private excludeKeys: string[] = [],
   ) {
     super([baseEntitySource]);
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     const comparingDetached = new Applied(this.comparingSrc, (value) =>
       JSON.parse(JSON.stringify(value)),
     );

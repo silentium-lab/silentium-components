@@ -1,14 +1,20 @@
-import { From, isFilled, TheInformation, TheOwner } from "silentium";
+import {
+  From,
+  InformationType,
+  isFilled,
+  OwnerType,
+  TheInformation,
+} from "silentium";
 
 export class Sync<T> extends TheInformation<T> {
   private theValue: T | undefined;
   private isInit = false;
 
-  public constructor(private baseSrc: TheInformation<T>) {
+  public constructor(private baseSrc: InformationType<T>) {
     super(baseSrc);
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     this.baseSrc.value(o);
     return this;
   }

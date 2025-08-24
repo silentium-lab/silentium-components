@@ -1,4 +1,11 @@
-import { All, From, Of, TheInformation, TheOwner } from "silentium";
+import {
+  All,
+  From,
+  InformationType,
+  Of,
+  OwnerType,
+  TheInformation,
+} from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
@@ -6,15 +13,15 @@ import { All, From, Of, TheInformation, TheOwner } from "silentium";
  */
 export class RegexpReplaced extends TheInformation<string> {
   public constructor(
-    private valueSrc: TheInformation<string>,
-    private patternSrc: TheInformation<string>,
-    private replaceValueSrc: TheInformation<string>,
-    private flagsSrc: TheInformation<string> = new Of(""),
+    private valueSrc: InformationType<string>,
+    private patternSrc: InformationType<string>,
+    private replaceValueSrc: InformationType<string>,
+    private flagsSrc: InformationType<string> = new Of(""),
   ) {
     super(valueSrc, patternSrc, replaceValueSrc, flagsSrc);
   }
 
-  public value(o: TheOwner<string>): this {
+  public value(o: OwnerType<string>): this {
     new All(
       this.patternSrc,
       this.valueSrc,

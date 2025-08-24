@@ -1,17 +1,23 @@
-import { Filtered, From, TheInformation, TheOwner } from "silentium";
+import {
+  Filtered,
+  From,
+  InformationType,
+  OwnerType,
+  TheInformation,
+} from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
  */
 export class Lock<T> extends TheInformation<T> {
   public constructor(
-    private baseSrc: TheInformation<T>,
-    private lockSrc: TheInformation<boolean>,
+    private baseSrc: InformationType<T>,
+    private lockSrc: InformationType<boolean>,
   ) {
     super(baseSrc, lockSrc);
   }
 
-  public value(o: TheOwner<T>): this {
+  public value(o: OwnerType<T>): this {
     let locked = false;
     this.lockSrc.value(
       new From((newLock) => {

@@ -1,4 +1,4 @@
-import { From, TheInformation, TheOwner } from "silentium";
+import { From, InformationType, OwnerType, TheInformation } from "silentium";
 
 /**
  * Representation of loading process
@@ -8,13 +8,13 @@ import { From, TheInformation, TheOwner } from "silentium";
  */
 export class Loading extends TheInformation<boolean> {
   public constructor(
-    private loadingStartSrc: TheInformation<unknown>,
-    private loadingFinishSrc: TheInformation<unknown>,
+    private loadingStartSrc: InformationType<unknown>,
+    private loadingFinishSrc: InformationType<unknown>,
   ) {
     super(loadingFinishSrc, loadingStartSrc);
   }
 
-  public value(o: TheOwner<boolean>): this {
+  public value(o: OwnerType<boolean>): this {
     this.loadingStartSrc.value(
       new From(() => {
         o.give(true);
