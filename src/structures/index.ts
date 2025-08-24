@@ -1,2 +1,2 @@
 export * from "./HashTable";
-export * from "./Record";
+export * from "./RecordOf";

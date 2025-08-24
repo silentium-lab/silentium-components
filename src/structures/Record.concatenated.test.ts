@@ -1,25 +1,27 @@
-import { i, of, shared } from "silentium";
+import { From, Late, Of, Shared } from "silentium";
 import { expect, test, vi } from "vitest";
-import { concatenated } from "../strings";
-import { record } from "./Record";
+import { Concatenated } from "../strings";
+import { RecordOf } from "./RecordOf";
 
 test("Record.concatenated.test", () => {
-  const three = i<string>("three");
-  const [concatPart, cpo] = of<string>("part");
-  const [r] = shared(
-    record({
-      one: i("one"),
-      two: i("two"),
+  const three = new Of<string>("three");
+  const concatPart = new Late<string>("part");
+  const r = new Shared(
+    new RecordOf({
+      one: new Of("one"),
+      two: new Of("two"),
       three,
-      nested: concatenated([i("one"), concatPart]),
+      nested: new Concatenated([new Of("one"), concatPart]),
     }),
   );
   const g = vi.fn();
-  r(g);
+  r.value(new From(g));
   let counter = 0;
-  r(() => {
-    counter += 1;
-  });
+  r.value(
+    new From(() => {
+      counter += 1;
+    }),
+  );
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",
@@ -28,7 +30,7 @@ test("Record.concatenated.test", () => {
     nested: "onepart",
   });
 
-  cpo("changed");
+  concatPart.owner().give("changed");
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",
