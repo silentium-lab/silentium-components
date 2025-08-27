@@ -42,7 +42,7 @@ export class Router<T = "string"> extends TheInformation<T> {
                 this.urlSrc,
                 r.patternFlags ? new Of(r.patternFlags) : undefined,
               ),
-              (r.template instanceof TheInformation
+              ("value" in (r.template as InformationType)
                 ? r.template
                 : new Of(r.template)) as TheInformation,
             );
