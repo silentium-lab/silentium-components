@@ -175,7 +175,7 @@ declare class Template extends TheInformation<string> {
 interface Route<T> {
     pattern: string;
     patternFlags?: string;
-    template: T | TheInformation<T>;
+    template: T | InformationType<T>;
 }
 /**
  * Router component what will return template if url matches pattern
