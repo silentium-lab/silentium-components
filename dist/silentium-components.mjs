@@ -489,7 +489,7 @@ class Router extends TheInformation {
                 this.urlSrc,
                 r.patternFlags ? new Of(r.patternFlags) : void 0
               ),
-              r.template instanceof TheInformation ? r.template : new Of(r.template)
+              "value" in r.template ? r.template : new Of(r.template)
             );
           })
         ).value(o);
