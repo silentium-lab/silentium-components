@@ -491,7 +491,7 @@ class Router extends silentium.TheInformation {
                 this.urlSrc,
                 r.patternFlags ? new silentium.Of(r.patternFlags) : void 0
               ),
-              "value" in r.template ? r.template : new silentium.Of(r.template)
+              typeof r.template === "object" && "value" in r.template ? r.template : new silentium.Of(r.template)
             );
           })
         ).value(o);
