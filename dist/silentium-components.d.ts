@@ -1,6 +1,39 @@
 import { TheInformation, InformationType, OwnerType, From } from 'silentium';
 
 /**
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
+ */
+declare class Branch<Then, Else> extends TheInformation<Then | Else> {
+    private conditionSrc;
+    private leftSrc;
+    private rightSrc?;
+    constructor(conditionSrc: InformationType<boolean>, leftSrc: InformationType<Then>, rightSrc?: InformationType<Else> | undefined);
+    value(o: OwnerType<Then | Else>): this;
+}
+
+/**
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/path
+ */
+declare class Deadline<T> extends TheInformation<T> {
+    private error;
+    private baseSrc;
+    private timeoutSrc;
+    constructor(error: OwnerType<Error>, baseSrc: InformationType<T>, timeoutSrc: InformationType<number>);
+    value(o: OwnerType<T>): this;
+}
+
+/**
+ * Defer one source after another, gives values of baseSrc only once when triggerSrc responds
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
+ */
+declare class Deferred<T> extends TheInformation<T> {
+    private baseSrc;
+    private triggerSrc;
+    constructor(baseSrc: InformationType<T>, triggerSrc: InformationType<unknown>);
+    value(o: OwnerType<T>): this;
+}
+
+/**
  * Takes source and remember it first value
  * returns new record, what will contain only fields what was changed
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
@@ -29,57 +62,13 @@ declare class Loading extends TheInformation<boolean> {
 }
 
 /**
- * Return source of record path
- * https://silentium-lab.github.io/silentium-components/#/behaviors/path
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
  */
-declare class Path<R, T extends Record<string, unknown> | Array<unknown> = any, K extends string = any> extends TheInformation<R> {
+declare class Lock<T> extends TheInformation<T> {
     private baseSrc;
-    private keySrc;
-    constructor(baseSrc: InformationType<T>, keySrc: InformationType<K>);
-    value(o: OwnerType<R>): this;
-}
-
-/**
- * https://silentium-lab.github.io/silentium-components/#/behaviors/path
- */
-declare class Deadline<T> extends TheInformation<T> {
-    private error;
-    private baseSrc;
-    private timeoutSrc;
-    constructor(error: OwnerType<Error>, baseSrc: InformationType<T>, timeoutSrc: InformationType<number>);
+    private lockSrc;
+    constructor(baseSrc: InformationType<T>, lockSrc: InformationType<boolean>);
     value(o: OwnerType<T>): this;
-}
-
-/**
- * Accumulates the last value of the source and returns one result once per tick
- * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
- */
-declare class Tick<T> extends TheInformation<T> {
-    private baseSrc;
-    constructor(baseSrc: InformationType<T>);
-    value(o: OwnerType<T>): this;
-}
-
-/**
- * Defer one source after another, gives values of baseSrc only once when triggerSrc responds
- * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
- */
-declare class Deferred<T> extends TheInformation<T> {
-    private baseSrc;
-    private triggerSrc;
-    constructor(baseSrc: InformationType<T>, triggerSrc: InformationType<unknown>);
-    value(o: OwnerType<T>): this;
-}
-
-/**
- * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
- */
-declare class Branch<Then, Else> extends TheInformation<Then | Else> {
-    private conditionSrc;
-    private leftSrc;
-    private rightSrc?;
-    constructor(conditionSrc: InformationType<boolean>, leftSrc: InformationType<Then>, rightSrc?: InformationType<Else> | undefined);
-    value(o: OwnerType<Then | Else>): this;
 }
 
 /**
@@ -93,13 +82,24 @@ declare class Memo<T> extends TheInformation<T> {
 }
 
 /**
- * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
+ * Represents source what was changed at least once
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
  */
-declare class Lock<T> extends TheInformation<T> {
+declare class OnlyChanged<T> extends TheInformation<T> {
     private baseSrc;
-    private lockSrc;
-    constructor(baseSrc: InformationType<T>, lockSrc: InformationType<boolean>);
+    constructor(baseSrc: InformationType<T>);
     value(o: OwnerType<T>): this;
+}
+
+/**
+ * Return source of record path
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/path
+ */
+declare class Path<R, T extends Record<string, unknown> | Array<unknown> = any, K extends string = any> extends TheInformation<R> {
+    private baseSrc;
+    private keySrc;
+    constructor(baseSrc: InformationType<T>, keySrc: InformationType<K>);
+    value(o: OwnerType<R>): this;
 }
 
 /**
@@ -113,11 +113,22 @@ declare class Shot<T> extends TheInformation<T> {
     value(o: OwnerType<T>): this;
 }
 
+declare class Sync<T> extends TheInformation<T> {
+    private baseSrc;
+    private theValue;
+    private isInit;
+    constructor(baseSrc: InformationType<T>);
+    value(o: OwnerType<T>): this;
+    valueExisted(): boolean;
+    valueSync(): T;
+    initOwner(): this;
+}
+
 /**
- * Represents source what was changed at least once
- * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
+ * Accumulates the last value of the source and returns one result once per tick
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-declare class OnlyChanged<T> extends TheInformation<T> {
+declare class Tick<T> extends TheInformation<T> {
     private baseSrc;
     constructor(baseSrc: InformationType<T>);
     value(o: OwnerType<T>): this;
@@ -295,5 +306,5 @@ declare class First<T extends Array<unknown>> extends TheInformation<T[0]> {
     value(o: OwnerType<T[0]>): this;
 }
 
-export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
 export type { Route };

@@ -4,14 +4,135 @@ var silentium = require('silentium');
 
 var __defProp$2 = Object.defineProperty;
 var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$2 = (obj, key, value) => __defNormalProp$2(obj, key + "" , value);
+var __publicField$2 = (obj, key, value) => __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
+class Sync extends silentium.TheInformation {
+  constructor(baseSrc) {
+    super(baseSrc);
+    this.baseSrc = baseSrc;
+    __publicField$2(this, "theValue");
+    __publicField$2(this, "isInit", false);
+  }
+  value(o) {
+    this.baseSrc.value(o);
+    return this;
+  }
+  valueExisted() {
+    this.initOwner();
+    return silentium.isFilled(this.theValue);
+  }
+  valueSync() {
+    this.initOwner();
+    if (!silentium.isFilled(this.theValue)) {
+      throw new Error("no value in sync");
+    }
+    return this.theValue;
+  }
+  initOwner() {
+    if (!this.isInit) {
+      this.isInit = true;
+      this.value(
+        new silentium.From((v) => {
+          this.theValue = v;
+        })
+      );
+    }
+    return this;
+  }
+}
+
+class Branch extends silentium.TheInformation {
+  constructor(conditionSrc, leftSrc, rightSrc) {
+    super([conditionSrc, leftSrc, rightSrc]);
+    this.conditionSrc = conditionSrc;
+    this.leftSrc = leftSrc;
+    this.rightSrc = rightSrc;
+  }
+  value(o) {
+    const leftSync = new Sync(this.leftSrc).initOwner();
+    let rightSync;
+    if (this.rightSrc !== void 0) {
+      rightSync = new Sync(this.rightSrc).initOwner();
+    }
+    this.conditionSrc.value(
+      new silentium.From((v) => {
+        if (v) {
+          o.give(leftSync.valueSync());
+        } else if (rightSync) {
+          o.give(rightSync.valueSync());
+        }
+      })
+    );
+    return this;
+  }
+}
+
+class Deadline extends silentium.TheInformation {
+  constructor(error, baseSrc, timeoutSrc) {
+    super([error, baseSrc, timeoutSrc]);
+    this.error = error;
+    this.baseSrc = baseSrc;
+    this.timeoutSrc = timeoutSrc;
+  }
+  value(o) {
+    let timerHead = null;
+    const s = new silentium.Shared(this.baseSrc, true);
+    this.addDep(s);
+    this.timeoutSrc.value(
+      new silentium.From((timeout) => {
+        if (timerHead) {
+          clearTimeout(timerHead);
+        }
+        let timeoutReached = false;
+        timerHead = setTimeout(() => {
+          if (timeoutReached) {
+            return;
+          }
+          timeoutReached = true;
+          this.error.give(new Error("Timeout reached in Deadline class"));
+        }, timeout);
+        const f = new silentium.Filtered(s, () => !timeoutReached);
+        this.addDep(f);
+        f.value(o);
+        s.value(
+          new silentium.From(() => {
+            timeoutReached = true;
+          })
+        );
+      })
+    );
+    return this;
+  }
+}
+
+class Deferred extends silentium.TheInformation {
+  constructor(baseSrc, triggerSrc) {
+    super();
+    this.baseSrc = baseSrc;
+    this.triggerSrc = triggerSrc;
+  }
+  value(o) {
+    const baseSync = new Sync(this.baseSrc).initOwner();
+    this.triggerSrc.value(
+      new silentium.From(() => {
+        if (silentium.isFilled(baseSync.valueSync())) {
+          o.give(baseSync.valueSync());
+        }
+      })
+    );
+    return this;
+  }
+}
+
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, key + "" , value);
 class Dirty extends silentium.TheInformation {
   constructor(baseEntitySource, alwaysKeep = [], excludeKeys = []) {
     super([baseEntitySource]);
     this.baseEntitySource = baseEntitySource;
     this.alwaysKeep = alwaysKeep;
     this.excludeKeys = excludeKeys;
-    __publicField$2(this, "comparingSrc", new silentium.Late());
+    __publicField$1(this, "comparingSrc", new silentium.Late());
   }
   value(o) {
     const comparingDetached = new silentium.Applied(
@@ -67,6 +188,65 @@ class Loading extends silentium.TheInformation {
   }
 }
 
+class Lock extends silentium.TheInformation {
+  constructor(baseSrc, lockSrc) {
+    super(baseSrc, lockSrc);
+    this.baseSrc = baseSrc;
+    this.lockSrc = lockSrc;
+  }
+  value(o) {
+    let locked = false;
+    this.lockSrc.value(
+      new silentium.From((newLock) => {
+        locked = newLock;
+      })
+    );
+    const i = new silentium.Filtered(this.baseSrc, () => !locked);
+    this.addDep(i);
+    i.value(o);
+    return this;
+  }
+}
+
+class Memo extends silentium.TheInformation {
+  constructor(baseSrc) {
+    super(baseSrc);
+    this.baseSrc = baseSrc;
+  }
+  value(o) {
+    let lastValue = null;
+    this.baseSrc.value(
+      new silentium.From((v) => {
+        if (v !== lastValue) {
+          o.give(v);
+          lastValue = v;
+        }
+      })
+    );
+    return this;
+  }
+}
+
+class OnlyChanged extends silentium.TheInformation {
+  constructor(baseSrc) {
+    super(baseSrc);
+    this.baseSrc = baseSrc;
+  }
+  value(o) {
+    let firstValue = false;
+    this.baseSrc.value(
+      new silentium.From((v) => {
+        if (firstValue === false) {
+          firstValue = true;
+        } else {
+          o.give(v);
+        }
+      })
+    );
+    return this;
+  }
+}
+
 class Path extends silentium.TheInformation {
   constructor(baseSrc, keySrc) {
     super(baseSrc, keySrc);
@@ -91,38 +271,20 @@ class Path extends silentium.TheInformation {
   }
 }
 
-class Deadline extends silentium.TheInformation {
-  constructor(error, baseSrc, timeoutSrc) {
-    super([error, baseSrc, timeoutSrc]);
-    this.error = error;
-    this.baseSrc = baseSrc;
-    this.timeoutSrc = timeoutSrc;
+class Shot extends silentium.TheInformation {
+  constructor(targetSrc, triggerSrc) {
+    super(targetSrc, triggerSrc);
+    this.targetSrc = targetSrc;
+    this.triggerSrc = triggerSrc;
   }
   value(o) {
-    let timerHead = null;
-    const s = new silentium.Shared(this.baseSrc, true);
-    this.addDep(s);
-    this.timeoutSrc.value(
-      new silentium.From((timeout) => {
-        if (timerHead) {
-          clearTimeout(timerHead);
+    const targetSync = new Sync(this.targetSrc);
+    targetSync.initOwner();
+    this.triggerSrc.value(
+      new silentium.From(() => {
+        if (targetSync.valueExisted()) {
+          o.give(targetSync.valueSync());
         }
-        let timeoutReached = false;
-        timerHead = setTimeout(() => {
-          if (timeoutReached) {
-            return;
-          }
-          timeoutReached = true;
-          this.error.give(new Error("Timeout reached in Deadline class"));
-        }, timeout);
-        const f = new silentium.Filtered(s, () => !timeoutReached);
-        this.addDep(f);
-        f.value(o);
-        s.value(
-          new silentium.From(() => {
-            timeoutReached = true;
-          })
-        );
       })
     );
     return this;
@@ -152,168 +314,6 @@ class Tick extends silentium.TheInformation {
         lastValue = v;
         if (!microtaskScheduled) {
           scheduleMicrotask();
-        }
-      })
-    );
-    return this;
-  }
-}
-
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
-class Sync extends silentium.TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-    __publicField$1(this, "theValue");
-    __publicField$1(this, "isInit", false);
-  }
-  value(o) {
-    this.baseSrc.value(o);
-    return this;
-  }
-  valueExisted() {
-    this.initOwner();
-    return silentium.isFilled(this.theValue);
-  }
-  valueSync() {
-    this.initOwner();
-    if (!silentium.isFilled(this.theValue)) {
-      throw new Error("no value in sync");
-    }
-    return this.theValue;
-  }
-  initOwner() {
-    if (!this.isInit) {
-      this.isInit = true;
-      this.value(
-        new silentium.From((v) => {
-          this.theValue = v;
-        })
-      );
-    }
-    return this;
-  }
-}
-
-class Deferred extends silentium.TheInformation {
-  constructor(baseSrc, triggerSrc) {
-    super();
-    this.baseSrc = baseSrc;
-    this.triggerSrc = triggerSrc;
-  }
-  value(o) {
-    const baseSync = new Sync(this.baseSrc).initOwner();
-    this.triggerSrc.value(
-      new silentium.From(() => {
-        if (silentium.isFilled(baseSync.valueSync())) {
-          o.give(baseSync.valueSync());
-        }
-      })
-    );
-    return this;
-  }
-}
-
-class Branch extends silentium.TheInformation {
-  constructor(conditionSrc, leftSrc, rightSrc) {
-    super([conditionSrc, leftSrc, rightSrc]);
-    this.conditionSrc = conditionSrc;
-    this.leftSrc = leftSrc;
-    this.rightSrc = rightSrc;
-  }
-  value(o) {
-    const leftSync = new Sync(this.leftSrc).initOwner();
-    let rightSync;
-    if (this.rightSrc !== void 0) {
-      rightSync = new Sync(this.rightSrc).initOwner();
-    }
-    this.conditionSrc.value(
-      new silentium.From((v) => {
-        if (v) {
-          o.give(leftSync.valueSync());
-        } else if (rightSync) {
-          o.give(rightSync.valueSync());
-        }
-      })
-    );
-    return this;
-  }
-}
-
-class Memo extends silentium.TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
-    let lastValue = null;
-    this.baseSrc.value(
-      new silentium.From((v) => {
-        if (v !== lastValue) {
-          o.give(v);
-          lastValue = v;
-        }
-      })
-    );
-    return this;
-  }
-}
-
-class Lock extends silentium.TheInformation {
-  constructor(baseSrc, lockSrc) {
-    super(baseSrc, lockSrc);
-    this.baseSrc = baseSrc;
-    this.lockSrc = lockSrc;
-  }
-  value(o) {
-    let locked = false;
-    this.lockSrc.value(
-      new silentium.From((newLock) => {
-        locked = newLock;
-      })
-    );
-    const i = new silentium.Filtered(this.baseSrc, () => !locked);
-    this.addDep(i);
-    i.value(o);
-    return this;
-  }
-}
-
-class Shot extends silentium.TheInformation {
-  constructor(targetSrc, triggerSrc) {
-    super(targetSrc, triggerSrc);
-    this.targetSrc = targetSrc;
-    this.triggerSrc = triggerSrc;
-  }
-  value(o) {
-    const targetSync = new Sync(this.targetSrc);
-    targetSync.initOwner();
-    this.triggerSrc.value(
-      new silentium.From(() => {
-        if (targetSync.valueExisted()) {
-          o.give(targetSync.valueSync());
-        }
-      })
-    );
-    return this;
-  }
-}
-
-class OnlyChanged extends silentium.TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
-    let firstValue = false;
-    this.baseSrc.value(
-      new silentium.From((v) => {
-        if (firstValue === false) {
-          firstValue = true;
-        } else {
-          o.give(v);
         }
       })
     );
@@ -634,6 +634,7 @@ exports.RegexpReplaced = RegexpReplaced;
 exports.Router = Router;
 exports.Set = Set;
 exports.Shot = Shot;
+exports.Sync = Sync;
 exports.Template = Template;
 exports.Tick = Tick;
 exports.ToJson = ToJson;
