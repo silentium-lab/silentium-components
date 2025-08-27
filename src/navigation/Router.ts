@@ -14,7 +14,7 @@ import { RegexpMatched } from "../system";
 export interface Route<T> {
   pattern: string;
   patternFlags?: string;
-  template: T | TheInformation<T>;
+  template: T | InformationType<T>;
 }
 
 /**
