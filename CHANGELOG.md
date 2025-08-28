@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.36](https://github.com/silentium-lab/silentium-components/compare/v0.0.35...v0.0.36) (2025-08-28)
+
+
+### Bug Fixes
+
+* **main:** router with lazy branch ([02048dd](https://github.com/silentium-lab/silentium-components/commit/02048dd172add9d70d46612be08847056243a9d0))
+
 ### [0.0.35](https://github.com/silentium-lab/silentium-components/compare/v0.0.34...v0.0.35) (2025-08-27)
 
 
