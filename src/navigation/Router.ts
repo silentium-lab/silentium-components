@@ -3,18 +3,19 @@ import {
   Chain,
   From,
   InformationType,
+  Lazy,
   Of,
   OwnerType,
   TheInformation,
   TheOwner,
 } from "silentium";
-import { Branch } from "../behaviors";
 import { RegexpMatched } from "../system";
+import { BranchLazy } from "../behaviors/BranchLazy";
 
 export interface Route<T> {
   pattern: string;
   patternFlags?: string;
-  template: T | InformationType<T>;
+  template: Lazy<T>;
 }
 
 /**
@@ -36,16 +37,13 @@ export class Router<T = "string"> extends TheInformation<T> {
         new Any(
           new Chain(this.urlSrc, this.defaultSrc),
           ...routes.map((r) => {
-            return new Branch(
+            return new BranchLazy(
               new RegexpMatched(
                 new Of(r.pattern),
                 this.urlSrc,
                 r.patternFlags ? new Of(r.patternFlags) : undefined,
               ),
-              (typeof r.template === "object" &&
-              "value" in (r.template as InformationType)
-                ? r.template
-                : new Of(r.template)) as TheInformation,
+              r.template,
             );
           }),
         ).value(o as TheOwner);

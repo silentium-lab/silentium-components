@@ -1,12 +1,12 @@
-import { Applied, From, Late, Of, Shared } from "silentium";
+import { Applied, From, Late, Lazy, Of, Shared } from "silentium";
 import { expect, test, vi } from "vitest";
-import { Router } from "../navigation/Router";
+import { Router } from "./Router";
 
 const drop = (dropPart: string) => (value: string) => {
   return value.replace(dropPart, "");
 };
 
-test("Router.test", () => {
+test("Router._main.test", () => {
   const urlSrc = new Late<string>("http://domain.com/");
   const urlPathSrc = new Shared(new Applied(urlSrc, drop("http://domain.com")));
   const g = vi.fn();
@@ -17,11 +17,11 @@ test("Router.test", () => {
     new Of([
       {
         pattern: "^/$",
-        template: new Of("page/home.html"),
+        template: new Lazy(() => new Of("page/home.html")),
       },
       {
         pattern: "/some/contacts",
-        template: "page/contacts.html",
+        template: new Lazy(() => new Of("page/contacts.html")),
       },
     ]),
     new Of<string>("page/404.html"),
