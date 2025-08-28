@@ -1,4 +1,4 @@
-import { TheInformation, InformationType, OwnerType, From } from 'silentium';
+import { TheInformation, InformationType, OwnerType, From, Lazy } from 'silentium';
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
@@ -175,7 +175,7 @@ declare class Template extends TheInformation<string> {
 interface Route<T> {
     pattern: string;
     patternFlags?: string;
-    template: T | InformationType<T>;
+    template: Lazy<T>;
 }
 /**
  * Router component what will return template if url matches pattern
