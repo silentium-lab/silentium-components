@@ -382,7 +382,9 @@ class Template extends TheInformation {
     this.placesSrc = placesSrc;
     __publicField$1(this, "source");
     __publicField$1(this, "placesCounter", 0);
-    __publicField$1(this, "vars", {});
+    __publicField$1(this, "vars", {
+      $TPL: new Of("$TPL")
+    });
     this.source = source;
   }
   value(guest) {
@@ -403,6 +405,7 @@ class Template extends TheInformation {
   }
   template(value) {
     this.source = new Of(value);
+    this.addDep(this.source);
     return this;
   }
   /**

@@ -384,7 +384,9 @@ class Template extends silentium.TheInformation {
     this.placesSrc = placesSrc;
     __publicField$1(this, "source");
     __publicField$1(this, "placesCounter", 0);
-    __publicField$1(this, "vars", {});
+    __publicField$1(this, "vars", {
+      $TPL: new silentium.Of("$TPL")
+    });
     this.source = source;
   }
   value(guest) {
@@ -405,6 +407,7 @@ class Template extends silentium.TheInformation {
   }
   template(value) {
     this.source = new silentium.Of(value);
+    this.addDep(this.source);
     return this;
   }
   /**
