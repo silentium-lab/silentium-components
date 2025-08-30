@@ -12,21 +12,21 @@ test("Branch.dontRespondAfterRespond.test", () => {
   const g = vi.fn();
   branchI.value(new From(g));
 
-  l.owner().give(2);
+  l.give(2);
   expect(g).toHaveBeenLastCalledWith("then");
 
   const g2 = vi.fn();
   branchI.value(new From(g2));
-  l.owner().give(1);
+  l.give(1);
   expect(g2).not.toHaveBeenCalled();
 
   const g3 = vi.fn();
   branchI.value(new From(g3));
-  l.owner().give(2);
+  l.give(2);
   expect(g3).toHaveBeenLastCalledWith("then");
 
   const g4 = vi.fn();
   branchI.value(new From(g4));
-  l.owner().give(3);
+  l.give(3);
   expect(g4).not.toHaveBeenCalled();
 });

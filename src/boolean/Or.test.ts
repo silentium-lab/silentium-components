@@ -10,15 +10,15 @@ test("Or.test", () => {
   result.value(new From(g));
   expect(g).toHaveBeenLastCalledWith(false);
 
-  one.owner().give(true);
-  two.owner().give(false);
+  one.give(true);
+  two.give(false);
   expect(g).toHaveBeenLastCalledWith(true);
 
-  one.owner().give(false);
-  two.owner().give(true);
+  one.give(false);
+  two.give(true);
   expect(g).toHaveBeenLastCalledWith(true);
 
-  one.owner().give(true);
-  two.owner().give(true);
+  one.give(true);
+  two.give(true);
   expect(g).toHaveBeenLastCalledWith(true);
 });

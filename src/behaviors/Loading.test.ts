@@ -8,8 +8,8 @@ test("Loading.test", () => {
   const loadingSrc = new Loading(loadingStartSource, loadingFinishSource);
   const g = vi.fn();
   loadingSrc.value(new From(g));
-  loadingStartSource.owner().give({});
+  loadingStartSource.give({});
   expect(g).toHaveBeenLastCalledWith(true);
-  loadingFinishSource.owner().give({});
+  loadingFinishSource.give({});
   expect(g).toHaveBeenLastCalledWith(false);
 });

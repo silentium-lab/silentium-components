@@ -16,7 +16,7 @@ test("Deadline._value.test", () => {
   const l = new Late<number>();
 
   setTimeout(() => {
-    l.owner().give(11);
+    l.give(11);
   }, 10);
 
   const dl = new Deadline(new From(errorGuest), l, new Of(200));

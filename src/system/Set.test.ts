@@ -13,7 +13,7 @@ test("Set.test", () => {
 
   expect(object.value).toBe("hello");
 
-  value.owner().give("bue!");
+  value.give("bue!");
 
   expect(object.value).toBe("bue!");
 });

@@ -15,16 +15,16 @@ test("Memo.test", () => {
     }),
   );
 
-  l.owner().give(2);
-  l.owner().give(2);
-  l.owner().give(2);
-  l.owner().give(2);
-  l.owner().give(2);
+  l.give(2);
+  l.give(2);
+  l.give(2);
+  l.give(2);
+  l.give(2);
 
   expect(g).toHaveBeenLastCalledWith(2);
   expect(counter).toBe(2);
 
-  l.owner().give(3);
+  l.give(3);
 
   expect(g).toHaveBeenLastCalledWith(3);
   expect(counter).toBe(3);

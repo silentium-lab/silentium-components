@@ -30,7 +30,7 @@ test("Record.concatenated.test", () => {
     nested: "onepart",
   });
 
-  concatPart.owner().give("changed");
+  concatPart.give("changed");
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

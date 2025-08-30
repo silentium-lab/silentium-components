@@ -13,18 +13,18 @@ test("Deferred.test", () => {
   urlWithLayoutSrc.value(new From(g1));
   expect(g1).not.toHaveBeenCalled();
 
-  layoutSrc.owner().give("layout here");
+  layoutSrc.give("layout here");
 
   const g2 = vi.fn();
   urlWithLayoutSrc.value(new From(g2));
-  urlSrc.owner().give("http://new.com");
+  urlSrc.give("http://new.com");
   expect(g2).toHaveBeenCalledWith("http://hello.com");
 
   const urlSync = new Sync(urlWithLayoutSrc);
 
   expect(urlSync.valueSync()).toBe("http://hello.com");
 
-  layoutSrc.owner().give("layout here again");
+  layoutSrc.give("layout here again");
 
   expect(urlSync.valueSync()).toBe("http://new.com");
 });

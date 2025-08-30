@@ -11,7 +11,7 @@ test("Dirty.test", () => {
   const g = vi.fn();
   d.value(new From(g));
 
-  d.owner().give({
+  d.give({
     name: "new",
     surname: "two",
   });

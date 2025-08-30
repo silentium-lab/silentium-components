@@ -13,10 +13,10 @@ test("Branch.branchesDontAffectResult.test", () => {
   const g = vi.fn();
   boolSync.value(new From(g));
 
-  l.owner().give(1);
+  l.give(1);
   expect(g).toHaveBeenLastCalledWith("else");
 
-  el.owner().give("else changed");
+  el.give("else changed");
   // changed else source don't affect branch result
   expect(g).toHaveBeenLastCalledWith("else");
 });

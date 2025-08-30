@@ -16,7 +16,7 @@ test("Branch._main.test", () => {
   res.value(new From(g));
   expect(g).toBeCalledWith("Then ветка");
 
-  l.owner().give(1);
+  l.give(1);
 
   expect(g).toBeCalledWith("Else ветка");
 });

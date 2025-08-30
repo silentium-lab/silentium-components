@@ -31,16 +31,16 @@ test("Router._main.test", () => {
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 
-  urlSrc.owner().give("http://domain.com/some/contacts");
+  urlSrc.give("http://domain.com/some/contacts");
 
   expect(g).toHaveBeenLastCalledWith("/some/contacts");
   expect(g2).toHaveBeenLastCalledWith("page/contacts.html");
 
-  urlSrc.owner().give("http://domain.com/some/unknown/");
+  urlSrc.give("http://domain.com/some/unknown/");
 
   expect(g2).toHaveBeenLastCalledWith("page/404.html");
 
-  urlSrc.owner().give("http://domain.com/");
+  urlSrc.give("http://domain.com/");
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 });

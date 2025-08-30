@@ -13,18 +13,18 @@ test("Lock.test", () => {
 
   expect(g).toHaveBeenLastCalledWith(1);
 
-  source.owner().give(2);
+  source.give(2);
 
   expect(g).toHaveBeenLastCalledWith(2);
 
-  lockSrc.owner().give(true);
-  source.owner().give(3);
-  source.owner().give(4);
-  source.owner().give(5);
+  lockSrc.give(true);
+  source.give(3);
+  source.give(4);
+  source.give(5);
 
   expect(g).toHaveBeenLastCalledWith(2);
 
-  lockSrc.owner().give(false);
-  source.owner().give(6);
+  lockSrc.give(false);
+  source.give(6);
   expect(g).toHaveBeenLastCalledWith(6);
 });

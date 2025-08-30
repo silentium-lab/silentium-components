@@ -10,16 +10,16 @@ test("Shot._main.test", () => {
   const g = vi.fn();
   shotResult.value(new From(g));
 
-  baseSrc.owner().give(1);
-  shotSrc.owner().give(1);
+  baseSrc.give(1);
+  shotSrc.give(1);
 
   expect(g).toHaveBeenLastCalledWith(1);
 
-  baseSrc.owner().give(2);
+  baseSrc.give(2);
 
   expect(g).toHaveBeenLastCalledWith(1);
 
-  shotSrc.owner().give(1);
+  shotSrc.give(1);
 
   expect(g).toHaveBeenLastCalledWith(2);
 

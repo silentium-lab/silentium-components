@@ -19,8 +19,8 @@ test("Tick.test", async () => {
   const g = vi.fn();
   tickSrc.value(new From(g));
 
-  s1.owner().give(3);
-  s2.owner().give(4);
+  s1.give(3);
+  s2.give(4);
 
   await vi.advanceTimersByTimeAsync(10);
   vi.runAllTicks();

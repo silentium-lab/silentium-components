@@ -18,19 +18,19 @@ test("Shot._onlyChanged.test", () => {
 
   expect(vals).toStrictEqual([]);
 
-  baseSrc.owner().give(222);
+  baseSrc.give(222);
 
   expect(vals).toStrictEqual([]);
 
-  baseSrc.owner().give(222);
+  baseSrc.give(222);
 
   expect(vals).toStrictEqual([222]);
 
-  baseSrc.owner().give(333);
+  baseSrc.give(333);
 
   expect(vals).toStrictEqual([222, 333]);
 
-  baseSrc.owner().give(123);
+  baseSrc.give(123);
 
   expect(vals).toStrictEqual([222, 333, 123]);
 });

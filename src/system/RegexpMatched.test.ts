@@ -10,7 +10,7 @@ test("RegexpMatched.test", () => {
 
   expect(g).toHaveBeenLastCalledWith(true);
 
-  urlI.owner().give("http://domain.com/changed");
+  urlI.give("http://domain.com/changed");
 
   expect(g).toHaveBeenLastCalledWith(false);
 });

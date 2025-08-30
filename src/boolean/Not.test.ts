@@ -9,6 +9,6 @@ test("Not.test", () => {
   result.value(new From(g));
   expect(g).toHaveBeenLastCalledWith(true);
 
-  one.owner().give(true);
+  one.give(true);
   expect(g).toHaveBeenLastCalledWith(false);
 });

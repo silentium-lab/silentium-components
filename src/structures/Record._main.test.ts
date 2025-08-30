@@ -18,7 +18,7 @@ test("Record._main.test", () => {
     three: "three",
   });
 
-  three.owner().give("three-changed");
+  three.give("three-changed");
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

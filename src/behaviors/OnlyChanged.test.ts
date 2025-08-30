@@ -10,7 +10,7 @@ test("OnlyChanged.test", () => {
   changedSrc.value(new From(g));
   expect(g).not.toBeCalled();
 
-  src.owner().give(2);
+  src.give(2);
 
   const g2 = vi.fn();
   changedSrc.value(new From(g2));

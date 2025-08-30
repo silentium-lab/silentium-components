@@ -7,8 +7,8 @@ test("HashTable.test", () => {
   const hashTableSrc = new HashTable(entrySource);
   const g = vi.fn();
   hashTableSrc.value(new From(g));
-  entrySource.owner().give(["key-one", "value-one"]);
-  entrySource.owner().give(["key-two", "value-two"]);
+  entrySource.give(["key-one", "value-one"]);
+  entrySource.give(["key-two", "value-two"]);
 
   expect(g).toHaveBeenLastCalledWith({
     "key-one": "value-one",

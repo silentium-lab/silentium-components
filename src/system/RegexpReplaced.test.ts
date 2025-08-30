@@ -14,7 +14,7 @@ test("RegexpReplaced.test", () => {
 
   expect(g).toHaveBeenLastCalledWith("http://domain.com/");
 
-  urlSrc.owner().give("http://domain.com/some/url/changed/");
+  urlSrc.give("http://domain.com/some/url/changed/");
 
   expect(g).toHaveBeenLastCalledWith("http://domain.com/changed/");
 });

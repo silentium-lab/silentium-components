@@ -13,7 +13,7 @@ import {
  * returns new record, what will contain only fields what was changed
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
-export class Dirty<T> extends TheInformation<T> {
+export class Dirty<T> extends TheInformation<T> implements OwnerType<T> {
   private comparingSrc = new Late<T>();
 
   public constructor(
@@ -55,7 +55,8 @@ export class Dirty<T> extends TheInformation<T> {
     return this;
   }
 
-  public owner() {
-    return this.comparingSrc.owner();
+  public give(value: T): this {
+    this.comparingSrc.give(value);
+    return this;
   }
 }
