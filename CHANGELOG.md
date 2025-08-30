@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.37](https://github.com/silentium-lab/silentium-components/compare/v0.0.36...v0.0.37) (2025-08-30)
+
+
+### Bug Fixes
+
+* **main:** template variables ([52b0864](https://github.com/silentium-lab/silentium-components/commit/52b0864785e7ce26f4fa1ad11de787fa0417a551))
+
 ### [0.0.36](https://github.com/silentium-lab/silentium-components/compare/v0.0.35...v0.0.36) (2025-08-28)
 
 
