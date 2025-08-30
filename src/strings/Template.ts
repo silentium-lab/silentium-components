@@ -11,7 +11,9 @@ import { RecordOf } from "../structures";
 export class Template extends TheInformation<string> {
   private source: InformationType<string>;
   private placesCounter = 0;
-  private vars: Record<string, InformationType> = {};
+  private vars: Record<string, InformationType> = {
+    $TPL: new Of("$TPL"),
+  };
 
   public constructor(
     theSrc: InformationType<string> | string = "",
@@ -42,6 +44,7 @@ export class Template extends TheInformation<string> {
 
   public template(value: string) {
     this.source = new Of(value);
+    this.addDep(this.source);
     return this;
   }
 
