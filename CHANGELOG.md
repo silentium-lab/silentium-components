@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.39](https://github.com/silentium-lab/silentium-components/compare/v0.0.38...v0.0.39) (2025-08-30)
+
+
+### Bug Fixes
+
+* **main:** fixes for owner methods ([beed87d](https://github.com/silentium-lab/silentium-components/commit/beed87d0bb97574de8b29b8f79fed3440d0a2363))
+
 ### [0.0.38](https://github.com/silentium-lab/silentium-components/compare/v0.0.37...v0.0.38) (2025-08-30)
 
 
