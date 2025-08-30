@@ -1,9 +1,9 @@
 import { From, Of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { Template } from "../strings/Template";
+import { Template } from "./Template";
 import { RecordOf } from "../structures";
 
-test("Template.test", () => {
+test("Template._main.test", () => {
   const tpl = new Template(
     "<h1>$1</h1>",
     new RecordOf({
