@@ -160,8 +160,9 @@ class Dirty extends TheInformation {
     this.addDep(allSrc);
     return this;
   }
-  owner() {
-    return this.comparingSrc.owner();
+  give(value) {
+    this.comparingSrc.give(value);
+    return this;
   }
 }
 

@@ -1,4 +1,4 @@
-import { TheInformation, InformationType, OwnerType, From, Lazy } from 'silentium';
+import { TheInformation, InformationType, OwnerType, Lazy } from 'silentium';
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
@@ -38,14 +38,14 @@ declare class Deferred<T> extends TheInformation<T> {
  * returns new record, what will contain only fields what was changed
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
-declare class Dirty<T> extends TheInformation<T> {
+declare class Dirty<T> extends TheInformation<T> implements OwnerType<T> {
     private baseEntitySource;
     private alwaysKeep;
     private excludeKeys;
     private comparingSrc;
     constructor(baseEntitySource: InformationType<T>, alwaysKeep?: string[], excludeKeys?: string[]);
     value(o: OwnerType<T>): this;
-    owner(): From<T>;
+    give(value: T): this;
 }
 
 /**
