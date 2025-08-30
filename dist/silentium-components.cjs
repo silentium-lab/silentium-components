@@ -376,23 +376,47 @@ class Concatenated extends silentium.TheInformation {
 
 var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, key + "" , value);
+var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
 class Template extends silentium.TheInformation {
-  constructor(theSrc, rules) {
+  constructor(theSrc = "", placesSrc = new silentium.Of({})) {
     const source = typeof theSrc === "string" ? new silentium.Of(theSrc) : theSrc;
-    super(source, rules);
-    this.rules = rules;
+    super(source, placesSrc);
+    this.placesSrc = placesSrc;
     __publicField$1(this, "source");
+    __publicField$1(this, "placesCounter", 0);
+    __publicField$1(this, "vars", {});
     this.source = source;
   }
   value(guest) {
-    new silentium.Applied(new silentium.All(this.source, this.rules), ([base, rules]) => {
-      Object.entries(rules).forEach(([ph, val]) => {
-        base = base.replaceAll(ph, String(val));
-      });
-      return base;
-    }).value(guest);
+    const varsSrc = new RecordOf(this.vars);
+    new silentium.Applied(
+      new silentium.All(this.source, this.placesSrc, varsSrc),
+      ([base, rules, vars]) => {
+        Object.entries(rules).forEach(([ph, val]) => {
+          base = base.replaceAll(ph, String(val));
+        });
+        Object.entries(vars).forEach(([ph, val]) => {
+          base = base.replaceAll(ph, String(val));
+        });
+        return base;
+      }
+    ).value(guest);
     return this;
+  }
+  template(value) {
+    this.source = new silentium.Of(value);
+    return this;
+  }
+  /**
+   * Ability to register variable
+   * in concrete place of template
+   */
+  var(src) {
+    this.addDep(src);
+    const varName = `$var${this.placesCounter}`;
+    this.placesCounter += 1;
+    this.vars[varName] = src;
+    return varName;
   }
 }
 

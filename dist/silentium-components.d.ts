@@ -166,10 +166,18 @@ declare class Concatenated extends TheInformation<string> {
 }
 
 declare class Template extends TheInformation<string> {
-    private rules;
+    private placesSrc;
     private source;
-    constructor(theSrc: InformationType<string> | string, rules: InformationType<Record<string, unknown>>);
+    private placesCounter;
+    private vars;
+    constructor(theSrc?: InformationType<string> | string, placesSrc?: InformationType<Record<string, unknown>>);
     value(guest: OwnerType<string>): this;
+    template(value: string): this;
+    /**
+     * Ability to register variable
+     * in concrete place of template
+     */
+    var(src: InformationType<string>): string;
 }
 
 interface Route<T> {
