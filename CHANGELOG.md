@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.44](https://github.com/silentium-lab/silentium-components/compare/v0.0.43...v0.0.44) (2025-08-31)
+
+
+### Bug Fixes
+
+* **main:** const component ([e053477](https://github.com/silentium-lab/silentium-components/commit/e053477e285fbe637d12ae9f2f478da28f8a7ec1))
+
 ### [0.0.43](https://github.com/silentium-lab/silentium-components/compare/v0.0.42...v0.0.43) (2025-08-30)
 
 ### [0.0.42](https://github.com/silentium-lab/silentium-components/compare/v0.0.41...v0.0.42) (2025-08-30)
