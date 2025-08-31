@@ -66,6 +66,22 @@ class Branch extends silentium.TheInformation {
   }
 }
 
+class Const extends silentium.TheInformation {
+  constructor(permanentValue, triggerSrc) {
+    super(triggerSrc);
+    this.permanentValue = permanentValue;
+    this.triggerSrc = triggerSrc;
+  }
+  value(o) {
+    this.triggerSrc.value(
+      new silentium.From(() => {
+        o.give(this.permanentValue);
+      })
+    );
+    return this;
+  }
+}
+
 class Deadline extends silentium.TheInformation {
   constructor(error, baseSrc, timeoutSrc) {
     super([error, baseSrc, timeoutSrc]);
@@ -677,6 +693,7 @@ exports.And = And;
 exports.Bool = Bool;
 exports.Branch = Branch;
 exports.Concatenated = Concatenated;
+exports.Const = Const;
 exports.Deadline = Deadline;
 exports.Deferred = Deferred;
 exports.Dirty = Dirty;

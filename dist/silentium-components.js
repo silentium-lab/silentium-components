@@ -64,6 +64,22 @@ class Branch extends TheInformation {
   }
 }
 
+class Const extends TheInformation {
+  constructor(permanentValue, triggerSrc) {
+    super(triggerSrc);
+    this.permanentValue = permanentValue;
+    this.triggerSrc = triggerSrc;
+  }
+  value(o) {
+    this.triggerSrc.value(
+      new From(() => {
+        o.give(this.permanentValue);
+      })
+    );
+    return this;
+  }
+}
+
 class Deadline extends TheInformation {
   constructor(error, baseSrc, timeoutSrc) {
     super([error, baseSrc, timeoutSrc]);
@@ -671,5 +687,5 @@ class First extends TheInformation {
   }
 }
 
-export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
 //# sourceMappingURL=silentium-components.js.map

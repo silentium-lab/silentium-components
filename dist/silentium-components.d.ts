@@ -11,6 +11,13 @@ declare class Branch<Then, Else> extends TheInformation<Then | Else> {
     value(o: OwnerType<Then | Else>): this;
 }
 
+declare class Const<T> extends TheInformation<T> {
+    private permanentValue;
+    private triggerSrc;
+    constructor(permanentValue: T, triggerSrc: InformationType);
+    value(o: OwnerType<T>): this;
+}
+
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
@@ -314,5 +321,5 @@ declare class First<T extends Array<unknown>> extends TheInformation<T[0]> {
     value(o: OwnerType<T[0]>): this;
 }
 
-export { And, Bool, Branch, Concatenated, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
 export type { Route };
