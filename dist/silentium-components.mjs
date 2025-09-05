@@ -1,14 +1,14 @@
-import { TheInformation, isFilled, From, Shared, Filtered, Late, Applied, All, Of, Any, Chain } from 'silentium';
+import { TheInformation, isFilled, From, Shared, Filtered, Late, Applied, All, Of, Any } from 'silentium';
 
-var __defProp$3 = Object.defineProperty;
-var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$3 = (obj, key, value) => __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
+var __defProp$4 = Object.defineProperty;
+var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$4 = (obj, key, value) => __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
 class Sync extends TheInformation {
   constructor(baseSrc) {
     super(baseSrc);
     this.baseSrc = baseSrc;
-    __publicField$3(this, "theValue");
-    __publicField$3(this, "isInit", false);
+    __publicField$4(this, "theValue");
+    __publicField$4(this, "isInit", false);
   }
   value(o) {
     this.baseSrc.value(o);
@@ -137,16 +137,16 @@ class Deferred extends TheInformation {
   }
 }
 
-var __defProp$2 = Object.defineProperty;
-var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$2 = (obj, key, value) => __defNormalProp$2(obj, key + "" , value);
+var __defProp$3 = Object.defineProperty;
+var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$3 = (obj, key, value) => __defNormalProp$3(obj, key + "" , value);
 class Dirty extends TheInformation {
   constructor(baseEntitySource, alwaysKeep = [], excludeKeys = []) {
     super([baseEntitySource]);
     this.baseEntitySource = baseEntitySource;
     this.alwaysKeep = alwaysKeep;
     this.excludeKeys = excludeKeys;
-    __publicField$2(this, "comparingSrc", new Late());
+    __publicField$3(this, "comparingSrc", new Late());
   }
   value(o) {
     const comparingDetached = new Applied(
@@ -389,17 +389,17 @@ class Concatenated extends TheInformation {
   }
 }
 
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
+var __defProp$2 = Object.defineProperty;
+var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$2 = (obj, key, value) => __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
 class Template extends TheInformation {
   constructor(theSrc = "", placesSrc = new Of({})) {
     const source = typeof theSrc === "string" ? new Of(theSrc) : theSrc;
     super(source, placesSrc);
     this.placesSrc = placesSrc;
-    __publicField$1(this, "source");
-    __publicField$1(this, "placesCounter", 0);
-    __publicField$1(this, "vars", {
+    __publicField$2(this, "source");
+    __publicField$2(this, "placesCounter", 0);
+    __publicField$2(this, "vars", {
       $TPL: new Of("$TPL")
     });
     this.source = source;
@@ -435,6 +435,41 @@ class Template extends TheInformation {
     this.placesCounter += 1;
     this.vars[varName] = src;
     return varName;
+  }
+}
+
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, key + "" , value);
+class BranchLazy extends TheInformation {
+  constructor(conditionSrc, leftSrc, rightSrc) {
+    super([conditionSrc, leftSrc, rightSrc]);
+    this.conditionSrc = conditionSrc;
+    this.leftSrc = leftSrc;
+    this.rightSrc = rightSrc;
+    __publicField$1(this, "instances", []);
+  }
+  value(o) {
+    this.conditionSrc.value(
+      new From((v) => {
+        if (this.instances.length) {
+          this.instances.forEach((instance2) => {
+            instance2?.destroy();
+          });
+        }
+        let instance = null;
+        if (v) {
+          instance = this.leftSrc.get();
+        } else if (this.rightSrc) {
+          instance = this.rightSrc.get();
+        }
+        if (instance) {
+          this.instances.push(instance);
+          instance.value(o);
+        }
+      })
+    );
+    return this;
   }
 }
 
@@ -517,55 +552,27 @@ class Set extends TheInformation {
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, key + "" , value);
-class BranchLazy extends TheInformation {
-  constructor(conditionSrc, leftSrc, rightSrc) {
-    super([conditionSrc, leftSrc, rightSrc]);
-    this.conditionSrc = conditionSrc;
-    this.leftSrc = leftSrc;
-    this.rightSrc = rightSrc;
-    __publicField(this, "instances", []);
-  }
-  value(o) {
-    this.conditionSrc.value(
-      new From((v) => {
-        if (this.instances.length) {
-          this.instances.forEach((instance2) => {
-            instance2?.destroy();
-          });
-        }
-        let instance = null;
-        if (v) {
-          instance = this.leftSrc.get();
-        } else if (this.rightSrc) {
-          instance = this.rightSrc.get();
-        }
-        if (instance) {
-          this.instances.push(instance);
-          instance.value(o);
-        }
-      })
-    );
-    return this;
-  }
-}
-
 class Router extends TheInformation {
   constructor(urlSrc, routesSrc, defaultSrc) {
     super(urlSrc, routesSrc, defaultSrc);
     this.urlSrc = urlSrc;
     this.routesSrc = routesSrc;
     this.defaultSrc = defaultSrc;
+    __publicField(this, "instance");
   }
   value(o) {
-    this.routesSrc.value(
-      new From((routes) => {
-        new Any(
-          new Chain(this.urlSrc, this.defaultSrc),
+    new All(this.routesSrc, this.urlSrc).value(
+      new From(([routes, url]) => {
+        if (this.instance) {
+          this.instance?.destroy();
+        }
+        this.instance = new Any(
+          this.defaultSrc.get(),
           ...routes.map((r) => {
             return new BranchLazy(
               new RegexpMatched(
                 new Of(r.pattern),
-                this.urlSrc,
+                new Of(url),
                 r.patternFlags ? new Of(r.patternFlags) : void 0
               ),
               r.template

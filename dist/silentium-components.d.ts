@@ -200,7 +200,8 @@ declare class Router<T = "string"> extends TheInformation<T> {
     private urlSrc;
     private routesSrc;
     private defaultSrc;
-    constructor(urlSrc: InformationType<string>, routesSrc: InformationType<Route<T>[]>, defaultSrc: InformationType<T>);
+    private instance?;
+    constructor(urlSrc: InformationType<string>, routesSrc: InformationType<Route<T>[]>, defaultSrc: Lazy<T>);
     value(o: OwnerType<T>): this;
 }
 

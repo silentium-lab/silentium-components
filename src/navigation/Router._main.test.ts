@@ -24,7 +24,7 @@ test("Router._main.test", () => {
         template: new Lazy(() => new Of("page/contacts.html")),
       },
     ]),
-    new Of<string>("page/404.html"),
+    new Lazy(() => new Of<string>("page/404.html")),
   );
   const g2 = vi.fn();
   routerSrc.value(new From(g2));
