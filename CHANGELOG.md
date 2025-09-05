@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.45](https://github.com/silentium-lab/silentium-components/compare/v0.0.44...v0.0.45) (2025-09-05)
+
+
+### Bug Fixes
+
+* **main:** router component fix ([2595641](https://github.com/silentium-lab/silentium-components/commit/2595641a74999e6b6446e2b9d6ccc490d41b277a))
+
 ### [0.0.44](https://github.com/silentium-lab/silentium-components/compare/v0.0.43...v0.0.44) (2025-08-31)
 
 
