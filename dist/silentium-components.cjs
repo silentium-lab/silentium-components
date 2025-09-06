@@ -554,6 +554,7 @@ class Set extends silentium.TheInformation {
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, key + "" , value);
+const emptySrc = new silentium.Lazy(() => new silentium.Of(false));
 class Router extends silentium.TheInformation {
   constructor(urlSrc, routesSrc, defaultSrc) {
     super(urlSrc, routesSrc, defaultSrc);
@@ -568,18 +569,31 @@ class Router extends silentium.TheInformation {
         if (this.instance) {
           this.instance?.destroy();
         }
-        this.instance = new silentium.Any(
+        this.instance = new silentium.All(
           this.defaultSrc.get(),
-          ...routes.map((r) => {
-            return new BranchLazy(
-              new RegexpMatched(
-                new silentium.Of(r.pattern),
-                new silentium.Of(url),
-                r.patternFlags ? new silentium.Of(r.patternFlags) : void 0
-              ),
-              r.template
-            );
-          })
+          new silentium.All(
+            ...routes.map(
+              (r) => new BranchLazy(
+                new RegexpMatched(
+                  new silentium.Of(r.pattern),
+                  new silentium.Of(url),
+                  r.patternFlags ? new silentium.Of(r.patternFlags) : void 0
+                ),
+                r.template,
+                emptySrc
+              )
+            )
+          )
+        );
+        new silentium.Applied(
+          this.instance,
+          (r) => {
+            const firstReal = r[1].find((r2) => r2 !== false);
+            if (firstReal) {
+              return firstReal;
+            }
+            return r[0];
+          }
         ).value(o);
       })
     );
