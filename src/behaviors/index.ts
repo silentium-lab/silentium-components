@@ -7,6 +7,7 @@ export * from "./Loading";
 export * from "./Lock";
 export * from "./Memo";
 export * from "./OnlyChanged";
+export * from "./Part";
 export * from "./Path";
 export * from "./Shot";
 export * from "./Sync";

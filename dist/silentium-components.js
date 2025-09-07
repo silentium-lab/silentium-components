@@ -1,14 +1,14 @@
-import { TheInformation, isFilled, From, Shared, Filtered, Late, Applied, All, Of, Lazy } from 'silentium';
+import { TheInformation, isFilled, From, Shared, Filtered, Late, Applied, All, MbInfo, Of, Lazy } from 'silentium';
 
-var __defProp$4 = Object.defineProperty;
-var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$4 = (obj, key, value) => __defNormalProp$4(obj, typeof key !== "symbol" ? key + "" : key, value);
+var __defProp$5 = Object.defineProperty;
+var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$5 = (obj, key, value) => __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
 class Sync extends TheInformation {
   constructor(baseSrc) {
     super(baseSrc);
     this.baseSrc = baseSrc;
-    __publicField$4(this, "theValue");
-    __publicField$4(this, "isInit", false);
+    __publicField$5(this, "theValue");
+    __publicField$5(this, "isInit", false);
   }
   value(o) {
     this.baseSrc.value(o);
@@ -137,16 +137,16 @@ class Deferred extends TheInformation {
   }
 }
 
-var __defProp$3 = Object.defineProperty;
-var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$3 = (obj, key, value) => __defNormalProp$3(obj, key + "" , value);
+var __defProp$4 = Object.defineProperty;
+var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$4 = (obj, key, value) => __defNormalProp$4(obj, key + "" , value);
 class Dirty extends TheInformation {
   constructor(baseEntitySource, alwaysKeep = [], excludeKeys = []) {
     super([baseEntitySource]);
     this.baseEntitySource = baseEntitySource;
     this.alwaysKeep = alwaysKeep;
     this.excludeKeys = excludeKeys;
-    __publicField$3(this, "comparingSrc", new Late());
+    __publicField$4(this, "comparingSrc", new Late());
   }
   value(o) {
     const comparingDetached = new Applied(
@@ -258,6 +258,46 @@ class OnlyChanged extends TheInformation {
         }
       })
     );
+    return this;
+  }
+}
+
+var __defProp$3 = Object.defineProperty;
+var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$3 = (obj, key, value) => __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
+class Part extends TheInformation {
+  constructor(baseSrc, key) {
+    super(baseSrc);
+    this.baseSrc = baseSrc;
+    this.key = key;
+    __publicField$3(this, "baseSync");
+    __publicField$3(this, "keySync");
+    __publicField$3(this, "keySrc");
+    this.keySrc = new MbInfo(key);
+    this.baseSync = new Sync(baseSrc);
+    this.keySync = new Sync(this.keySrc);
+  }
+  value(o) {
+    const allSrc = new All(this.baseSrc, this.keySrc).value(
+      new From(([base, key]) => {
+        const keyChunks = key.split(".");
+        let value = base;
+        keyChunks.forEach((keyChunk) => {
+          value = value[keyChunk];
+        });
+        if (value !== void 0 && value !== base) {
+          o.give(value);
+        }
+      })
+    );
+    this.addDep(allSrc);
+    return this;
+  }
+  give(value) {
+    this.baseSrc.give({
+      ...this.baseSync.valueSync(),
+      [this.keySync.valueSync()]: value
+    });
     return this;
   }
 }
@@ -708,5 +748,5 @@ class First extends TheInformation {
   }
 }
 
-export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
 //# sourceMappingURL=silentium-components.js.map

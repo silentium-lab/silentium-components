@@ -1,4 +1,4 @@
-import { TheInformation, InformationType, OwnerType, Lazy } from 'silentium';
+import { TheInformation, InformationType, OwnerType, SourceType, MaybeInformationType, Lazy } from 'silentium';
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
@@ -96,6 +96,21 @@ declare class OnlyChanged<T> extends TheInformation<T> {
     private baseSrc;
     constructor(baseSrc: InformationType<T>);
     value(o: OwnerType<T>): this;
+}
+
+/**
+ * Return source of record path
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/path
+ */
+declare class Part<R, T extends Record<string, unknown> | Array<unknown> = any, K extends string = any> extends TheInformation<R> implements OwnerType<R> {
+    private baseSrc;
+    private key;
+    private baseSync;
+    private keySync;
+    private keySrc;
+    constructor(baseSrc: SourceType<T>, key: MaybeInformationType<K>);
+    value(o: OwnerType<R>): this;
+    give(value: R): this;
 }
 
 /**
@@ -322,5 +337,5 @@ declare class First<T extends Array<unknown>> extends TheInformation<T[0]> {
     value(o: OwnerType<T[0]>): this;
 }
 
-export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
 export type { Route };
