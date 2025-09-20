@@ -326,6 +326,26 @@ class Path extends TheInformation {
   }
 }
 
+class Polling extends TheInformation {
+  constructor(baseSrc, triggerSrc) {
+    super(baseSrc, triggerSrc);
+    this.baseSrc = baseSrc;
+    this.triggerSrc = triggerSrc;
+  }
+  value(o) {
+    this.triggerSrc.value(
+      new From(() => {
+        this.baseSrc.value(
+          new From((v) => {
+            o.give(v);
+          })
+        );
+      })
+    );
+    return this;
+  }
+}
+
 class Shot extends TheInformation {
   constructor(targetSrc, triggerSrc) {
     super(targetSrc, triggerSrc);
@@ -748,5 +768,5 @@ class First extends TheInformation {
   }
 }
 
-export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
 //# sourceMappingURL=silentium-components.mjs.map

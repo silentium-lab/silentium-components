@@ -328,6 +328,26 @@ class Path extends silentium.TheInformation {
   }
 }
 
+class Polling extends silentium.TheInformation {
+  constructor(baseSrc, triggerSrc) {
+    super(baseSrc, triggerSrc);
+    this.baseSrc = baseSrc;
+    this.triggerSrc = triggerSrc;
+  }
+  value(o) {
+    this.triggerSrc.value(
+      new silentium.From(() => {
+        this.baseSrc.value(
+          new silentium.From((v) => {
+            o.give(v);
+          })
+        );
+      })
+    );
+    return this;
+  }
+}
+
 class Shot extends silentium.TheInformation {
   constructor(targetSrc, triggerSrc) {
     super(targetSrc, triggerSrc);
@@ -769,6 +789,7 @@ exports.OnlyChanged = OnlyChanged;
 exports.Or = Or;
 exports.Part = Part;
 exports.Path = Path;
+exports.Polling = Polling;
 exports.RecordOf = RecordOf;
 exports.RegexpMatch = RegexpMatch;
 exports.RegexpMatched = RegexpMatched;

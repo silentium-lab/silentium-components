@@ -124,6 +124,13 @@ declare class Path<R, T extends Record<string, unknown> | Array<unknown> = any, 
     value(o: OwnerType<R>): this;
 }
 
+declare class Polling<T> extends TheInformation<T> {
+    private baseSrc;
+    private triggerSrc;
+    constructor(baseSrc: InformationType<T>, triggerSrc: InformationType<T>);
+    value(o: OwnerType<T>): this;
+}
+
 /**
  * Helps to represent only last fresh value of some source, refreshing controls by shotSrc
  * https://silentium-lab.github.io/silentium-components/#/behaviors/shot
@@ -337,5 +344,5 @@ declare class First<T extends Array<unknown>> extends TheInformation<T[0]> {
     value(o: OwnerType<T[0]>): this;
 }
 
-export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
 export type { Route };
