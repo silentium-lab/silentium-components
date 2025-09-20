@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.52](https://github.com/silentium-lab/silentium-components/compare/v0.0.51...v0.0.52) (2025-09-20)
+
+
+### Bug Fixes
+
+* **main:** polling component ([6b771ec](https://github.com/silentium-lab/silentium-components/commit/6b771ecac5fc63d4d05453e8458c4ed9c7296e28))
+
 ### [0.0.51](https://github.com/silentium-lab/silentium-components/compare/v0.0.50...v0.0.51) (2025-09-07)
 
 ### [0.0.50](https://github.com/silentium-lab/silentium-components/compare/v0.0.49...v0.0.50) (2025-09-07)
