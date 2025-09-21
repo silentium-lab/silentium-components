@@ -163,6 +163,13 @@ declare class Tick<T> extends TheInformation<T> {
     value(o: OwnerType<T>): this;
 }
 
+declare class Task<T> extends TheInformation<T> {
+    private baseSrc;
+    private delay;
+    constructor(baseSrc: InformationType<T>, delay?: number);
+    value(o: OwnerType<T>): this;
+}
+
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
@@ -344,5 +351,5 @@ declare class First<T extends Array<unknown>> extends TheInformation<T[0]> {
     value(o: OwnerType<T[0]>): this;
 }
 
-export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Task, Template, Tick, ToJson };
 export type { Route };

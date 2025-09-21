@@ -398,6 +398,28 @@ class Tick extends silentium.TheInformation {
   }
 }
 
+class Task extends silentium.TheInformation {
+  constructor(baseSrc, delay = 0) {
+    super(baseSrc);
+    this.baseSrc = baseSrc;
+    this.delay = delay;
+  }
+  value(o) {
+    let prevTimer = null;
+    new silentium.ExecutorApplied(this.baseSrc, (fn) => {
+      return (v) => {
+        if (prevTimer) {
+          clearTimeout(prevTimer);
+        }
+        prevTimer = setTimeout(() => {
+          fn(v);
+        }, this.delay);
+      };
+    }).value(o);
+    return this;
+  }
+}
+
 class HashTable extends silentium.TheInformation {
   constructor(baseSrc) {
     super(baseSrc);
@@ -798,6 +820,7 @@ exports.Router = Router;
 exports.Set = Set;
 exports.Shot = Shot;
 exports.Sync = Sync;
+exports.Task = Task;
 exports.Template = Template;
 exports.Tick = Tick;
 exports.ToJson = ToJson;

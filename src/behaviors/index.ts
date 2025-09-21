@@ -13,3 +13,4 @@ export * from "./Polling";
 export * from "./Shot";
 export * from "./Sync";
 export * from "./Tick";
+export * from "./Task";

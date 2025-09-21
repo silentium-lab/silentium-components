@@ -1,4 +1,4 @@
-import { TheInformation, isFilled, From, Shared, Filtered, Late, Applied, All, MbInfo, Of, Lazy } from 'silentium';
+import { TheInformation, isFilled, From, Shared, Filtered, Late, Applied, All, MbInfo, ExecutorApplied, Of, Lazy } from 'silentium';
 
 var __defProp$5 = Object.defineProperty;
 var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -396,6 +396,28 @@ class Tick extends TheInformation {
   }
 }
 
+class Task extends TheInformation {
+  constructor(baseSrc, delay = 0) {
+    super(baseSrc);
+    this.baseSrc = baseSrc;
+    this.delay = delay;
+  }
+  value(o) {
+    let prevTimer = null;
+    new ExecutorApplied(this.baseSrc, (fn) => {
+      return (v) => {
+        if (prevTimer) {
+          clearTimeout(prevTimer);
+        }
+        prevTimer = setTimeout(() => {
+          fn(v);
+        }, this.delay);
+      };
+    }).value(o);
+    return this;
+  }
+}
+
 class HashTable extends TheInformation {
   constructor(baseSrc) {
     super(baseSrc);
@@ -768,5 +790,5 @@ class First extends TheInformation {
   }
 }
 
-export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Template, Tick, ToJson };
+export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Task, Template, Tick, ToJson };
 //# sourceMappingURL=silentium-components.js.map
