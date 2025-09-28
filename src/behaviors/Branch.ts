@@ -1,35 +1,32 @@
-import { From, InformationType, OwnerType, TheInformation } from "silentium";
-import { Sync } from "./Sync";
+import { DataType, primitive } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
-export class Branch<Then, Else> extends TheInformation<Then | Else> {
-  public constructor(
-    private conditionSrc: InformationType<boolean>,
-    private leftSrc: InformationType<Then>,
-    private rightSrc?: InformationType<Else>,
-  ) {
-    super([conditionSrc, leftSrc, rightSrc]);
-  }
-  public value(o: OwnerType<Then | Else>): this {
-    const leftSync = new Sync(this.leftSrc).initOwner();
-    let rightSync: Sync<Else>;
+export const branch = <Then, Else>(
+  conditionSrc: DataType<boolean>,
+  leftSrc: DataType<Then>,
+  rightSrc?: DataType<Else>,
+): DataType<Then | Else> => {
+  return (u) => {
+    const leftSync = primitive(leftSrc);
+    let rightSync: ReturnType<typeof primitive<Else>>;
 
-    if (this.rightSrc !== undefined) {
-      rightSync = new Sync(this.rightSrc).initOwner();
+    if (rightSrc !== undefined) {
+      rightSync = primitive(rightSrc);
     }
 
-    this.conditionSrc.value(
-      new From((v) => {
-        if (v) {
-          o.give(leftSync.valueSync());
-        } else if (rightSync) {
-          o.give(rightSync.valueSync());
-        }
-      }),
-    );
+    conditionSrc((v) => {
+      let result: Then | Else | null = null;
+      if (v) {
+        result = leftSync.primitive();
+      } else if (rightSync) {
+        result = rightSync.primitive();
+      }
 
-    return this;
-  }
-}
+      if (result !== null) {
+        u(result);
+      }
+    });
+  };
+};

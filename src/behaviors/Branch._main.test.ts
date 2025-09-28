@@ -1,19 +1,19 @@
-import { Applied, From, Late, Of } from "silentium";
+import { applied, late, of } from "silentium";
+import { branch } from "../behaviors/Branch";
 import { expect, test, vi } from "vitest";
-import { Branch } from "../behaviors/Branch";
 
 test("Branch._main.test", () => {
-  const l = new Late<number>(2);
-  const res = new Branch(
-    new Applied(l, (t) => {
+  const l = late<number>(2);
+  const res = branch(
+    applied(l.value, (t) => {
       return t === 2;
     }),
-    new Of("Then ветка"),
-    new Of("Else ветка"),
+    of("Then ветка"),
+    of("Else ветка"),
   );
 
   const g = vi.fn();
-  res.value(new From(g));
+  res(g);
   expect(g).toBeCalledWith("Then ветка");
 
   l.give(1);
