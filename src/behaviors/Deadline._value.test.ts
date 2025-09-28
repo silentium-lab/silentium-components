@@ -1,6 +1,6 @@
-import { From, Late, Of } from "silentium";
+import { late, of } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { Deadline } from "../behaviors/Deadline";
+import { deadline } from "../behaviors/Deadline";
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -13,15 +13,15 @@ afterEach(() => {
 
 test("Deadline._value.test", () => {
   const errorGuest = vi.fn();
-  const l = new Late<number>();
+  const l = late<number>();
 
   setTimeout(() => {
     l.give(11);
   }, 10);
 
-  const dl = new Deadline(new From(errorGuest), l, new Of(200));
+  const dl = deadline(errorGuest, l.value, of(200));
   const g = vi.fn();
-  dl.value(new From(g));
+  dl(g);
 
   vi.runAllTimers();
 

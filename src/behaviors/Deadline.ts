@@ -1,57 +1,38 @@
-import {
-  Filtered,
-  From,
-  InformationType,
-  OwnerType,
-  Shared,
-  TheInformation,
-} from "silentium";
+import { DataType, DataUserType, filtered, shared } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-export class Deadline<T> extends TheInformation<T> {
-  public constructor(
-    private error: OwnerType<Error>,
-    private baseSrc: InformationType<T>,
-    private timeoutSrc: InformationType<number>,
-  ) {
-    super([error, baseSrc, timeoutSrc]);
-  }
-
-  public value(o: OwnerType<T>) {
+export const deadline = <T>(
+  error: DataUserType<Error>,
+  baseSrc: DataType<T>,
+  timeoutSrc: DataType<number>,
+): DataType<T> => {
+  return (u) => {
     let timerHead: unknown = null;
 
-    const s = new Shared(this.baseSrc, true);
-    this.addDep(s);
+    const s = shared(baseSrc, true);
 
-    this.timeoutSrc.value(
-      new From((timeout) => {
-        if (timerHead) {
-          clearTimeout(timerHead as number);
+    timeoutSrc((timeout) => {
+      if (timerHead) {
+        clearTimeout(timerHead as number);
+      }
+      let timeoutReached = false;
+
+      timerHead = setTimeout(() => {
+        if (timeoutReached) {
+          return;
         }
-        let timeoutReached = false;
+        timeoutReached = true;
+        error(new Error("Timeout reached in Deadline class"));
+      }, timeout);
 
-        timerHead = setTimeout(() => {
-          if (timeoutReached) {
-            return;
-          }
-          timeoutReached = true;
-          this.error.give(new Error("Timeout reached in Deadline class"));
-        }, timeout);
+      const f = filtered(s.value, () => !timeoutReached);
+      f(u);
 
-        const f = new Filtered(s, () => !timeoutReached);
-        this.addDep(f);
-        f.value(o);
-
-        s.value(
-          new From(() => {
-            timeoutReached = true;
-          }),
-        );
-      }),
-    );
-
-    return this;
-  }
-}
+      s.value(() => {
+        timeoutReached = true;
+      });
+    });
+  };
+};

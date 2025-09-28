@@ -1,16 +1,14 @@
-import { From, Late } from "silentium";
+import { late } from "silentium";
+import { constant } from "../behaviors/Const";
 import { expect, test } from "vitest";
-import { Const } from "../behaviors/Const";
 
 test("Const.test", () => {
-  const triggerSrc = new Late(1);
-  const src = new Const("val", triggerSrc);
+  const triggerSrc = late(1);
+  const src = constant("val", triggerSrc.value);
   const data: string[] = [];
-  src.value(
-    new From((v) => {
-      data.push(v);
-    }),
-  );
+  src((v) => {
+    data.push(v);
+  });
 
   expect(data).toStrictEqual(["val"]);
 
