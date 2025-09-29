@@ -1,19 +1,17 @@
-import { From, Late, Shared } from "silentium";
+import { late, shared } from "silentium";
+import { memo } from "../behaviors/Memo";
 import { expect, test, vi } from "vitest";
-import { Memo } from "../behaviors/Memo";
 
 test("Memo.test", () => {
-  const l = new Late<number>(1);
-  const mem = new Shared(new Memo(l));
+  const l = late<number>(1);
+  const mem = shared(memo(l.value));
   const g = vi.fn();
-  mem.value(new From(g));
+  mem.value(g);
   let counter = 0;
 
-  mem.value(
-    new From(() => {
-      counter += 1;
-    }),
-  );
+  mem.value(() => {
+    counter += 1;
+  });
 
   l.give(2);
   l.give(2);

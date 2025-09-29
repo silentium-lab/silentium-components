@@ -1,23 +1,12 @@
-import { From, InformationType, OwnerType, TheInformation } from "silentium";
+import { DataType } from "silentium";
 
-export class Polling<T> extends TheInformation<T> {
-  public constructor(
-    private baseSrc: InformationType<T>,
-    private triggerSrc: InformationType<T>,
-  ) {
-    super(baseSrc, triggerSrc);
-  }
-
-  public value(o: OwnerType<T>): this {
-    this.triggerSrc.value(
-      new From(() => {
-        this.baseSrc.value(
-          new From((v) => {
-            o.give(v);
-          }),
-        );
-      }),
-    );
-    return this;
-  }
-}
+export const polling = <T>(
+  baseSrc: DataType<T>,
+  triggerSrc: DataType<T>,
+): DataType<T> => {
+  return (u) => {
+    triggerSrc(() => {
+      baseSrc(u);
+    });
+  };
+};

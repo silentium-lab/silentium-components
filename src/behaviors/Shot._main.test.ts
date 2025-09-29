@@ -1,14 +1,14 @@
-import { From, Late, Shared } from "silentium";
+import { late, shared } from "silentium";
+import { shot } from "../behaviors/Shot";
 import { expect, test, vi } from "vitest";
-import { Shot } from "../behaviors/Shot";
 
 test("Shot._main.test", () => {
-  const baseSrc = new Late();
-  const shotSrc = new Late();
+  const baseSrc = late();
+  const shotSrc = late();
 
-  const shotResult = new Shared(new Shot(baseSrc, shotSrc));
+  const shotResult = shared(shot(baseSrc.value, shotSrc.value));
   const g = vi.fn();
-  shotResult.value(new From(g));
+  shotResult.value(g);
 
   baseSrc.give(1);
   shotSrc.give(1);
@@ -24,6 +24,6 @@ test("Shot._main.test", () => {
   expect(g).toHaveBeenLastCalledWith(2);
 
   const g2 = vi.fn();
-  shotResult.value(new From(g2));
+  shotResult.value(g2);
   expect(g2).toHaveBeenLastCalledWith(2);
 });

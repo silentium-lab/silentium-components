@@ -1,13 +1,16 @@
-import { From, Late } from "silentium";
+import { late } from "silentium";
+import { loading } from "../behaviors/Loading";
 import { expect, test, vi } from "vitest";
-import { Loading } from "../behaviors/Loading";
 
 test("Loading.test", () => {
-  const loadingStartSource = new Late();
-  const loadingFinishSource = new Late();
-  const loadingSrc = new Loading(loadingStartSource, loadingFinishSource);
+  const loadingStartSource = late();
+  const loadingFinishSource = late();
+  const loadingSrc = loading(
+    loadingStartSource.value,
+    loadingFinishSource.value,
+  );
   const g = vi.fn();
-  loadingSrc.value(new From(g));
+  loadingSrc(g);
   loadingStartSource.give({});
   expect(g).toHaveBeenLastCalledWith(true);
   loadingFinishSource.give({});

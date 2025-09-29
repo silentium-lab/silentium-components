@@ -1,14 +1,14 @@
-import { From, Of } from "silentium";
+import { of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { Path } from "./Path";
+import { path } from "./Path";
 
 test("Path._main.test", () => {
   const record = {
     name: "Peter",
     surname: "Parker",
   };
-  const name = new Path<string>(new Of(record), new Of("name"));
+  const name = path<string>(of(record), of("name"));
   const g = vi.fn();
-  name.value(new From(g));
+  name(g);
   expect(g).toHaveBeenLastCalledWith("Peter");
 });

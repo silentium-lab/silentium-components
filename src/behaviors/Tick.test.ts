@@ -1,6 +1,6 @@
-import { Any, From, Late, Shared } from "silentium";
+import { any, late, shared } from "silentium";
+import { tick } from "../behaviors/Tick";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { Tick } from "../behaviors/Tick";
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -12,12 +12,12 @@ afterEach(() => {
 });
 
 test("Tick.test", async () => {
-  const s1 = new Late<number>(1);
-  const s2 = new Late<number>(2);
-  const tickSrc = new Shared(new Tick(new Any(s1, s2)), true);
+  const s1 = late<number>(1);
+  const s2 = late<number>(2);
+  const tickSrc = shared(tick(any(s1.value, s2.value)), true);
 
   const g = vi.fn();
-  tickSrc.value(new From(g));
+  tickSrc.value(g);
 
   s1.give(3);
   s2.give(4);

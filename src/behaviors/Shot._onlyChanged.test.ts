@@ -1,20 +1,18 @@
-import { From, Late, Shared } from "silentium";
+import { late, shared } from "silentium";
+import { onlyChanged } from "../behaviors/OnlyChanged";
+import { shot } from "../behaviors/Shot";
 import { expect, test } from "vitest";
-import { OnlyChanged } from "../behaviors/OnlyChanged";
-import { Shot } from "../behaviors/Shot";
 
 test("Shot._onlyChanged.test", () => {
-  const baseSrc = new Late<number>(123);
-  const sharedBase = new Shared(baseSrc, true);
-  const resultSrc = new Shot(sharedBase, new OnlyChanged(sharedBase));
+  const baseSrc = late<number>(123);
+  const sharedBase = shared(baseSrc.value, true);
+  const resultSrc = shot(sharedBase.value, onlyChanged(sharedBase.value));
 
   const vals: number[] = [];
 
-  resultSrc.value(
-    new From((v) => {
-      vals.push(v);
-    }),
-  );
+  resultSrc((v) => {
+    vals.push(v);
+  });
 
   expect(vals).toStrictEqual([]);
 

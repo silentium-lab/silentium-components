@@ -1,15 +1,15 @@
-import { From, Late } from "silentium";
+import { late } from "silentium";
+import { dirty } from "../behaviors/Dirty";
 import { expect, test, vi } from "vitest";
-import { Dirty } from "../behaviors/Dirty";
 
 test("Dirty.test", () => {
-  const form = new Late({
+  const form = late({
     name: "one",
     surname: "two",
   });
-  const d = new Dirty(form);
+  const d = dirty(form.value);
   const g = vi.fn();
-  d.value(new From(g));
+  d.value(g);
 
   d.give({
     name: "new",

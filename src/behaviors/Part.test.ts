@@ -1,17 +1,17 @@
-import { From, Late, SharedSource } from "silentium";
-import { Part } from "../behaviors/Part";
+import { late, of, sharedSource } from "silentium";
+import { part } from "../behaviors/Part";
 import { expect, test, vi } from "vitest";
 
 test("Part.test", () => {
-  const recordSrc = new SharedSource(
-    new Late({
+  const recordSrc = sharedSource(
+    late({
       name: "Peter",
       surname: "Parker",
     }),
   );
-  const nameSrc = new Part<string>(recordSrc, "name");
+  const nameSrc = part<string>(recordSrc, of("name"));
   const g = vi.fn();
-  recordSrc.value(new From(g));
+  recordSrc.value(g);
   expect(g).toHaveBeenLastCalledWith({ name: "Peter", surname: "Parker" });
 
   nameSrc.give("Shmiter");

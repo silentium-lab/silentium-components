@@ -1,11 +1,10 @@
-import { Of } from "silentium";
+import { of, primitive } from "silentium";
 import { expect, test } from "vitest";
-import { Sync } from "../behaviors/Sync";
-import { ToJson } from "../formats/ToJson";
+import { toJson } from "../formats/ToJson";
 
 test("ToJson.test", () => {
-  const one = new Of({ hello: "world" });
-  const objectSync = new Sync(new ToJson(one));
+  const one = of({ hello: "world" });
+  const objectSync = primitive(toJson(one));
 
-  expect(objectSync.valueSync()).toBe('{"hello":"world"}');
+  expect(objectSync.primitive()).toBe('{"hello":"world"}');
 });

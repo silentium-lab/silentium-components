@@ -1,15 +1,15 @@
-import { From, Late, Shared } from "silentium";
-import { Lock } from "../behaviors/Lock";
+import { late, shared } from "silentium";
+import { lock } from "../behaviors/Lock";
 import { expect, test, vi } from "vitest";
 
 test("Lock.test", () => {
-  const source = new Late<number>(1);
-  const lockSrc = new Late<boolean>(false);
+  const source = late<number>(1);
+  const lockSrc = late<boolean>(false);
 
-  const ls = new Lock(source, lockSrc);
-  const lockedSrc = new Shared(ls);
+  const ls = lock(source.value, lockSrc.value);
+  const lockedSrc = shared(ls);
   const g = vi.fn();
-  lockedSrc.value(new From(g));
+  lockedSrc.value(g);
 
   expect(g).toHaveBeenLastCalledWith(1);
 

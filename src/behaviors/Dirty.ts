@@ -1,62 +1,51 @@
-import {
-  All,
-  Applied,
-  From,
-  InformationType,
-  Late,
-  OwnerType,
-  TheInformation,
-} from "silentium";
+import { all, applied, DataType, late, SourceType } from "silentium";
 
 /**
  * Takes source and remember it first value
  * returns new record, what will contain only fields what was changed
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
-export class Dirty<T> extends TheInformation<T> implements OwnerType<T> {
-  private comparingSrc = new Late<T>();
+export const dirty = <T>(
+  baseEntitySource: DataType<T>,
+  alwaysKeep: string[] = [],
+  excludeKeys: string[] = [],
+  cloneFn?: (v: T) => T,
+): SourceType<T> => {
+  const comparingSrc = late<T>();
 
-  public constructor(
-    private baseEntitySource: InformationType<T>,
-    private alwaysKeep: string[] = [],
-    private excludeKeys: string[] = [],
-  ) {
-    super([baseEntitySource]);
+  if (cloneFn === undefined) {
+    cloneFn = (value) => JSON.parse(JSON.stringify(value));
   }
 
-  public value(o: OwnerType<T>): this {
-    const comparingDetached = new Applied(this.comparingSrc, (value) =>
-      JSON.parse(JSON.stringify(value)),
-    );
+  return {
+    value: (u) => {
+      const comparingDetached = applied(comparingSrc.value, cloneFn);
 
-    const allSrc = new All(comparingDetached, this.baseEntitySource).value(
-      new From(([comparing, base]) => {
+      all(
+        comparingDetached,
+        baseEntitySource,
+      )(([comparing, base]) => {
         if (!comparing) {
           return;
         }
 
-        o.give(
+        u(
           Object.fromEntries(
             Object.entries(comparing).filter(([key, value]) => {
-              if (this.alwaysKeep.includes(key)) {
+              if (alwaysKeep.includes(key)) {
                 return true;
               }
-              if (this.excludeKeys.includes(key)) {
+              if (excludeKeys.includes(key)) {
                 return false;
               }
               return value !== (base as any)[key];
             }),
           ) as T,
         );
-      }),
-    );
-    this.addDep(allSrc);
-
-    return this;
-  }
-
-  public give(value: T): this {
-    this.comparingSrc.give(value);
-    return this;
-  }
-}
+      });
+    },
+    give: (v) => {
+      comparingSrc.give(v);
+    },
+  };
+};
