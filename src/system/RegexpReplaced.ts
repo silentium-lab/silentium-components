@@ -1,37 +1,23 @@
-import {
-  All,
-  From,
-  InformationType,
-  Of,
-  OwnerType,
-  TheInformation,
-} from "silentium";
+import { all, DataType, of } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-replaced
  */
-export class RegexpReplaced extends TheInformation<string> {
-  public constructor(
-    private valueSrc: InformationType<string>,
-    private patternSrc: InformationType<string>,
-    private replaceValueSrc: InformationType<string>,
-    private flagsSrc: InformationType<string> = new Of(""),
-  ) {
-    super(valueSrc, patternSrc, replaceValueSrc, flagsSrc);
-  }
-
-  public value(o: OwnerType<string>): this {
-    new All(
-      this.patternSrc,
-      this.valueSrc,
-      this.replaceValueSrc,
-      this.flagsSrc,
-    ).value(
-      new From(([pattern, value, replaceValue, flags]) => {
-        o.give(String(value).replace(new RegExp(pattern, flags), replaceValue));
-      }),
-    );
-    return this;
-  }
-}
+export const regexpReplaced = (
+  valueSrc: DataType<string>,
+  patternSrc: DataType<string>,
+  replaceValueSrc: DataType<string>,
+  flagsSrc: DataType<string> = of(""),
+): DataType<string> => {
+  return (u) => {
+    all(
+      patternSrc,
+      valueSrc,
+      replaceValueSrc,
+      flagsSrc,
+    )(([pattern, value, replaceValue, flags]) => {
+      u(String(value).replace(new RegExp(pattern, flags), replaceValue));
+    });
+  };
+};

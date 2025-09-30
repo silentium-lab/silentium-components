@@ -1,33 +1,33 @@
-import { Applied, From, Late, Lazy, Of, Shared } from "silentium";
+import { applied, late, of, shared } from "silentium";
+import { router } from "../navigation/Router";
 import { expect, test, vi } from "vitest";
-import { Router } from "./Router";
 
 const drop = (dropPart: string) => (value: string) => {
   return value.replace(dropPart, "");
 };
 
 test("Router._main.test", () => {
-  const urlSrc = new Late<string>("http://domain.com/");
-  const urlPathSrc = new Shared(new Applied(urlSrc, drop("http://domain.com")));
+  const urlSrc = late<string>("http://domain.com/");
+  const urlPathSrc = shared(applied(urlSrc.value, drop("http://domain.com")));
   const g = vi.fn();
-  urlPathSrc.value(new From(g));
+  urlPathSrc.value(g);
 
-  const routerSrc = new Router(
-    urlPathSrc,
-    new Of([
+  const routerSrc = router(
+    urlPathSrc.value,
+    of([
       {
         pattern: "^/$",
-        template: new Lazy(() => new Of("page/home.html")),
+        template: () => of("page/home.html"),
       },
       {
         pattern: "/some/contacts",
-        template: new Lazy(() => new Of("page/contacts.html")),
+        template: () => of("page/contacts.html"),
       },
     ]),
-    new Lazy(() => new Of<string>("page/404.html")),
+    () => of<string>("page/404.html"),
   );
   const g2 = vi.fn();
-  routerSrc.value(new From(g2));
+  routerSrc(g2);
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 
