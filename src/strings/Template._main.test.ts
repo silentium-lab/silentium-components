@@ -1,28 +1,28 @@
-import { From, Of } from "silentium";
+import { of } from "silentium";
+import { template } from "../strings/Template";
+import { recordOf } from "../structures";
 import { expect, test, vi } from "vitest";
-import { Template } from "./Template";
-import { RecordOf } from "../structures";
 
 test("Template._main.test", () => {
-  const tpl = new Template(
-    "<h1>$1</h1>",
-    new RecordOf({
-      $1: new Of("one value"),
+  const tpl = template(
+    of("<h1>$1</h1>"),
+    recordOf({
+      $1: of("one value"),
     }),
   );
   const g = vi.fn();
-  tpl.value(new From(g));
+  tpl.value(g);
 
   expect(g).toHaveBeenLastCalledWith("<h1>one value</h1>");
 
-  const tpl2 = new Template(
-    new Of("<h2>$1</h2>"),
-    new RecordOf({
-      $1: new Of("second value"),
+  const tpl2 = template(
+    of("<h2>$1</h2>"),
+    recordOf({
+      $1: of("second value"),
     }),
   );
   const g2 = vi.fn();
-  tpl2.value(new From(g2));
+  tpl2.value(g2);
 
   expect(g2).toHaveBeenLastCalledWith("<h2>second value</h2>");
 });

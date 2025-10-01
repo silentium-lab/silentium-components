@@ -1,12 +1,12 @@
-import { From, Of } from "silentium";
+import { of } from "silentium";
+import { template } from "../strings/Template";
 import { expect, test, vi } from "vitest";
-import { Template } from "./Template";
 
 test("Template._place.test", () => {
-  const t = new Template();
-  t.template(`<div class="greeting">Hello ${t.var(new Of("User"))}</div>`);
+  const t = template();
+  t.template(`<div class="greeting">Hello ${t.var(of("User"))}</div>`);
   const g = vi.fn();
-  t.value(new From(g));
+  t.value(g);
 
   expect(g).toHaveBeenLastCalledWith('<div class="greeting">Hello User</div>');
 });

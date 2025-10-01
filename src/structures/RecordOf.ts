@@ -1,35 +1,22 @@
-import {
-  All,
-  From,
-  InformationType,
-  OwnerType,
-  TheInformation,
-} from "silentium";
+import { all, DataType } from "silentium";
 
-type UnInformation<T> = T extends InformationType<infer U> ? U : never;
+type UnInformation<T> = T extends DataType<infer U> ? U : never;
 
 /**
  * Returns record of data from record of sources
  * https://silentium-lab.github.io/silentium-components/#/structures/record
  */
-export class RecordOf<T extends InformationType> extends TheInformation<
-  Record<string, UnInformation<T>>
-> {
-  public constructor(private recordSrc: Record<string, T>) {
-    super(...Object.values(recordSrc));
-  }
-
-  public value(o: OwnerType<Record<string, UnInformation<T>>>): this {
-    const keys = Object.keys(this.recordSrc);
-    new All(...Object.values(this.recordSrc)).value(
-      new From((entries) => {
-        const record: Record<string, any> = {};
-        entries.forEach((entry, index) => {
-          record[keys[index]] = entry;
-        });
-        o.give(record);
-      }),
-    );
-    return this;
-  }
-}
+export const recordOf = <T extends DataType>(
+  recordSrc: Record<string, T>,
+): DataType<Record<string, UnInformation<T>>> => {
+  return (u) => {
+    const keys = Object.keys(recordSrc);
+    all(...Object.values(recordSrc))((entries) => {
+      const record: Record<string, any> = {};
+      entries.forEach((entry, index) => {
+        record[keys[index]] = entry;
+      });
+      u(record);
+    });
+  };
+};

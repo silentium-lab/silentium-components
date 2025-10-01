@@ -1,14 +1,14 @@
-import { From, Of } from "silentium";
+import { of } from "silentium";
+import { concatenated } from "../strings/Concatenated";
 import { expect, test, vi } from "vitest";
-import { Concatenated } from "../strings/Concatenated";
 
 test("Concatenated.test", () => {
-  const concatenatedSrc = new Concatenated(
-    [new Of("one"), new Of("two"), new Of("three")],
-    new Of("-"),
+  const concatenatedSrc = concatenated(
+    [of("one"), of("two"), of("three")],
+    of("-"),
   );
   const g = vi.fn();
-  concatenatedSrc.value(new From(g));
+  concatenatedSrc(g);
 
   expect(g).toHaveBeenLastCalledWith("one-two-three");
 });

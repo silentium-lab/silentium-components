@@ -1,16 +1,16 @@
-import { From, Late, Of } from "silentium";
+import { late, of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { RecordOf } from "./RecordOf";
+import { recordOf } from "./RecordOf";
 
 test("Record._main.test", () => {
-  const three = new Late<string>("three");
-  const recordSrc = new RecordOf({
-    one: new Of("one"),
-    two: new Of(2),
-    three,
+  const three = late<string>("three");
+  const recordSrc = recordOf({
+    one: of("one"),
+    two: of(2),
+    three: three.value,
   });
   const g = vi.fn();
-  recordSrc.value(new From(g));
+  recordSrc(g);
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

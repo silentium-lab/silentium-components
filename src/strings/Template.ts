@@ -1,34 +1,18 @@
-import {
-  All,
-  Applied,
-  InformationType,
-  Of,
-  OwnerType,
-  TheInformation,
-} from "silentium";
-import { RecordOf } from "../structures";
+import { all, applied, DataType, of } from "silentium";
+import { recordOf } from "../structures";
 
-export class Template extends TheInformation<string> {
-  private source: InformationType<string>;
-  private placesCounter = 0;
-  private vars: Record<string, InformationType> = {
-    $TPL: new Of("$TPL"),
+export const template = (
+  theSrc: DataType<string> = of(""),
+  placesSrc: DataType<Record<string, unknown>> = of({}),
+) => {
+  let placesCounter = 0;
+  const vars: Record<string, DataType> = {
+    $TPL: of("$TPL"),
   };
-
-  public constructor(
-    theSrc: InformationType<string> | string = "",
-    private placesSrc: InformationType<Record<string, unknown>> = new Of({}),
-  ) {
-    const source = typeof theSrc === "string" ? new Of(theSrc) : theSrc;
-    super(source, placesSrc);
-    this.source = source;
-  }
-
-  public value(guest: OwnerType<string>) {
-    const varsSrc = new RecordOf(this.vars);
-    new Applied(
-      new All(this.source, this.placesSrc, varsSrc),
-      ([base, rules, vars]) => {
+  return {
+    value: <DataType<string>>((u) => {
+      const varsSrc = recordOf(vars);
+      applied(all(theSrc, placesSrc, varsSrc), ([base, rules, vars]) => {
         Object.entries(rules).forEach(([ph, val]) => {
           base = base.replaceAll(ph, String(val));
         });
@@ -37,26 +21,20 @@ export class Template extends TheInformation<string> {
         });
 
         return base;
-      },
-    ).value(guest);
-    return this;
-  }
-
-  public template(value: string) {
-    this.source = new Of(value);
-    this.addDep(this.source);
-    return this;
-  }
-
-  /**
-   * Ability to register variable
-   * in concrete place of template
-   */
-  public var(src: InformationType<string>) {
-    this.addDep(src);
-    const varName = `$var${this.placesCounter}`;
-    this.placesCounter += 1;
-    this.vars[varName] = src;
-    return varName;
-  }
-}
+      })(u);
+    }),
+    template: (value: string) => {
+      theSrc = of(value);
+    },
+    /**
+     * Ability to register variable
+     * in concrete place of template
+     */
+    var: (src: DataType<string>) => {
+      const varName = `$var${placesCounter}`;
+      placesCounter += 1;
+      vars[varName] = src;
+      return varName;
+    },
+  };
+};

@@ -1,20 +1,20 @@
-import { From, Of } from "silentium";
+import { of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { RecordOf } from "./RecordOf";
+import { recordOf } from "./RecordOf";
 
 test("Record.nested.test", () => {
-  const three = new Of<string>("three");
-  const recordSrc = new RecordOf({
-    one: new Of("one"),
-    two: new Of("two"),
+  const three = of<string>("three");
+  const recordSrc = recordOf({
+    one: of("one"),
+    two: of("two"),
     three,
-    nested: new RecordOf({
-      four: new Of("four"),
-      five: new Of("five"),
+    nested: recordOf({
+      four: of("four"),
+      five: of("five"),
     }),
   });
   const g = vi.fn();
-  recordSrc.value(new From(g));
+  recordSrc(g);
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

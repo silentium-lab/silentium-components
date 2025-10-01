@@ -1,12 +1,12 @@
-import { From, Late } from "silentium";
+import { late } from "silentium";
+import { hashTable } from "../structures/HashTable";
 import { expect, test, vi } from "vitest";
-import { HashTable } from "../structures/HashTable";
 
 test("HashTable.test", () => {
-  const entrySource = new Late<[string, string]>();
-  const hashTableSrc = new HashTable(entrySource);
+  const entrySource = late<[string, string]>();
+  const hashTableSrc = hashTable(entrySource.value);
   const g = vi.fn();
-  hashTableSrc.value(new From(g));
+  hashTableSrc(g);
   entrySource.give(["key-one", "value-one"]);
   entrySource.give(["key-two", "value-two"]);
 
