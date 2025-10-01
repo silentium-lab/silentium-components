@@ -1,377 +1,221 @@
-import { TheInformation, isFilled, From, Shared, Filtered, Late, Applied, All, MbInfo, ExecutorApplied, Of, Lazy } from 'silentium';
+import { primitive, shared, filtered, isFilled, late, applied, all, executorApplied, of } from 'silentium';
 
-var __defProp$5 = Object.defineProperty;
-var __defNormalProp$5 = (obj, key, value) => key in obj ? __defProp$5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$5 = (obj, key, value) => __defNormalProp$5(obj, typeof key !== "symbol" ? key + "" : key, value);
-class Sync extends TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-    __publicField$5(this, "theValue");
-    __publicField$5(this, "isInit", false);
-  }
-  value(o) {
-    this.baseSrc.value(o);
-    return this;
-  }
-  valueExisted() {
-    this.initOwner();
-    return isFilled(this.theValue);
-  }
-  valueSync() {
-    this.initOwner();
-    if (!isFilled(this.theValue)) {
-      throw new Error("no value in sync");
-    }
-    return this.theValue;
-  }
-  initOwner() {
-    if (!this.isInit) {
-      this.isInit = true;
-      this.value(
-        new From((v) => {
-          this.theValue = v;
-        })
-      );
-    }
-    return this;
-  }
-}
-
-class Branch extends TheInformation {
-  constructor(conditionSrc, leftSrc, rightSrc) {
-    super([conditionSrc, leftSrc, rightSrc]);
-    this.conditionSrc = conditionSrc;
-    this.leftSrc = leftSrc;
-    this.rightSrc = rightSrc;
-  }
-  value(o) {
-    const leftSync = new Sync(this.leftSrc).initOwner();
+const branch = (conditionSrc, leftSrc, rightSrc) => {
+  return (u) => {
+    const leftSync = primitive(leftSrc);
     let rightSync;
-    if (this.rightSrc !== void 0) {
-      rightSync = new Sync(this.rightSrc).initOwner();
+    if (rightSrc !== void 0) {
+      rightSync = primitive(rightSrc);
     }
-    this.conditionSrc.value(
-      new From((v) => {
-        if (v) {
-          o.give(leftSync.valueSync());
-        } else if (rightSync) {
-          o.give(rightSync.valueSync());
-        }
-      })
-    );
-    return this;
-  }
-}
+    conditionSrc((v) => {
+      let result = null;
+      if (v) {
+        result = leftSync.primitive();
+      } else if (rightSync) {
+        result = rightSync.primitive();
+      }
+      if (result !== null) {
+        u(result);
+      }
+    });
+  };
+};
 
-class Const extends TheInformation {
-  constructor(permanentValue, triggerSrc) {
-    super(triggerSrc);
-    this.permanentValue = permanentValue;
-    this.triggerSrc = triggerSrc;
-  }
-  value(o) {
-    this.triggerSrc.value(
-      new From(() => {
-        o.give(this.permanentValue);
-      })
-    );
-    return this;
-  }
-}
+const constant = (permanentValue, triggerSrc) => {
+  return (u) => {
+    triggerSrc(() => {
+      u(permanentValue);
+    });
+  };
+};
 
-class Deadline extends TheInformation {
-  constructor(error, baseSrc, timeoutSrc) {
-    super([error, baseSrc, timeoutSrc]);
-    this.error = error;
-    this.baseSrc = baseSrc;
-    this.timeoutSrc = timeoutSrc;
-  }
-  value(o) {
+const deadline = (error, baseSrc, timeoutSrc) => {
+  return (u) => {
     let timerHead = null;
-    const s = new Shared(this.baseSrc, true);
-    this.addDep(s);
-    this.timeoutSrc.value(
-      new From((timeout) => {
-        if (timerHead) {
-          clearTimeout(timerHead);
+    const s = shared(baseSrc, true);
+    timeoutSrc((timeout) => {
+      if (timerHead) {
+        clearTimeout(timerHead);
+      }
+      let timeoutReached = false;
+      timerHead = setTimeout(() => {
+        if (timeoutReached) {
+          return;
         }
-        let timeoutReached = false;
-        timerHead = setTimeout(() => {
-          if (timeoutReached) {
-            return;
-          }
-          timeoutReached = true;
-          this.error.give(new Error("Timeout reached in Deadline class"));
-        }, timeout);
-        const f = new Filtered(s, () => !timeoutReached);
-        this.addDep(f);
-        f.value(o);
-        s.value(
-          new From(() => {
-            timeoutReached = true;
-          })
-        );
-      })
-    );
-    return this;
-  }
-}
+        timeoutReached = true;
+        error(new Error("Timeout reached in Deadline class"));
+      }, timeout);
+      const f = filtered(s.value, () => !timeoutReached);
+      f(u);
+      s.value(() => {
+        timeoutReached = true;
+      });
+    });
+  };
+};
 
-class Deferred extends TheInformation {
-  constructor(baseSrc, triggerSrc) {
-    super();
-    this.baseSrc = baseSrc;
-    this.triggerSrc = triggerSrc;
-  }
-  value(o) {
-    const baseSync = new Sync(this.baseSrc).initOwner();
-    this.triggerSrc.value(
-      new From(() => {
-        if (isFilled(baseSync.valueSync())) {
-          o.give(baseSync.valueSync());
-        }
-      })
-    );
-    return this;
-  }
-}
+const deferred = (baseSrc, triggerSrc) => {
+  return (u) => {
+    const baseSync = primitive(baseSrc);
+    triggerSrc(() => {
+      const value = baseSync.primitive();
+      if (isFilled(value)) {
+        u(value);
+      }
+    });
+  };
+};
 
-var __defProp$4 = Object.defineProperty;
-var __defNormalProp$4 = (obj, key, value) => key in obj ? __defProp$4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$4 = (obj, key, value) => __defNormalProp$4(obj, key + "" , value);
-class Dirty extends TheInformation {
-  constructor(baseEntitySource, alwaysKeep = [], excludeKeys = []) {
-    super([baseEntitySource]);
-    this.baseEntitySource = baseEntitySource;
-    this.alwaysKeep = alwaysKeep;
-    this.excludeKeys = excludeKeys;
-    __publicField$4(this, "comparingSrc", new Late());
+const dirty = (baseEntitySource, alwaysKeep = [], excludeKeys = [], cloneFn) => {
+  const comparingSrc = late();
+  if (cloneFn === void 0) {
+    cloneFn = (value) => JSON.parse(JSON.stringify(value));
   }
-  value(o) {
-    const comparingDetached = new Applied(
-      this.comparingSrc,
-      (value) => JSON.parse(JSON.stringify(value))
-    );
-    const allSrc = new All(comparingDetached, this.baseEntitySource).value(
-      new From(([comparing, base]) => {
+  return {
+    value: (u) => {
+      const comparingDetached = applied(comparingSrc.value, cloneFn);
+      all(
+        comparingDetached,
+        baseEntitySource
+      )(([comparing, base]) => {
         if (!comparing) {
           return;
         }
-        o.give(
+        u(
           Object.fromEntries(
             Object.entries(comparing).filter(([key, value]) => {
-              if (this.alwaysKeep.includes(key)) {
+              if (alwaysKeep.includes(key)) {
                 return true;
               }
-              if (this.excludeKeys.includes(key)) {
+              if (excludeKeys.includes(key)) {
                 return false;
               }
               return value !== base[key];
             })
           )
         );
-      })
-    );
-    this.addDep(allSrc);
-    return this;
-  }
-  give(value) {
-    this.comparingSrc.give(value);
-    return this;
-  }
-}
+      });
+    },
+    give: (v) => {
+      comparingSrc.give(v);
+    }
+  };
+};
 
-class Loading extends TheInformation {
-  constructor(loadingStartSrc, loadingFinishSrc) {
-    super(loadingFinishSrc, loadingStartSrc);
-    this.loadingStartSrc = loadingStartSrc;
-    this.loadingFinishSrc = loadingFinishSrc;
-  }
-  value(o) {
-    this.loadingStartSrc.value(
-      new From(() => {
-        o.give(true);
-      })
-    );
-    this.loadingFinishSrc.value(
-      new From(() => {
-        o.give(false);
-      })
-    );
-    return this;
-  }
-}
+const loading = (loadingStartSrc, loadingFinishSrc) => {
+  return (u) => {
+    loadingStartSrc(() => u(true));
+    loadingFinishSrc(() => u(false));
+  };
+};
 
-class Lock extends TheInformation {
-  constructor(baseSrc, lockSrc) {
-    super(baseSrc, lockSrc);
-    this.baseSrc = baseSrc;
-    this.lockSrc = lockSrc;
-  }
-  value(o) {
+const lock = (baseSrc, lockSrc) => {
+  return (u) => {
     let locked = false;
-    this.lockSrc.value(
-      new From((newLock) => {
-        locked = newLock;
-      })
-    );
-    const i = new Filtered(this.baseSrc, () => !locked);
-    this.addDep(i);
-    i.value(o);
-    return this;
-  }
-}
-
-class Memo extends TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
-    let lastValue = null;
-    this.baseSrc.value(
-      new From((v) => {
-        if (v !== lastValue) {
-          o.give(v);
-          lastValue = v;
-        }
-      })
-    );
-    return this;
-  }
-}
-
-class OnlyChanged extends TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
-    let firstValue = false;
-    this.baseSrc.value(
-      new From((v) => {
-        if (firstValue === false) {
-          firstValue = true;
-        } else {
-          o.give(v);
-        }
-      })
-    );
-    return this;
-  }
-}
-
-var __defProp$3 = Object.defineProperty;
-var __defNormalProp$3 = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$3 = (obj, key, value) => __defNormalProp$3(obj, typeof key !== "symbol" ? key + "" : key, value);
-class Part extends TheInformation {
-  constructor(baseSrc, key) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-    this.key = key;
-    __publicField$3(this, "baseSync");
-    __publicField$3(this, "keySync");
-    __publicField$3(this, "keySrc");
-    this.keySrc = new MbInfo(key);
-    this.baseSync = new Sync(baseSrc);
-    this.keySync = new Sync(this.keySrc);
-  }
-  value(o) {
-    const allSrc = new All(this.baseSrc, this.keySrc).value(
-      new From(([base, key]) => {
-        const keyChunks = key.split(".");
-        let value = base;
-        keyChunks.forEach((keyChunk) => {
-          value = value[keyChunk];
-        });
-        if (value !== void 0 && value !== base) {
-          o.give(value);
-        }
-      })
-    );
-    this.addDep(allSrc);
-    return this;
-  }
-  give(value) {
-    this.baseSrc.give({
-      ...this.baseSync.valueSync(),
-      [this.keySync.valueSync()]: value
+    lockSrc((newLock) => {
+      locked = newLock;
     });
-    return this;
-  }
-}
+    const i = filtered(baseSrc, () => !locked);
+    i(u);
+  };
+};
 
-class Path extends TheInformation {
-  constructor(baseSrc, keySrc) {
-    super(baseSrc, keySrc);
-    this.baseSrc = baseSrc;
-    this.keySrc = keySrc;
-  }
-  value(o) {
-    const allSrc = new All(this.baseSrc, this.keySrc).value(
-      new From(([base, key]) => {
+const memo = (baseSrc) => {
+  return (u) => {
+    let lastValue = null;
+    baseSrc((v) => {
+      if (v !== lastValue) {
+        u(v);
+        lastValue = v;
+      }
+    });
+  };
+};
+
+const onlyChanged = (baseSrc) => {
+  return (u) => {
+    let firstValue = false;
+    baseSrc((v) => {
+      if (firstValue === false) {
+        firstValue = true;
+      } else {
+        u(v);
+      }
+    });
+  };
+};
+
+const part = (baseSrc, keySrc) => {
+  const baseSync = primitive(baseSrc.value);
+  const keySync = primitive(keySrc);
+  return {
+    value: (u) => {
+      all(
+        baseSrc.value,
+        keySrc
+      )(([base, key]) => {
         const keyChunks = key.split(".");
         let value = base;
         keyChunks.forEach((keyChunk) => {
           value = value[keyChunk];
         });
         if (value !== void 0 && value !== base) {
-          o.give(value);
+          u(value);
         }
-      })
-    );
-    this.addDep(allSrc);
-    return this;
-  }
-}
+      });
+    },
+    give: (value) => {
+      const key = keySync.primitive();
+      if (isFilled(key)) {
+        baseSrc.give({
+          ...baseSync.primitive(),
+          [key]: value
+        });
+      }
+    }
+  };
+};
 
-class Polling extends TheInformation {
-  constructor(baseSrc, triggerSrc) {
-    super(baseSrc, triggerSrc);
-    this.baseSrc = baseSrc;
-    this.triggerSrc = triggerSrc;
-  }
-  value(o) {
-    this.triggerSrc.value(
-      new From(() => {
-        this.baseSrc.value(
-          new From((v) => {
-            o.give(v);
-          })
-        );
-      })
-    );
-    return this;
-  }
-}
+const path = (baseSrc, keySrc) => {
+  return (u) => {
+    all(
+      baseSrc,
+      keySrc
+    )(([base, key]) => {
+      const keyChunks = key.split(".");
+      let value = base;
+      keyChunks.forEach((keyChunk) => {
+        value = value[keyChunk];
+      });
+      if (value !== void 0 && value !== base) {
+        u(value);
+      }
+    });
+  };
+};
 
-class Shot extends TheInformation {
-  constructor(targetSrc, triggerSrc) {
-    super(targetSrc, triggerSrc);
-    this.targetSrc = targetSrc;
-    this.triggerSrc = triggerSrc;
-  }
-  value(o) {
-    const targetSync = new Sync(this.targetSrc);
-    targetSync.initOwner();
-    this.triggerSrc.value(
-      new From(() => {
-        if (targetSync.valueExisted()) {
-          o.give(targetSync.valueSync());
-        }
-      })
-    );
-    return this;
-  }
-}
+const polling = (baseSrc, triggerSrc) => {
+  return (u) => {
+    triggerSrc(() => {
+      baseSrc(u);
+    });
+  };
+};
 
-class Tick extends TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
+const shot = (targetSrc, triggerSrc) => {
+  return (u) => {
+    const targetSync = primitive(targetSrc);
+    triggerSrc(() => {
+      const value = targetSync.primitive();
+      if (isFilled(value)) {
+        u(value);
+      }
+    });
+  };
+};
+
+const tick = (baseSrc) => {
+  return (u) => {
     let microtaskScheduled = false;
     let lastValue = null;
     const scheduleMicrotask = () => {
@@ -379,416 +223,270 @@ class Tick extends TheInformation {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          o.give(lastValue);
+          u(lastValue);
           lastValue = null;
         }
       });
     };
-    this.baseSrc.value(
-      new From((v) => {
-        lastValue = v;
-        if (!microtaskScheduled) {
-          scheduleMicrotask();
-        }
-      })
-    );
-    return this;
-  }
-}
+    baseSrc((v) => {
+      lastValue = v;
+      if (!microtaskScheduled) {
+        scheduleMicrotask();
+      }
+    });
+  };
+};
 
-class Task extends TheInformation {
-  constructor(baseSrc, delay = 0) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-    this.delay = delay;
-  }
-  value(o) {
+const task = (baseSrc, delay = 0) => {
+  return (u) => {
     let prevTimer = null;
-    new ExecutorApplied(this.baseSrc, (fn) => {
+    executorApplied(baseSrc, (fn) => {
       return (v) => {
         if (prevTimer) {
           clearTimeout(prevTimer);
         }
         prevTimer = setTimeout(() => {
           fn(v);
-        }, this.delay);
+        }, delay);
       };
-    }).value(o);
-    return this;
-  }
-}
+    })(u);
+  };
+};
 
-class HashTable extends TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
+const hashTable = (baseSrc) => {
+  return (u) => {
     const record = {};
-    this.baseSrc.value(
-      new From(([key, value]) => {
-        record[key] = value;
-        o.give(record);
-      })
-    );
-    return this;
-  }
-}
-
-class RecordOf extends TheInformation {
-  constructor(recordSrc) {
-    super(...Object.values(recordSrc));
-    this.recordSrc = recordSrc;
-  }
-  value(o) {
-    const keys = Object.keys(this.recordSrc);
-    new All(...Object.values(this.recordSrc)).value(
-      new From((entries) => {
-        const record = {};
-        entries.forEach((entry, index) => {
-          record[keys[index]] = entry;
-        });
-        o.give(record);
-      })
-    );
-    return this;
-  }
-}
-
-class Concatenated extends TheInformation {
-  constructor(sources, joinPartSrc = new Of("")) {
-    super(...sources, joinPartSrc);
-    this.sources = sources;
-    this.joinPartSrc = joinPartSrc;
-  }
-  value(o) {
-    new All(this.joinPartSrc, ...this.sources).value(
-      new From(([joinPart, ...strings]) => {
-        o.give(strings.join(joinPart));
-      })
-    );
-    return this;
-  }
-}
-
-var __defProp$2 = Object.defineProperty;
-var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$2 = (obj, key, value) => __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
-class Template extends TheInformation {
-  constructor(theSrc = "", placesSrc = new Of({})) {
-    const source = typeof theSrc === "string" ? new Of(theSrc) : theSrc;
-    super(source, placesSrc);
-    this.placesSrc = placesSrc;
-    __publicField$2(this, "source");
-    __publicField$2(this, "placesCounter", 0);
-    __publicField$2(this, "vars", {
-      $TPL: new Of("$TPL")
+    baseSrc(([key, value]) => {
+      record[key] = value;
+      u(record);
     });
-    this.source = source;
-  }
-  value(guest) {
-    const varsSrc = new RecordOf(this.vars);
-    new Applied(
-      new All(this.source, this.placesSrc, varsSrc),
-      ([base, rules, vars]) => {
+  };
+};
+
+const recordOf = (recordSrc) => {
+  return (u) => {
+    const keys = Object.keys(recordSrc);
+    all(...Object.values(recordSrc))((entries) => {
+      const record = {};
+      entries.forEach((entry, index) => {
+        record[keys[index]] = entry;
+      });
+      u(record);
+    });
+  };
+};
+
+const concatenated = (sources, joinPartSrc = of("")) => {
+  return (u) => {
+    all(
+      joinPartSrc,
+      ...sources
+    )(([joinPart, ...strings]) => {
+      u(strings.join(joinPart));
+    });
+  };
+};
+
+const template = (theSrc = of(""), placesSrc = of({})) => {
+  let placesCounter = 0;
+  const vars = {
+    $TPL: of("$TPL")
+  };
+  return {
+    value: (u) => {
+      const varsSrc = recordOf(vars);
+      applied(all(theSrc, placesSrc, varsSrc), ([base, rules, vars2]) => {
         Object.entries(rules).forEach(([ph, val]) => {
           base = base.replaceAll(ph, String(val));
         });
-        Object.entries(vars).forEach(([ph, val]) => {
+        Object.entries(vars2).forEach(([ph, val]) => {
           base = base.replaceAll(ph, String(val));
         });
         return base;
+      })(u);
+    },
+    template: (value) => {
+      theSrc = of(value);
+    },
+    /**
+     * Ability to register variable
+     * in concrete place of template
+     */
+    var: (src) => {
+      const varName = `$var${placesCounter}`;
+      placesCounter += 1;
+      vars[varName] = src;
+      return varName;
+    }
+  };
+};
+
+const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
+  return (u) => {
+    conditionSrc((v) => {
+      let instance = null;
+      if (v) {
+        instance = leftSrc();
+      } else if (rightSrc) {
+        instance = rightSrc();
       }
-    ).value(guest);
-    return this;
-  }
-  template(value) {
-    this.source = new Of(value);
-    this.addDep(this.source);
-    return this;
-  }
-  /**
-   * Ability to register variable
-   * in concrete place of template
-   */
-  var(src) {
-    this.addDep(src);
-    const varName = `$var${this.placesCounter}`;
-    this.placesCounter += 1;
-    this.vars[varName] = src;
-    return varName;
-  }
-}
+      if (instance) {
+        instance(u);
+      }
+    });
+  };
+};
 
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, key + "" , value);
-class BranchLazy extends TheInformation {
-  constructor(conditionSrc, leftSrc, rightSrc) {
-    super([conditionSrc, leftSrc, rightSrc]);
-    this.conditionSrc = conditionSrc;
-    this.leftSrc = leftSrc;
-    this.rightSrc = rightSrc;
-    __publicField$1(this, "instances", []);
-  }
-  value(o) {
-    this.conditionSrc.value(
-      new From((v) => {
-        if (this.instances.length) {
-          this.instances.forEach((instance2) => {
-            instance2?.destroy();
-          });
-        }
-        let instance = null;
-        if (v) {
-          instance = this.leftSrc.get();
-        } else if (this.rightSrc) {
-          instance = this.rightSrc.get();
-        }
-        if (instance) {
-          this.instances.push(instance);
-          instance.value(o);
-        }
-      })
-    );
-    return this;
-  }
-}
+const regexpMatched = (patternSrc, valueSrc, flagsSrc = of("")) => {
+  return (u) => {
+    all(
+      patternSrc,
+      valueSrc,
+      flagsSrc
+    )(([pattern, value, flags]) => {
+      u(new RegExp(pattern, flags).test(value));
+    });
+  };
+};
 
-class RegexpMatched extends TheInformation {
-  constructor(patternSrc, valueSrc, flagsSrc = new Of("")) {
-    super(patternSrc, valueSrc, flagsSrc);
-    this.patternSrc = patternSrc;
-    this.valueSrc = valueSrc;
-    this.flagsSrc = flagsSrc;
-  }
-  value(o) {
-    new All(this.patternSrc, this.valueSrc, this.flagsSrc).value(
-      new From(([pattern, value, flags]) => {
-        o.give(new RegExp(pattern, flags).test(value));
-      })
-    );
-    return this;
-  }
-}
+const regexpReplaced = (valueSrc, patternSrc, replaceValueSrc, flagsSrc = of("")) => {
+  return (u) => {
+    all(
+      patternSrc,
+      valueSrc,
+      replaceValueSrc,
+      flagsSrc
+    )(([pattern, value, replaceValue, flags]) => {
+      u(String(value).replace(new RegExp(pattern, flags), replaceValue));
+    });
+  };
+};
 
-class RegexpReplaced extends TheInformation {
-  constructor(valueSrc, patternSrc, replaceValueSrc, flagsSrc = new Of("")) {
-    super(valueSrc, patternSrc, replaceValueSrc, flagsSrc);
-    this.valueSrc = valueSrc;
-    this.patternSrc = patternSrc;
-    this.replaceValueSrc = replaceValueSrc;
-    this.flagsSrc = flagsSrc;
-  }
-  value(o) {
-    new All(
-      this.patternSrc,
-      this.valueSrc,
-      this.replaceValueSrc,
-      this.flagsSrc
-    ).value(
-      new From(([pattern, value, replaceValue, flags]) => {
-        o.give(String(value).replace(new RegExp(pattern, flags), replaceValue));
-      })
-    );
-    return this;
-  }
-}
+const regexpMatch = (patternSrc, valueSrc, flagsSrc = of("")) => {
+  return (u) => {
+    all(
+      patternSrc,
+      valueSrc,
+      flagsSrc
+    )(([pattern, value, flags]) => {
+      const result = new RegExp(pattern, flags).exec(value);
+      u(result ?? []);
+    });
+  };
+};
 
-class RegexpMatch extends TheInformation {
-  constructor(patternSrc, valueSrc, flagsSrc = new Of("")) {
-    super(patternSrc, valueSrc, flagsSrc);
-    this.patternSrc = patternSrc;
-    this.valueSrc = valueSrc;
-    this.flagsSrc = flagsSrc;
-  }
-  value(o) {
-    new All(this.patternSrc, this.valueSrc, this.flagsSrc).value(
-      new From(([pattern, value, flags]) => {
-        const result = new RegExp(pattern, flags).exec(value);
-        o.give(result ?? []);
-      })
-    );
-    return this;
-  }
-}
+const set = (baseSrc, keySrc, valueSrc) => {
+  return (u) => {
+    all(
+      baseSrc,
+      keySrc,
+      valueSrc
+    )(([base, key, value]) => {
+      base[key] = value;
+      u(base);
+    });
+  };
+};
 
-class Set extends TheInformation {
-  constructor(baseSrc, keySrc, valueSrc) {
-    super(baseSrc, keySrc, valueSrc);
-    this.baseSrc = baseSrc;
-    this.keySrc = keySrc;
-    this.valueSrc = valueSrc;
-  }
-  value(o) {
-    new All(this.baseSrc, this.keySrc, this.valueSrc).value(
-      new From(([base, key, value]) => {
-        base[key] = value;
-        o.give(base);
-      })
-    );
-    return this;
-  }
-}
-
-var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => __defNormalProp(obj, key + "" , value);
-const emptySrc = new Lazy(() => new Of(false));
-class Router extends TheInformation {
-  constructor(urlSrc, routesSrc, defaultSrc) {
-    super(urlSrc, routesSrc, defaultSrc);
-    this.urlSrc = urlSrc;
-    this.routesSrc = routesSrc;
-    this.defaultSrc = defaultSrc;
-    __publicField(this, "instance");
-  }
-  value(o) {
-    new All(this.routesSrc, this.urlSrc).value(
-      new From(([routes, url]) => {
-        if (this.instance) {
-          this.instance?.destroy();
-        }
-        this.instance = new All(
-          this.defaultSrc.get(),
-          new All(
-            ...routes.map(
-              (r) => new BranchLazy(
-                new RegexpMatched(
-                  new Of(r.pattern),
-                  new Of(url),
-                  r.patternFlags ? new Of(r.patternFlags) : void 0
-                ),
-                r.template,
-                emptySrc
-              )
+const emptySrc = () => of(false);
+const router = (urlSrc, routesSrc, defaultSrc) => {
+  return (u) => {
+    all(
+      routesSrc,
+      urlSrc
+    )(([routes, url]) => {
+      const instance = all(
+        defaultSrc(),
+        all(
+          ...routes.map(
+            (r) => branchLazy(
+              regexpMatched(
+                of(r.pattern),
+                of(url),
+                r.patternFlags ? of(r.patternFlags) : void 0
+              ),
+              r.template,
+              emptySrc
             )
           )
-        );
-        new Applied(
-          this.instance,
-          (r) => {
-            const firstReal = r[1].find((r2) => r2 !== false);
-            if (firstReal) {
-              return firstReal;
-            }
-            return r[0];
-          }
-        ).value(o);
-      })
-    );
-    return this;
-  }
-}
-
-class And extends TheInformation {
-  constructor(oneSrc, twoSrc) {
-    super(oneSrc, twoSrc);
-    this.oneSrc = oneSrc;
-    this.twoSrc = twoSrc;
-  }
-  value(o) {
-    new All(this.oneSrc, this.twoSrc).value(
-      new From(([one, two]) => {
-        o.give(one && two);
-      })
-    );
-    return this;
-  }
-}
-
-class Or extends TheInformation {
-  constructor(oneSrc, twoSrc) {
-    super(oneSrc, twoSrc);
-    this.oneSrc = oneSrc;
-    this.twoSrc = twoSrc;
-  }
-  value(o) {
-    new All(this.oneSrc, this.twoSrc).value(
-      new From(([one, two]) => {
-        o.give(one || two);
-      })
-    );
-    return this;
-  }
-}
-
-class Not extends TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
-    this.baseSrc.value(
-      new From((v) => {
-        o.give(!v);
-      })
-    );
-    return this;
-  }
-}
-
-class Bool extends TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
-    new Applied(this.baseSrc, Boolean).value(o);
-    return this;
-  }
-}
-
-class FromJson extends TheInformation {
-  constructor(jsonSrc, errorOwner) {
-    super(jsonSrc);
-    this.jsonSrc = jsonSrc;
-    this.errorOwner = errorOwner;
-  }
-  value(o) {
-    this.jsonSrc.value(
-      new From((json) => {
-        try {
-          o.give(JSON.parse(json));
-        } catch (error) {
-          this.errorOwner?.give(new Error(`Failed to parse JSON: ${error}`));
+        )
+      );
+      applied(instance, (r) => {
+        const firstReal = r[1].find((r2) => r2 !== false);
+        if (firstReal) {
+          return firstReal;
         }
-      })
-    );
-    return this;
-  }
-}
+        return r[0];
+      })(u);
+    });
+  };
+};
 
-class ToJson extends TheInformation {
-  constructor(dataSrc, errorOwner) {
-    super(dataSrc);
-    this.dataSrc = dataSrc;
-    this.errorOwner = errorOwner;
-  }
-  value(o) {
-    this.dataSrc.value(
-      new From((data) => {
-        try {
-          o.give(JSON.stringify(data));
-        } catch {
-          this.errorOwner?.give(new Error("Failed to convert to JSON"));
-        }
-      })
-    );
-    return this;
-  }
-}
+const and = (oneSrc, twoSrc) => {
+  return (u) => {
+    all(
+      oneSrc,
+      twoSrc
+    )(([one, two]) => {
+      u(one && two);
+    });
+  };
+};
 
-class First extends TheInformation {
-  constructor(baseSrc) {
-    super(baseSrc);
-    this.baseSrc = baseSrc;
-  }
-  value(o) {
-    new Applied(this.baseSrc, (a) => a[0]).value(o);
-    return this;
-  }
-}
+const or = (oneSrc, twoSrc) => {
+  return (u) => {
+    all(
+      oneSrc,
+      twoSrc
+    )(([one, two]) => {
+      u(one || two);
+    });
+  };
+};
 
-export { And, Bool, Branch, Concatenated, Const, Deadline, Deferred, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Sync, Task, Template, Tick, ToJson };
+const not = (baseSrc) => {
+  return (u) => {
+    baseSrc((v) => {
+      u(!v);
+    });
+  };
+};
+
+const bool = (baseSrc) => {
+  return (u) => {
+    applied(baseSrc, Boolean)(u);
+  };
+};
+
+const fromJson = (jsonSrc, errorOwner) => {
+  return (u) => {
+    jsonSrc((json) => {
+      try {
+        u(JSON.parse(json));
+      } catch (error) {
+        errorOwner?.(new Error(`Failed to parse JSON: ${error}`));
+      }
+    });
+  };
+};
+
+const toJson = (dataSrc, errorOwner) => {
+  return (u) => {
+    dataSrc((data) => {
+      try {
+        u(JSON.stringify(data));
+      } catch {
+        errorOwner?.(new Error("Failed to convert to JSON"));
+      }
+    });
+  };
+};
+
+const first = (baseSrc) => {
+  return (u) => {
+    applied(baseSrc, (a) => a[0])(u);
+  };
+};
+
+export { and, bool, branch, concatenated, constant, deadline, deferred, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
 //# sourceMappingURL=silentium-components.js.map
