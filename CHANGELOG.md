@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.54](https://github.com/silentium-lab/silentium-components/compare/v0.0.53...v0.0.54) (2025-10-01)
+
+
+### Bug Fixes
+
+* **main:** branch rebuilded ([ef483f8](https://github.com/silentium-lab/silentium-components/commit/ef483f8eb551fe26d87381e07cd4e372afc68d00))
+* **main:** fns done ([76a91a7](https://github.com/silentium-lab/silentium-components/commit/76a91a75f257211760bf6f343f76e46d2620315c))
+* **main:** going to fns ([f5bdfd0](https://github.com/silentium-lab/silentium-components/commit/f5bdfd0b2850024ad3967c4eb176194fbe904c34))
+* **main:** work on fns ([7141702](https://github.com/silentium-lab/silentium-components/commit/714170237ff6258a60b99997750bb2076b1814a8))
+* **main:** work on fns ([e32d973](https://github.com/silentium-lab/silentium-components/commit/e32d973459f18ff32b1e3c45efd7fd2cd6333661))
+
 ### [0.0.53](https://github.com/silentium-lab/silentium-components/compare/v0.0.52...v0.0.53) (2025-09-21)
 
 
