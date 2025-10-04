@@ -3,7 +3,7 @@ import { DataType, DataUserType } from "silentium";
 /**
  * Represents object from json
  */
-export const fromJson = <T>(
+export const fromJson = <T = Record<string, unknown>>(
   jsonSrc: DataType<string>,
   errorOwner?: DataUserType,
 ): DataType<T> => {

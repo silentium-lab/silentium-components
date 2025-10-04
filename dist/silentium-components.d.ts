@@ -165,7 +165,7 @@ declare const bool: (baseSrc: DataType) => DataType<boolean>;
 /**
  * Represents object from json
  */
-declare const fromJson: <T>(jsonSrc: DataType<string>, errorOwner?: DataUserType) => DataType<T>;
+declare const fromJson: <T = Record<string, unknown>>(jsonSrc: DataType<string>, errorOwner?: DataUserType) => DataType<T>;
 
 /**
  * Represents json from object
