@@ -31,6 +31,7 @@ export const router = <T = "string">(
     const destructors: DestructorType[] = [];
     const destroyAllData = () => {
       destructors.forEach((d) => d());
+      destructors.length = 0;
     };
     all(
       routesSrc,

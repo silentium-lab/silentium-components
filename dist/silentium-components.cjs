@@ -409,6 +409,7 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
     const destructors = [];
     const destroyAllData = () => {
       destructors.forEach((d) => d());
+      destructors.length = 0;
     };
     silentium.all(
       routesSrc,
