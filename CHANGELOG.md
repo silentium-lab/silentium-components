@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.56](https://github.com/silentium-lab/silentium-components/compare/v0.0.55...v0.0.56) (2025-10-05)
+
+
+### Bug Fixes
+
+* **main:** fixed branch lazy destruction logic ([7c1f2c3](https://github.com/silentium-lab/silentium-components/commit/7c1f2c30d08b418b091a43069f0effa92cc41fa9))
+
 ### [0.0.55](https://github.com/silentium-lab/silentium-components/compare/v0.0.54...v0.0.55) (2025-10-04)
 
 
