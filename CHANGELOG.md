@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.61](https://github.com/silentium-lab/silentium-components/compare/v0.0.60...v0.0.61) (2025-10-05)
+
+
+### Bug Fixes
+
+* **main:** fix destructors ([e150a74](https://github.com/silentium-lab/silentium-components/commit/e150a74ceeb99b2eb04d7a5af20117a8ba701eb3))
+
 ### [0.0.60](https://github.com/silentium-lab/silentium-components/compare/v0.0.59...v0.0.60) (2025-10-05)
 
 
