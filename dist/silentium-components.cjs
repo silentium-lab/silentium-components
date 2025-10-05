@@ -320,7 +320,7 @@ const template = (theSrc = silentium.of(""), placesSrc = silentium.of({})) => {
       placesCounter += 1;
       vars[varName] = silentium.destructor(src, (d) => {
         destructors.push(d);
-      });
+      }).value;
       return varName;
     },
     destroy() {
@@ -431,7 +431,7 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
                 emptySrc
               ),
               (d) => destructors.push(d)
-            )
+            ).value
           )
         )
       );

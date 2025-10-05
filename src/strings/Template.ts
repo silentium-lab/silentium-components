@@ -43,7 +43,7 @@ export const template = (
       placesCounter += 1;
       vars[varName] = destructor(src, (d: DestructorType) => {
         destructors.push(d);
-      });
+      }).value;
       return varName;
     },
     destroy() {

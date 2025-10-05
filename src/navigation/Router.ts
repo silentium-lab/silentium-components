@@ -41,19 +41,20 @@ export const router = <T = "string">(
       const instance = all(
         defaultSrc(),
         all(
-          ...routes.map((r) =>
-            destructor(
-              branchLazy(
-                regexpMatched(
-                  of(r.pattern),
-                  of(url),
-                  r.patternFlags ? of(r.patternFlags) : undefined,
+          ...routes.map(
+            (r) =>
+              destructor(
+                branchLazy(
+                  regexpMatched(
+                    of(r.pattern),
+                    of(url),
+                    r.patternFlags ? of(r.patternFlags) : undefined,
+                  ),
+                  r.template,
+                  emptySrc,
                 ),
-                r.template,
-                emptySrc,
-              ),
-              (d: DestructorType) => destructors.push(d),
-            ),
+                (d: DestructorType) => destructors.push(d),
+              ).value,
           ),
         ),
       );
