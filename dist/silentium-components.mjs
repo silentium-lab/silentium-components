@@ -1,4 +1,4 @@
-import { primitive, shared, filtered, isFilled, late, applied, all, executorApplied, of } from 'silentium';
+import { primitive, shared, filtered, isFilled, late, applied, all, executorApplied, of, destructor } from 'silentium';
 
 const branch = (conditionSrc, leftSrc, rightSrc) => {
   return (u) => {
@@ -292,6 +292,7 @@ const template = (theSrc = of(""), placesSrc = of({})) => {
   const vars = {
     $TPL: of("$TPL")
   };
+  const destructors = [];
   return {
     value: (u) => {
       const varsSrc = recordOf(vars);
@@ -315,8 +316,13 @@ const template = (theSrc = of(""), placesSrc = of({})) => {
     var: (src) => {
       const varName = `$var${placesCounter}`;
       placesCounter += 1;
-      vars[varName] = src;
+      vars[varName] = destructor(src, (d) => {
+        destructors.push(d);
+      });
       return varName;
+    },
+    destroy() {
+      destructors.forEach((d) => d());
     }
   };
 };

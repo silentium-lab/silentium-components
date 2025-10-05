@@ -294,6 +294,7 @@ const template = (theSrc = silentium.of(""), placesSrc = silentium.of({})) => {
   const vars = {
     $TPL: silentium.of("$TPL")
   };
+  const destructors = [];
   return {
     value: (u) => {
       const varsSrc = recordOf(vars);
@@ -317,8 +318,13 @@ const template = (theSrc = silentium.of(""), placesSrc = silentium.of({})) => {
     var: (src) => {
       const varName = `$var${placesCounter}`;
       placesCounter += 1;
-      vars[varName] = src;
+      vars[varName] = silentium.destructor(src, (d) => {
+        destructors.push(d);
+      });
       return varName;
+    },
+    destroy() {
+      destructors.forEach((d) => d());
     }
   };
 };

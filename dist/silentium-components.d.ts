@@ -104,6 +104,7 @@ declare const template: (theSrc?: DataType<string>, placesSrc?: DataType<Record<
      * in concrete place of template
      */
     var: (src: DataType<string>) => string;
+    destroy(): void;
 };
 
 interface Route<T> {

@@ -1,4 +1,11 @@
-import { all, applied, DataType, of } from "silentium";
+import {
+  all,
+  applied,
+  DataType,
+  destructor,
+  DestructorType,
+  of,
+} from "silentium";
 import { recordOf } from "../structures";
 
 export const template = (
@@ -9,6 +16,7 @@ export const template = (
   const vars: Record<string, DataType> = {
     $TPL: of("$TPL"),
   };
+  const destructors: DestructorType[] = [];
   return {
     value: <DataType<string>>((u) => {
       const varsSrc = recordOf(vars);
@@ -33,8 +41,13 @@ export const template = (
     var: (src: DataType<string>) => {
       const varName = `$var${placesCounter}`;
       placesCounter += 1;
-      vars[varName] = src;
+      vars[varName] = destructor(src, (d: DestructorType) => {
+        destructors.push(d);
+      });
       return varName;
+    },
+    destroy() {
+      destructors.forEach((d) => d());
     },
   };
 };
