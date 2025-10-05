@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.57](https://github.com/silentium-lab/silentium-components/compare/v0.0.56...v0.0.57) (2025-10-05)
+
+
+### Bug Fixes
+
+* **main:** template component destructor ([e17b304](https://github.com/silentium-lab/silentium-components/commit/e17b304de2e9c4f84e81d1a447f95b2d4505345e))
+
 ### [0.0.56](https://github.com/silentium-lab/silentium-components/compare/v0.0.55...v0.0.56) (2025-10-05)
 
 
