@@ -24,5 +24,9 @@ export const branchLazy = <Then, Else>(
         destructor = instance(u);
       }
     });
+
+    return () => {
+      destructor?.();
+    };
   };
 };

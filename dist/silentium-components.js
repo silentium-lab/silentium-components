@@ -344,6 +344,9 @@ const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
         destructor = instance(u);
       }
     });
+    return () => {
+      destructor?.();
+    };
   };
 };
 
@@ -401,6 +404,7 @@ const set = (baseSrc, keySrc, valueSrc) => {
 const emptySrc = () => of(false);
 const router = (urlSrc, routesSrc, defaultSrc) => {
   return (u) => {
+    const destructors = [];
     all(
       routesSrc,
       urlSrc
@@ -409,14 +413,17 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
         defaultSrc(),
         all(
           ...routes.map(
-            (r) => branchLazy(
-              regexpMatched(
-                of(r.pattern),
-                of(url),
-                r.patternFlags ? of(r.patternFlags) : void 0
+            (r) => destructor(
+              branchLazy(
+                regexpMatched(
+                  of(r.pattern),
+                  of(url),
+                  r.patternFlags ? of(r.patternFlags) : void 0
+                ),
+                r.template,
+                emptySrc
               ),
-              r.template,
-              emptySrc
+              (d) => destructors.push(d)
             )
           )
         )
@@ -429,6 +436,9 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
         return r[0];
       })(u);
     });
+    return () => {
+      destructors.forEach((d) => d());
+    };
   };
 };
 

@@ -346,6 +346,9 @@ const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
         destructor = instance(u);
       }
     });
+    return () => {
+      destructor?.();
+    };
   };
 };
 
@@ -403,6 +406,7 @@ const set = (baseSrc, keySrc, valueSrc) => {
 const emptySrc = () => silentium.of(false);
 const router = (urlSrc, routesSrc, defaultSrc) => {
   return (u) => {
+    const destructors = [];
     silentium.all(
       routesSrc,
       urlSrc
@@ -411,14 +415,17 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
         defaultSrc(),
         silentium.all(
           ...routes.map(
-            (r) => branchLazy(
-              regexpMatched(
-                silentium.of(r.pattern),
-                silentium.of(url),
-                r.patternFlags ? silentium.of(r.patternFlags) : void 0
+            (r) => silentium.destructor(
+              branchLazy(
+                regexpMatched(
+                  silentium.of(r.pattern),
+                  silentium.of(url),
+                  r.patternFlags ? silentium.of(r.patternFlags) : void 0
+                ),
+                r.template,
+                emptySrc
               ),
-              r.template,
-              emptySrc
+              (d) => destructors.push(d)
             )
           )
         )
@@ -431,6 +438,9 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
         return r[0];
       })(u);
     });
+    return () => {
+      destructors.forEach((d) => d());
+    };
   };
 };
 

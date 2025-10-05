@@ -1,4 +1,12 @@
-import { all, applied, DataType, of, ValueType } from "silentium";
+import {
+  all,
+  applied,
+  DataType,
+  destructor,
+  DestructorType,
+  of,
+  ValueType,
+} from "silentium";
 import { branchLazy } from "../behaviors/BranchLazy";
 import { regexpMatched } from "../system";
 
@@ -20,6 +28,7 @@ export const router = <T = "string">(
   defaultSrc: ValueType<[], DataType<T>>,
 ): DataType<T> => {
   return (u) => {
+    const destructors: DestructorType[] = [];
     all(
       routesSrc,
       urlSrc,
@@ -28,14 +37,17 @@ export const router = <T = "string">(
         defaultSrc(),
         all(
           ...routes.map((r) =>
-            branchLazy(
-              regexpMatched(
-                of(r.pattern),
-                of(url),
-                r.patternFlags ? of(r.patternFlags) : undefined,
+            destructor(
+              branchLazy(
+                regexpMatched(
+                  of(r.pattern),
+                  of(url),
+                  r.patternFlags ? of(r.patternFlags) : undefined,
+                ),
+                r.template,
+                emptySrc,
               ),
-              r.template,
-              emptySrc,
+              (d: DestructorType) => destructors.push(d),
             ),
           ),
         ),
@@ -51,5 +63,9 @@ export const router = <T = "string">(
         return r[0];
       })(u);
     });
+
+    return () => {
+      destructors.forEach((d) => d());
+    };
   };
 };
