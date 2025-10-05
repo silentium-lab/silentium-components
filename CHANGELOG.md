@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.59](https://github.com/silentium-lab/silentium-components/compare/v0.0.58...v0.0.59) (2025-10-05)
+
+
+### Bug Fixes
+
+* **main:** correct router destroy ([dccf647](https://github.com/silentium-lab/silentium-components/commit/dccf64747e1287a2467e3f857f1d67b533883cfc))
+
 ### [0.0.58](https://github.com/silentium-lab/silentium-components/compare/v0.0.57...v0.0.58) (2025-10-05)
 
 
