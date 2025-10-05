@@ -325,7 +325,11 @@ const template = (theSrc = silentium.of(""), placesSrc = silentium.of({})) => {
 
 const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
   return (u) => {
+    let destructor;
     conditionSrc((v) => {
+      if (destructor !== void 0 && typeof destructor === "function") {
+        destructor();
+      }
       let instance = null;
       if (v) {
         instance = leftSrc();
@@ -333,7 +337,7 @@ const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
         instance = rightSrc();
       }
       if (instance) {
-        instance(u);
+        destructor = instance(u);
       }
     });
   };
