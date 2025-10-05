@@ -29,10 +29,14 @@ export const router = <T = "string">(
 ): DataType<T> => {
   return (u) => {
     const destructors: DestructorType[] = [];
+    const destroyAllData = () => {
+      destructors.forEach((d) => d());
+    };
     all(
       routesSrc,
       urlSrc,
     )(([routes, url]) => {
+      destroyAllData();
       const instance = all(
         defaultSrc(),
         all(
@@ -53,6 +57,7 @@ export const router = <T = "string">(
         ),
       );
 
+      // Return first not false or default
       applied(instance, (r) => {
         const firstReal = r[1].find((r) => r !== false);
 
@@ -64,8 +69,6 @@ export const router = <T = "string">(
       })(u);
     });
 
-    return () => {
-      destructors.forEach((d) => d());
-    };
+    return destroyAllData;
   };
 };

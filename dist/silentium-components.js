@@ -405,10 +405,14 @@ const emptySrc = () => of(false);
 const router = (urlSrc, routesSrc, defaultSrc) => {
   return (u) => {
     const destructors = [];
+    const destroyAllData = () => {
+      destructors.forEach((d) => d());
+    };
     all(
       routesSrc,
       urlSrc
     )(([routes, url]) => {
+      destroyAllData();
       const instance = all(
         defaultSrc(),
         all(
@@ -436,9 +440,7 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
         return r[0];
       })(u);
     });
-    return () => {
-      destructors.forEach((d) => d());
-    };
+    return destroyAllData;
   };
 };
 

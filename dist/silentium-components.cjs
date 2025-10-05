@@ -407,10 +407,14 @@ const emptySrc = () => silentium.of(false);
 const router = (urlSrc, routesSrc, defaultSrc) => {
   return (u) => {
     const destructors = [];
+    const destroyAllData = () => {
+      destructors.forEach((d) => d());
+    };
     silentium.all(
       routesSrc,
       urlSrc
     )(([routes, url]) => {
+      destroyAllData();
       const instance = silentium.all(
         defaultSrc(),
         silentium.all(
@@ -438,9 +442,7 @@ const router = (urlSrc, routesSrc, defaultSrc) => {
         return r[0];
       })(u);
     });
-    return () => {
-      destructors.forEach((d) => d());
-    };
+    return destroyAllData;
   };
 };
 
