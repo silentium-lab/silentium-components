@@ -31,6 +31,11 @@ describe("Router._nested.test", () => {
                     name: "create",
                     template: () => of("articles create"),
                   },
+                  {
+                    pattern: "^/admin/articles/update$",
+                    name: "create",
+                    template: () => of("articles update"),
+                  },
                 ]),
                 () => of("admin not found"),
               );
@@ -52,9 +57,9 @@ describe("Router._nested.test", () => {
     });
     const pd = () => d.join("\n");
 
-    urlSrc.give("/");
     urlSrc.give("/admin/articles");
     urlSrc.give("/admin/articles/create");
+    urlSrc.give("/admin/articles/update");
 
     expect(pd()).toBe("");
   });
