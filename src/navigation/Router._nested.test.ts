@@ -1,4 +1,4 @@
-import { lateShared, of, destructor, local } from "silentium";
+import { lateShared, of, destructor, local, primitive } from "silentium";
 import { router } from "../navigation/Router";
 import { describe, expect, test } from "vitest";
 
@@ -16,33 +16,58 @@ describe("Router._nested.test", () => {
           pattern: "/admin.*",
           template: () => {
             return (user) => {
-              const localUrlSrc = destructor(local(urlSrc.value));
+              // need to replace with detached component
+              const localUrlSrc = of(
+                primitive(urlSrc.value).primitive() as string,
+              );
 
               const r = router(
-                localUrlSrc.value,
+                localUrlSrc,
                 of([
                   {
                     pattern: "^/admin/articles$",
-                    name: "list",
                     template: () => of("articles list"),
                   },
                   {
                     pattern: "^/admin/articles/create$",
-                    name: "create",
                     template: () => of("articles create"),
                   },
                   {
                     pattern: "^/admin/articles/update$",
-                    name: "create",
                     template: () => of("articles update"),
                   },
+                  {
+                    pattern: "^/admin/nested/.*$",
+                    template: () => {
+                      return (user) => {
+                        const localUrlSrc = of(
+                          primitive(urlSrc.value).primitive() as string,
+                        );
+
+                        const r = router(
+                          localUrlSrc,
+                          of([
+                            {
+                              pattern: "^/admin/nested/list$",
+                              template: () => of("admin nested list"),
+                            },
+                          ]),
+                          () => of<string>("admin nested not found"),
+                        );
+                        const rDestructor = r(user);
+
+                        return function AdminDestroy() {
+                          rDestructor?.();
+                        };
+                      };
+                    },
+                  },
                 ]),
-                () => of("admin not found"),
+                () => of<string>("admin not found"),
               );
               const rDestructor = r(user);
 
               return function AdminDestroy() {
-                localUrlSrc.destroy();
                 rDestructor?.();
               };
             };
@@ -58,6 +83,7 @@ describe("Router._nested.test", () => {
     const pd = () => d.join("\n");
 
     urlSrc.give("/admin/articles");
+    urlSrc.give("/admin/nested/list");
     urlSrc.give("/admin/articles/create");
     urlSrc.give("/admin/articles/update");
 
