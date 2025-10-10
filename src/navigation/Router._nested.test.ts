@@ -1,6 +1,7 @@
-import { lateShared, of, destructor, local, primitive } from "silentium";
-import { router } from "../navigation/Router";
+import { lateShared, of } from "silentium";
 import { describe, expect, test } from "vitest";
+import { detached } from "../behaviors/Detached";
+import { router } from "../navigation/Router";
 
 describe("Router._nested.test", () => {
   test("Вложенные роуты", () => {
@@ -17,9 +18,7 @@ describe("Router._nested.test", () => {
           template: () => {
             return (user) => {
               // need to replace with detached component
-              const localUrlSrc = of(
-                primitive(urlSrc.value).primitive() as string,
-              );
+              const localUrlSrc = detached(urlSrc.value);
 
               const r = router(
                 localUrlSrc,
@@ -40,9 +39,7 @@ describe("Router._nested.test", () => {
                     pattern: "^/admin/nested/.*$",
                     template: () => {
                       return (user) => {
-                        const localUrlSrc = of(
-                          primitive(urlSrc.value).primitive() as string,
-                        );
+                        const localUrlSrc = detached(urlSrc.value);
 
                         const r = router(
                           localUrlSrc,
@@ -87,6 +84,10 @@ describe("Router._nested.test", () => {
     urlSrc.give("/admin/articles/create");
     urlSrc.give("/admin/articles/update");
 
-    expect(pd()).toBe("");
+    expect(pd()).toBe(`home
+articles list
+admin nested list
+articles create
+articles update`);
   });
 });

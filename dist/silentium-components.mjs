@@ -66,6 +66,19 @@ const deferred = (baseSrc, triggerSrc) => {
   };
 };
 
+const detached = (baseSrc) => {
+  const p = primitive(baseSrc);
+  let v = p.primitive();
+  return function Detached(user) {
+    if (isFilled(v)) {
+      user(v);
+    } else {
+      v = p.primitive();
+      Detached(user);
+    }
+  };
+};
+
 const dirty = (baseEntitySource, alwaysKeep = [], excludeKeys = [], cloneFn) => {
   const comparingSrc = late();
   if (cloneFn === void 0) {
@@ -214,6 +227,22 @@ const shot = (targetSrc, triggerSrc) => {
   };
 };
 
+const task = (baseSrc, delay = 0) => {
+  return (u) => {
+    let prevTimer = null;
+    executorApplied(baseSrc, (fn) => {
+      return (v) => {
+        if (prevTimer) {
+          clearTimeout(prevTimer);
+        }
+        prevTimer = setTimeout(() => {
+          fn(v);
+        }, delay);
+      };
+    })(u);
+  };
+};
+
 const tick = (baseSrc) => {
   return (u) => {
     let microtaskScheduled = false;
@@ -234,22 +263,6 @@ const tick = (baseSrc) => {
         scheduleMicrotask();
       }
     });
-  };
-};
-
-const task = (baseSrc, delay = 0) => {
-  return (u) => {
-    let prevTimer = null;
-    executorApplied(baseSrc, (fn) => {
-      return (v) => {
-        if (prevTimer) {
-          clearTimeout(prevTimer);
-        }
-        prevTimer = setTimeout(() => {
-          fn(v);
-        }, delay);
-      };
-    })(u);
   };
 };
 
@@ -511,5 +524,5 @@ const first = (baseSrc) => {
   };
 };
 
-export { and, bool, branch, concatenated, constant, deadline, deferred, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
+export { and, bool, branch, concatenated, constant, deadline, deferred, detached, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
 //# sourceMappingURL=silentium-components.mjs.map

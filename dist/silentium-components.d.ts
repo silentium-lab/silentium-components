@@ -18,6 +18,8 @@ declare const deadline: <T>(error: DataUserType<Error>, baseSrc: DataType<T>, ti
  */
 declare const deferred: <T>(baseSrc: DataType<T>, triggerSrc: DataType<unknown>) => DataType<T>;
 
+declare const detached: <T>(baseSrc: DataType<T>) => DataType<T>;
+
 /**
  * Takes source and remember it first value
  * returns new record, what will contain only fields what was changed
@@ -70,13 +72,13 @@ declare const polling: <T>(baseSrc: DataType<T>, triggerSrc: DataType<T>) => Dat
  */
 declare const shot: <T>(targetSrc: DataType<T>, triggerSrc: DataType) => DataType<T>;
 
+declare const task: <T>(baseSrc: DataType<T>, delay?: number) => DataType<T>;
+
 /**
  * Accumulates the last value of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
 declare const tick: <T>(baseSrc: DataType<T>) => DataType<T>;
-
-declare const task: <T>(baseSrc: DataType<T>, delay?: number) => DataType<T>;
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
@@ -178,5 +180,5 @@ declare const toJson: (dataSrc: DataType, errorOwner?: DataUserType) => DataType
  */
 declare const first: <T extends Array<unknown>>(baseSrc: DataType<T>) => DataType<T[0]>;
 
-export { and, bool, branch, concatenated, constant, deadline, deferred, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
+export { and, bool, branch, concatenated, constant, deadline, deferred, detached, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
 export type { Route };

@@ -68,6 +68,19 @@ const deferred = (baseSrc, triggerSrc) => {
   };
 };
 
+const detached = (baseSrc) => {
+  const p = silentium.primitive(baseSrc);
+  let v = p.primitive();
+  return function Detached(user) {
+    if (silentium.isFilled(v)) {
+      user(v);
+    } else {
+      v = p.primitive();
+      Detached(user);
+    }
+  };
+};
+
 const dirty = (baseEntitySource, alwaysKeep = [], excludeKeys = [], cloneFn) => {
   const comparingSrc = silentium.late();
   if (cloneFn === void 0) {
@@ -216,6 +229,22 @@ const shot = (targetSrc, triggerSrc) => {
   };
 };
 
+const task = (baseSrc, delay = 0) => {
+  return (u) => {
+    let prevTimer = null;
+    silentium.executorApplied(baseSrc, (fn) => {
+      return (v) => {
+        if (prevTimer) {
+          clearTimeout(prevTimer);
+        }
+        prevTimer = setTimeout(() => {
+          fn(v);
+        }, delay);
+      };
+    })(u);
+  };
+};
+
 const tick = (baseSrc) => {
   return (u) => {
     let microtaskScheduled = false;
@@ -236,22 +265,6 @@ const tick = (baseSrc) => {
         scheduleMicrotask();
       }
     });
-  };
-};
-
-const task = (baseSrc, delay = 0) => {
-  return (u) => {
-    let prevTimer = null;
-    silentium.executorApplied(baseSrc, (fn) => {
-      return (v) => {
-        if (prevTimer) {
-          clearTimeout(prevTimer);
-        }
-        prevTimer = setTimeout(() => {
-          fn(v);
-        }, delay);
-      };
-    })(u);
   };
 };
 
@@ -520,6 +533,7 @@ exports.concatenated = concatenated;
 exports.constant = constant;
 exports.deadline = deadline;
 exports.deferred = deferred;
+exports.detached = detached;
 exports.dirty = dirty;
 exports.first = first;
 exports.fromJson = fromJson;
