@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.62](https://github.com/silentium-lab/silentium-components/compare/v0.0.61...v0.0.62) (2025-10-10)
+
+
+### Bug Fixes
+
+* **main:** detached component for nested router ([b9b7a59](https://github.com/silentium-lab/silentium-components/commit/b9b7a59c18760f38b9c1fc912e47e3ec9dc769ce))
+* **main:** nested routing test ([e4268ba](https://github.com/silentium-lab/silentium-components/commit/e4268ba0adaa4b6b247e09ff9638a31d84179da4))
+* **main:** router nested test ([885a77a](https://github.com/silentium-lab/silentium-components/commit/885a77a1ea973b1420290e3bd5aae54c9a2ae95a))
+* **main:** work on detached ([36ca97e](https://github.com/silentium-lab/silentium-components/commit/36ca97eb78c4aec5bcabbae593758ea7b751942e))
+* **main:** work on router test ([ffb5009](https://github.com/silentium-lab/silentium-components/commit/ffb5009a56fa8ed0c7c32a140655d1303a1700b1))
+
 ### [0.0.61](https://github.com/silentium-lab/silentium-components/compare/v0.0.60...v0.0.61) (2025-10-05)
 
 
