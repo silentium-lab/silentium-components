@@ -7,7 +7,7 @@ describe("Router._nested.test", () => {
   test("Вложенные роуты", () => {
     const urlSrc = lateShared("/");
     const routerSrc = router(
-      urlSrc.value,
+      urlSrc.event,
       of([
         {
           pattern: "^/$",
@@ -18,7 +18,7 @@ describe("Router._nested.test", () => {
           template: () => {
             return (user) => {
               // need to replace with detached component
-              const localUrlSrc = detached(urlSrc.value);
+              const localUrlSrc = detached(urlSrc.event);
 
               const r = router(
                 localUrlSrc,
@@ -39,7 +39,7 @@ describe("Router._nested.test", () => {
                     pattern: "^/admin/nested/.*$",
                     template: () => {
                       return (user) => {
-                        const localUrlSrc = detached(urlSrc.value);
+                        const localUrlSrc = detached(urlSrc.event);
 
                         const r = router(
                           localUrlSrc,
@@ -79,10 +79,10 @@ describe("Router._nested.test", () => {
     });
     const pd = () => d.join("\n");
 
-    urlSrc.give("/admin/articles");
-    urlSrc.give("/admin/nested/list");
-    urlSrc.give("/admin/articles/create");
-    urlSrc.give("/admin/articles/update");
+    urlSrc.use("/admin/articles");
+    urlSrc.use("/admin/nested/list");
+    urlSrc.use("/admin/articles/create");
+    urlSrc.use("/admin/articles/update");
 
     expect(pd()).toBe(`home
 articles list

@@ -1,9 +1,9 @@
-import { DataType, executorApplied } from "silentium";
+import { EventType, executorApplied } from "silentium";
 
 export const task = <T>(
-  baseSrc: DataType<T>,
+  baseSrc: EventType<T>,
   delay: number = 0,
-): DataType<T> => {
+): EventType<T> => {
   return (u) => {
     let prevTimer: unknown | null = null;
     executorApplied(baseSrc, (fn) => {

@@ -1,4 +1,4 @@
-import { all, applied, DataType, late, SourceType } from "silentium";
+import { all, applied, EventType, late, SourceType } from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -6,7 +6,7 @@ import { all, applied, DataType, late, SourceType } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
 export const dirty = <T>(
-  baseEntitySource: DataType<T>,
+  baseEntitySource: EventType<T>,
   alwaysKeep: string[] = [],
   excludeKeys: string[] = [],
   cloneFn?: (v: T) => T,
@@ -18,8 +18,8 @@ export const dirty = <T>(
   }
 
   return {
-    value: (u) => {
-      const comparingDetached = applied(comparingSrc.value, cloneFn);
+    event: (u) => {
+      const comparingDetached = applied(comparingSrc.event, cloneFn);
 
       all(
         comparingDetached,
@@ -44,8 +44,8 @@ export const dirty = <T>(
         );
       });
     },
-    give: (v) => {
-      comparingSrc.give(v);
+    use: (v) => {
+      comparingSrc.use(v);
     },
   };
 };

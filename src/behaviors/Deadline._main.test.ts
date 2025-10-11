@@ -15,7 +15,7 @@ test("Deadline._main.test", () => {
   const l = late();
   const errorGuest = vi.fn();
   const g = vi.fn();
-  deadline(errorGuest, l.value, of(20))(g);
+  deadline(errorGuest, l.event, of(20))(g);
 
   vi.runAllTimers();
 

@@ -5,7 +5,7 @@ import { expect, test, vi } from "vitest";
 test("Branch._main.test", () => {
   const l = late<number>(2);
   const res = branch(
-    applied(l.value, (t) => {
+    applied(l.event, (t) => {
       return t === 2;
     }),
     of("Then ветка"),
@@ -16,7 +16,7 @@ test("Branch._main.test", () => {
   res(g);
   expect(g).toBeCalledWith("Then ветка");
 
-  l.give(1);
+  l.use(1);
 
   expect(g).toBeCalledWith("Else ветка");
 });

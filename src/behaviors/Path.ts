@@ -1,4 +1,4 @@
-import { all, DataType } from "silentium";
+import { all, EventType } from "silentium";
 
 /**
  * Return source of record path
@@ -9,9 +9,9 @@ export const path = <
   T extends Record<string, unknown> | Array<unknown> = any,
   K extends string = any,
 >(
-  baseSrc: DataType<T>,
-  keySrc: DataType<K>,
-): DataType<R> => {
+  baseSrc: EventType<T>,
+  keySrc: EventType<K>,
+): EventType<R> => {
   return (u) => {
     all(
       baseSrc,

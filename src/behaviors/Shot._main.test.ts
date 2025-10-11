@@ -6,24 +6,24 @@ test("Shot._main.test", () => {
   const baseSrc = late();
   const shotSrc = late();
 
-  const shotResult = shared(shot(baseSrc.value, shotSrc.value));
+  const shotResult = shared(shot(baseSrc.event, shotSrc.event));
   const g = vi.fn();
-  shotResult.value(g);
+  shotResult.event(g);
 
-  baseSrc.give(1);
-  shotSrc.give(1);
-
-  expect(g).toHaveBeenLastCalledWith(1);
-
-  baseSrc.give(2);
+  baseSrc.use(1);
+  shotSrc.use(1);
 
   expect(g).toHaveBeenLastCalledWith(1);
 
-  shotSrc.give(1);
+  baseSrc.use(2);
+
+  expect(g).toHaveBeenLastCalledWith(1);
+
+  shotSrc.use(1);
 
   expect(g).toHaveBeenLastCalledWith(2);
 
   const g2 = vi.fn();
-  shotResult.value(g2);
+  shotResult.event(g2);
   expect(g2).toHaveBeenLastCalledWith(2);
 });

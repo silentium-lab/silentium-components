@@ -1,15 +1,15 @@
-import { all, DataType, of } from "silentium";
+import { all, EventType, of } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-replaced
  */
 export const regexpReplaced = (
-  valueSrc: DataType<string>,
-  patternSrc: DataType<string>,
-  replaceValueSrc: DataType<string>,
-  flagsSrc: DataType<string> = of(""),
-): DataType<string> => {
+  valueSrc: EventType<string>,
+  patternSrc: EventType<string>,
+  replaceValueSrc: EventType<string>,
+  flagsSrc: EventType<string> = of(""),
+): EventType<string> => {
   return (u) => {
     all(
       patternSrc,

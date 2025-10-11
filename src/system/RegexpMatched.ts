@@ -1,14 +1,14 @@
-import { all, DataType, of } from "silentium";
+import { all, EventType, of } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
  */
 export const regexpMatched = (
-  patternSrc: DataType<string>,
-  valueSrc: DataType<string>,
-  flagsSrc: DataType<string> = of(""),
-): DataType<boolean> => {
+  patternSrc: EventType<string>,
+  valueSrc: EventType<string>,
+  flagsSrc: EventType<string> = of(""),
+): EventType<boolean> => {
   return (u) => {
     all(
       patternSrc,

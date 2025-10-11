@@ -8,12 +8,12 @@ const drop = (dropPart: string) => (value: string) => {
 
 test("Router._main.test", () => {
   const urlSrc = late<string>("http://domain.com/");
-  const urlPathSrc = shared(applied(urlSrc.value, drop("http://domain.com")));
+  const urlPathSrc = shared(applied(urlSrc.event, drop("http://domain.com")));
   const g = vi.fn();
-  urlPathSrc.value(g);
+  urlPathSrc.event(g);
 
   const routerSrc = router(
-    urlPathSrc.value,
+    urlPathSrc.event,
     of([
       {
         pattern: "^/$",
@@ -31,16 +31,16 @@ test("Router._main.test", () => {
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 
-  urlSrc.give("http://domain.com/some/contacts");
+  urlSrc.use("http://domain.com/some/contacts");
 
   expect(g).toHaveBeenLastCalledWith("/some/contacts");
   expect(g2).toHaveBeenLastCalledWith("page/contacts.html");
 
-  urlSrc.give("http://domain.com/some/unknown/");
+  urlSrc.use("http://domain.com/some/unknown/");
 
   expect(g2).toHaveBeenLastCalledWith("page/404.html");
 
-  urlSrc.give("http://domain.com/");
+  urlSrc.use("http://domain.com/");
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 });

@@ -7,11 +7,11 @@ test("Dirty.test", () => {
     name: "one",
     surname: "two",
   });
-  const d = dirty(form.value);
+  const d = dirty(form.event);
   const g = vi.fn();
-  d.value(g);
+  d.event(g);
 
-  d.give({
+  d.use({
     name: "new",
     surname: "two",
   });

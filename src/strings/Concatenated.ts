@@ -1,13 +1,13 @@
-import { all, DataType, of } from "silentium";
+import { all, EventType, of } from "silentium";
 
 /**
  * Join sources of strings to one source
  * https://silentium-lab.github.io/silentium-components/#/string/concatenated
  */
 export const concatenated = (
-  sources: DataType<string>[],
-  joinPartSrc: DataType<string> = of(""),
-): DataType<string> => {
+  sources: EventType<string>[],
+  joinPartSrc: EventType<string> = of(""),
+): EventType<string> => {
   return (u) => {
     all(
       joinPartSrc,

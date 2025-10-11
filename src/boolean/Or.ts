@@ -1,12 +1,12 @@
-import { all, DataType } from "silentium";
+import { all, EventType } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/or
  */
 export const or = (
-  oneSrc: DataType<boolean>,
-  twoSrc: DataType<boolean>,
-): DataType<boolean> => {
+  oneSrc: EventType<boolean>,
+  twoSrc: EventType<boolean>,
+): EventType<boolean> => {
   return (u) => {
     all(
       oneSrc,

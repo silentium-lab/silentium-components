@@ -1,9 +1,9 @@
-import { DataType } from "silentium";
+import { EventType } from "silentium";
 
 export const constant = <T>(
   permanentValue: T,
-  triggerSrc: DataType,
-): DataType<T> => {
+  triggerSrc: EventType,
+): EventType<T> => {
   return (u) => {
     triggerSrc(() => {
       u(permanentValue);

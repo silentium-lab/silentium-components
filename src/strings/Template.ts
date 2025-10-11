@@ -1,7 +1,7 @@
 import {
   all,
   applied,
-  DataType,
+  EventType,
   destructor,
   DestructorType,
   of,
@@ -9,16 +9,16 @@ import {
 import { recordOf } from "../structures";
 
 export const template = (
-  theSrc: DataType<string> = of(""),
-  placesSrc: DataType<Record<string, unknown>> = of({}),
+  theSrc: EventType<string> = of(""),
+  placesSrc: EventType<Record<string, unknown>> = of({}),
 ) => {
   let placesCounter = 0;
-  const vars: Record<string, DataType> = {
+  const vars: Record<string, EventType> = {
     $TPL: of("$TPL"),
   };
   const destructors: DestructorType[] = [];
   return {
-    value: <DataType<string>>((u) => {
+    value: <EventType<string>>((u) => {
       const varsSrc = recordOf(vars);
       applied(all(theSrc, placesSrc, varsSrc), ([base, rules, vars]) => {
         Object.entries(rules).forEach(([ph, val]) => {
@@ -38,7 +38,7 @@ export const template = (
      * Ability to register variable
      * in concrete place of template
      */
-    var: (src: DataType<string>) => {
+    var: (src: EventType<string>) => {
       const varName = `$var${placesCounter}`;
       placesCounter += 1;
       vars[varName] = destructor(src, (d: DestructorType) => {

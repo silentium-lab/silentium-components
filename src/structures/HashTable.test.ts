@@ -4,11 +4,11 @@ import { expect, test, vi } from "vitest";
 
 test("HashTable.test", () => {
   const entrySource = late<[string, string]>();
-  const hashTableSrc = hashTable(entrySource.value);
+  const hashTableSrc = hashTable(entrySource.event);
   const g = vi.fn();
   hashTableSrc(g);
-  entrySource.give(["key-one", "value-one"]);
-  entrySource.give(["key-two", "value-two"]);
+  entrySource.use(["key-one", "value-one"]);
+  entrySource.use(["key-two", "value-two"]);
 
   expect(g).toHaveBeenLastCalledWith({
     "key-one": "value-one",

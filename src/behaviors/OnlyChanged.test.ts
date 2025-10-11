@@ -4,15 +4,15 @@ import { expect, test, vi } from "vitest";
 
 test("OnlyChanged.test", () => {
   const src = late<number>(1);
-  const changedSrc = shared(onlyChanged(src.value));
+  const changedSrc = shared(onlyChanged(src.event));
 
   const g = vi.fn();
-  changedSrc.value(g);
+  changedSrc.event(g);
   expect(g).not.toBeCalled();
 
-  src.give(2);
+  src.use(2);
 
   const g2 = vi.fn();
-  changedSrc.value(g2);
+  changedSrc.event(g2);
   expect(g2).toBeCalledWith(2);
 });

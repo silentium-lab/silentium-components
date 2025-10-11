@@ -14,13 +14,13 @@ afterEach(() => {
 test("Tick.test", async () => {
   const s1 = late<number>(1);
   const s2 = late<number>(2);
-  const tickSrc = shared(tick(any(s1.value, s2.value)), true);
+  const tickSrc = shared(tick(any(s1.event, s2.event)), true);
 
   const g = vi.fn();
-  tickSrc.value(g);
+  tickSrc.event(g);
 
-  s1.give(3);
-  s2.give(4);
+  s1.use(3);
+  s2.use(4);
 
   await vi.advanceTimersByTimeAsync(10);
   vi.runAllTicks();

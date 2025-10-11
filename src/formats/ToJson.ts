@@ -1,12 +1,12 @@
-import { DataType, DataUserType } from "silentium";
+import { EventType, EventUserType } from "silentium";
 
 /**
  * Represents json from object
  */
 export const toJson = (
-  dataSrc: DataType,
-  errorOwner?: DataUserType,
-): DataType<string> => {
+  dataSrc: EventType,
+  errorOwner?: EventUserType,
+): EventType<string> => {
   return (u) => {
     dataSrc((data: unknown) => {
       try {

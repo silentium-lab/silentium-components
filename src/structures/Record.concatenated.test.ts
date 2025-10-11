@@ -11,13 +11,13 @@ test("Record.concatenated.test", () => {
       one: of("one"),
       two: of("two"),
       three,
-      nested: concatenated([of("one"), concatPart.value]),
+      nested: concatenated([of("one"), concatPart.event]),
     }),
   );
   const g = vi.fn();
-  r.value(g);
+  r.event(g);
   let counter = 0;
-  r.value(() => {
+  r.event(() => {
     counter += 1;
   });
 
@@ -28,7 +28,7 @@ test("Record.concatenated.test", () => {
     nested: "onepart",
   });
 
-  concatPart.give("changed");
+  concatPart.use("changed");
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

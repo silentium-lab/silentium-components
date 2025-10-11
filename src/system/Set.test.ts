@@ -7,13 +7,13 @@ test("Set.test", () => {
   const object = {
     value: "hello",
   };
-  const obj = set(of(object), of("value"), value.value);
+  const obj = set(of(object), of("value"), value.event);
   const g = vi.fn();
   obj(g);
 
   expect(object.value).toBe("hello");
 
-  value.give("bue!");
+  value.use("bue!");
 
   expect(object.value).toBe("bue!");
 });

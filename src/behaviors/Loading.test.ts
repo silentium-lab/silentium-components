@@ -6,13 +6,13 @@ test("Loading.test", () => {
   const loadingStartSource = late();
   const loadingFinishSource = late();
   const loadingSrc = loading(
-    loadingStartSource.value,
-    loadingFinishSource.value,
+    loadingStartSource.event,
+    loadingFinishSource.event,
   );
   const g = vi.fn();
   loadingSrc(g);
-  loadingStartSource.give({});
+  loadingStartSource.use({});
   expect(g).toHaveBeenLastCalledWith(true);
-  loadingFinishSource.give({});
+  loadingFinishSource.use({});
   expect(g).toHaveBeenLastCalledWith(false);
 });

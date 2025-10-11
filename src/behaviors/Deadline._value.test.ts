@@ -16,10 +16,10 @@ test("Deadline._value.test", () => {
   const l = late<number>();
 
   setTimeout(() => {
-    l.give(11);
+    l.use(11);
   }, 10);
 
-  const dl = deadline(errorGuest, l.value, of(200));
+  const dl = deadline(errorGuest, l.event, of(200));
   const g = vi.fn();
   dl(g);
 

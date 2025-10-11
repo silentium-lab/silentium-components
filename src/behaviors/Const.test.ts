@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 
 test("Const.test", () => {
   const triggerSrc = late(1);
-  const src = constant("val", triggerSrc.value);
+  const src = constant("val", triggerSrc.event);
   const data: string[] = [];
   src((v) => {
     data.push(v);
@@ -12,8 +12,8 @@ test("Const.test", () => {
 
   expect(data).toStrictEqual(["val"]);
 
-  triggerSrc.give(1);
-  triggerSrc.give(1);
+  triggerSrc.use(1);
+  triggerSrc.use(1);
 
   expect(data).toStrictEqual(["val", "val", "val"]);
 });

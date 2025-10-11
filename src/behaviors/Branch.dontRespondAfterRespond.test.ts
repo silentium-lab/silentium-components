@@ -7,29 +7,29 @@ test("Branch.dontRespondAfterRespond.test", () => {
   const ti = of<any>("then");
   const branchI = shared(
     branch(
-      applied(l.value, (t) => t === 2),
+      applied(l.event, (t) => t === 2),
       ti,
     ),
     true,
   );
   const g = vi.fn();
-  branchI.value(g);
+  branchI.event(g);
 
-  l.give(2);
+  l.use(2);
   expect(g).toHaveBeenLastCalledWith("then");
 
   const g2 = vi.fn();
-  branchI.value(g2);
-  l.give(1);
+  branchI.event(g2);
+  l.use(1);
   expect(g2).not.toHaveBeenCalled();
 
   const g3 = vi.fn();
-  branchI.value(g3);
-  l.give(2);
+  branchI.event(g3);
+  l.use(2);
   expect(g3).toHaveBeenLastCalledWith("then");
 
   const g4 = vi.fn();
-  branchI.value(g4);
-  l.give(3);
+  branchI.event(g4);
+  l.use(3);
   expect(g4).not.toHaveBeenCalled();
 });

@@ -1,4 +1,4 @@
-import { all, DataType, isFilled, primitive, SourceType } from "silentium";
+import { all, EventType, isFilled, primitive, SourceType } from "silentium";
 
 /**
  * Return source of record path
@@ -10,14 +10,14 @@ export const part = <
   K extends string = any,
 >(
   baseSrc: SourceType<T>,
-  keySrc: DataType<K>,
+  keySrc: EventType<K>,
 ): SourceType<R> => {
-  const baseSync = primitive(baseSrc.value);
+  const baseSync = primitive(baseSrc.event);
   const keySync = primitive(keySrc);
   return {
-    value: (u) => {
+    event: (u) => {
       all(
-        baseSrc.value,
+        baseSrc.event,
         keySrc,
       )(([base, key]) => {
         const keyChunks = key.split(".");
@@ -31,10 +31,10 @@ export const part = <
         }
       });
     },
-    give: (value: R) => {
+    use: (value: R) => {
       const key = keySync.primitive();
       if (isFilled(key)) {
-        baseSrc.give({
+        baseSrc.use({
           ...baseSync.primitive(),
           [key]: value,
         } as T);

@@ -4,13 +4,13 @@ import { expect, test, vi } from "vitest";
 
 test("RegexpMatched.test", () => {
   const urlI = late<string>("http://domain.com/some/url/");
-  const matchedSrc = regexpMatched(of("/some/url"), urlI.value);
+  const matchedSrc = regexpMatched(of("/some/url"), urlI.event);
   const g = vi.fn();
   matchedSrc(g);
 
   expect(g).toHaveBeenLastCalledWith(true);
 
-  urlI.give("http://domain.com/changed");
+  urlI.use("http://domain.com/changed");
 
   expect(g).toHaveBeenLastCalledWith(false);
 });

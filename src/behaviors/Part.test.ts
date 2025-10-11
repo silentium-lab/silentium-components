@@ -11,9 +11,9 @@ test("Part.test", () => {
   );
   const nameSrc = part<string>(recordSrc, of("name"));
   const g = vi.fn();
-  recordSrc.value(g);
+  recordSrc.event(g);
   expect(g).toHaveBeenLastCalledWith({ name: "Peter", surname: "Parker" });
 
-  nameSrc.give("Shmiter");
+  nameSrc.use("Shmiter");
   expect(g).toHaveBeenLastCalledWith({ name: "Shmiter", surname: "Parker" });
 });

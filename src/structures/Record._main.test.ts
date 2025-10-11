@@ -7,7 +7,7 @@ test("Record._main.test", () => {
   const recordSrc = recordOf({
     one: of("one"),
     two: of(2),
-    three: three.value,
+    three: three.event,
   });
   const g = vi.fn();
   recordSrc(g);
@@ -18,7 +18,7 @@ test("Record._main.test", () => {
     three: "three",
   });
 
-  three.give("three-changed");
+  three.use("three-changed");
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

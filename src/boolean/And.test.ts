@@ -5,20 +5,20 @@ import { and } from "../boolean/And";
 test("And.test", () => {
   const one = late<boolean>(false);
   const two = late<boolean>(false);
-  const result = and(one.value, two.value);
+  const result = and(one.event, two.event);
   const g = vi.fn();
   result(g);
   expect(g).toHaveBeenLastCalledWith(false);
 
-  one.give(true);
-  two.give(false);
+  one.use(true);
+  two.use(false);
   expect(g).toHaveBeenLastCalledWith(false);
 
-  one.give(false);
-  two.give(true);
+  one.use(false);
+  two.use(true);
   expect(g).toHaveBeenLastCalledWith(false);
 
-  one.give(true);
-  two.give(true);
+  one.use(true);
+  two.use(true);
   expect(g).toHaveBeenLastCalledWith(true);
 });

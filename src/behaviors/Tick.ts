@@ -1,10 +1,10 @@
-import { DataType } from "silentium";
+import { EventType } from "silentium";
 
 /**
  * Accumulates the last value of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-export const tick = <T>(baseSrc: DataType<T>): DataType<T> => {
+export const tick = <T>(baseSrc: EventType<T>): EventType<T> => {
   return (u) => {
     let microtaskScheduled = false;
     let lastValue: T | null = null;

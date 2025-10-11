@@ -6,17 +6,17 @@ test("Branch.branchesDontAffectResult.test", () => {
   const l = late<number>(2);
   const el = late<string>("else");
   const boolSync = branch(
-    applied(l.value, (t) => t === 2),
+    applied(l.event, (t) => t === 2),
     of("then"),
-    el.value,
+    el.event,
   );
   const g = vi.fn();
   boolSync(g);
 
-  l.give(1);
+  l.use(1);
   expect(g).toHaveBeenLastCalledWith("else");
 
-  el.give("else changed");
+  el.use("else changed");
   // changed else source don't affect branch result
   expect(g).toHaveBeenLastCalledWith("else");
 });

@@ -1,9 +1,9 @@
-import { DataType } from "silentium";
+import { EventType } from "silentium";
 
 export const polling = <T>(
-  baseSrc: DataType<T>,
-  triggerSrc: DataType<T>,
-): DataType<T> => {
+  baseSrc: EventType<T>,
+  triggerSrc: EventType<T>,
+): EventType<T> => {
   return (u) => {
     triggerSrc(() => {
       baseSrc(u);

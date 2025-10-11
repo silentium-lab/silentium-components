@@ -1,13 +1,13 @@
-import { DataType, primitive } from "silentium";
+import { EventType, primitive } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
 export const branch = <Then, Else>(
-  conditionSrc: DataType<boolean>,
-  leftSrc: DataType<Then>,
-  rightSrc?: DataType<Else>,
-): DataType<Then | Else> => {
+  conditionSrc: EventType<boolean>,
+  leftSrc: EventType<Then>,
+  rightSrc?: EventType<Else>,
+): EventType<Then | Else> => {
   return (u) => {
     const leftSync = primitive(leftSrc);
     let rightSync: ReturnType<typeof primitive<Else>>;

@@ -1,11 +1,11 @@
 import {
   all,
   applied,
-  DataType,
+  EventType,
   destructor,
   DestructorType,
   of,
-  ValueType,
+  ConstructorType,
 } from "silentium";
 import { branchLazy } from "../behaviors/BranchLazy";
 import { regexpMatched } from "../system";
@@ -13,7 +13,7 @@ import { regexpMatched } from "../system";
 export interface Route<T> {
   pattern: string;
   patternFlags?: string;
-  template: ValueType<[], DataType<T>>;
+  template: ConstructorType<[], EventType<T>>;
 }
 
 const emptySrc = () => of(false);
@@ -23,10 +23,10 @@ const emptySrc = () => of(false);
  * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
 export const router = <T = "string">(
-  urlSrc: DataType<string>,
-  routesSrc: DataType<Route<T>[]>,
-  defaultSrc: ValueType<[], DataType<T>>,
-): DataType<T> => {
+  urlSrc: EventType<string>,
+  routesSrc: EventType<Route<T>[]>,
+  defaultSrc: ConstructorType<[], EventType<T>>,
+): EventType<T> => {
   return (u) => {
     const destructors: DestructorType[] = [];
     const destroyAllData = () => {

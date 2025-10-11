@@ -1,12 +1,12 @@
-import { DataType, filtered } from "silentium";
+import { EventType, filtered } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
  */
 export const lock = <T>(
-  baseSrc: DataType<T>,
-  lockSrc: DataType<boolean>,
-): DataType<T> => {
+  baseSrc: EventType<T>,
+  lockSrc: EventType<boolean>,
+): EventType<T> => {
   return (u) => {
     let locked = false;
     lockSrc((newLock) => {

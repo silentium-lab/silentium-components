@@ -1,13 +1,13 @@
-import { DataType, DataUserType, filtered, shared } from "silentium";
+import { EventType, filtered, shared, EventUserType } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
 export const deadline = <T>(
-  error: DataUserType<Error>,
-  baseSrc: DataType<T>,
-  timeoutSrc: DataType<number>,
-): DataType<T> => {
+  error: EventUserType<Error>,
+  baseSrc: EventType<T>,
+  timeoutSrc: EventType<number>,
+): EventType<T> => {
   return (u) => {
     let timerHead: unknown = null;
 
@@ -27,10 +27,10 @@ export const deadline = <T>(
         error(new Error("Timeout reached in Deadline class"));
       }, timeout);
 
-      const f = filtered(s.value, () => !timeoutReached);
+      const f = filtered(s.event, () => !timeoutReached);
       f(u);
 
-      s.value(() => {
+      s.event(() => {
         timeoutReached = true;
       });
     });

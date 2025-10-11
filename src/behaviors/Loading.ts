@@ -1,4 +1,4 @@
-import { DataType } from "silentium";
+import { EventType } from "silentium";
 
 /**
  * Representation of loading process
@@ -7,9 +7,9 @@ import { DataType } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
 export const loading = (
-  loadingStartSrc: DataType<unknown>,
-  loadingFinishSrc: DataType<unknown>,
-): DataType<boolean> => {
+  loadingStartSrc: EventType<unknown>,
+  loadingFinishSrc: EventType<unknown>,
+): EventType<boolean> => {
   return (u) => {
     loadingStartSrc(() => u(true));
     loadingFinishSrc(() => u(false));

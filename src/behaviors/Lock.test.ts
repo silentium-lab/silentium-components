@@ -6,25 +6,25 @@ test("Lock.test", () => {
   const source = late<number>(1);
   const lockSrc = late<boolean>(false);
 
-  const ls = lock(source.value, lockSrc.value);
+  const ls = lock(source.event, lockSrc.event);
   const lockedSrc = shared(ls);
   const g = vi.fn();
-  lockedSrc.value(g);
+  lockedSrc.event(g);
 
   expect(g).toHaveBeenLastCalledWith(1);
 
-  source.give(2);
+  source.use(2);
 
   expect(g).toHaveBeenLastCalledWith(2);
 
-  lockSrc.give(true);
-  source.give(3);
-  source.give(4);
-  source.give(5);
+  lockSrc.use(true);
+  source.use(3);
+  source.use(4);
+  source.use(5);
 
   expect(g).toHaveBeenLastCalledWith(2);
 
-  lockSrc.give(false);
-  source.give(6);
+  lockSrc.use(false);
+  source.use(6);
   expect(g).toHaveBeenLastCalledWith(6);
 });
