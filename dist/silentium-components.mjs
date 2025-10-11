@@ -45,9 +45,9 @@ const deadline = (error, baseSrc, timeoutSrc) => {
         timeoutReached = true;
         error(new Error("Timeout reached in Deadline class"));
       }, timeout);
-      const f = filtered(s.value, () => !timeoutReached);
+      const f = filtered(s.event, () => !timeoutReached);
       f(u);
-      s.value(() => {
+      s.event(() => {
         timeoutReached = true;
       });
     });
@@ -85,8 +85,8 @@ const dirty = (baseEntitySource, alwaysKeep = [], excludeKeys = [], cloneFn) => 
     cloneFn = (value) => JSON.parse(JSON.stringify(value));
   }
   return {
-    value: (u) => {
-      const comparingDetached = applied(comparingSrc.value, cloneFn);
+    event: (u) => {
+      const comparingDetached = applied(comparingSrc.event, cloneFn);
       all(
         comparingDetached,
         baseEntitySource
@@ -109,8 +109,8 @@ const dirty = (baseEntitySource, alwaysKeep = [], excludeKeys = [], cloneFn) => 
         );
       });
     },
-    give: (v) => {
-      comparingSrc.give(v);
+    use: (v) => {
+      comparingSrc.use(v);
     }
   };
 };
@@ -159,12 +159,12 @@ const onlyChanged = (baseSrc) => {
 };
 
 const part = (baseSrc, keySrc) => {
-  const baseSync = primitive(baseSrc.value);
+  const baseSync = primitive(baseSrc.event);
   const keySync = primitive(keySrc);
   return {
-    value: (u) => {
+    event: (u) => {
       all(
-        baseSrc.value,
+        baseSrc.event,
         keySrc
       )(([base, key]) => {
         const keyChunks = key.split(".");
@@ -177,10 +177,10 @@ const part = (baseSrc, keySrc) => {
         }
       });
     },
-    give: (value) => {
+    use: (value) => {
       const key = keySync.primitive();
       if (isFilled(key)) {
-        baseSrc.give({
+        baseSrc.use({
           ...baseSync.primitive(),
           [key]: value
         });

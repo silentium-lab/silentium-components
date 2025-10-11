@@ -47,9 +47,9 @@ const deadline = (error, baseSrc, timeoutSrc) => {
         timeoutReached = true;
         error(new Error("Timeout reached in Deadline class"));
       }, timeout);
-      const f = silentium.filtered(s.value, () => !timeoutReached);
+      const f = silentium.filtered(s.event, () => !timeoutReached);
       f(u);
-      s.value(() => {
+      s.event(() => {
         timeoutReached = true;
       });
     });
@@ -87,8 +87,8 @@ const dirty = (baseEntitySource, alwaysKeep = [], excludeKeys = [], cloneFn) => 
     cloneFn = (value) => JSON.parse(JSON.stringify(value));
   }
   return {
-    value: (u) => {
-      const comparingDetached = silentium.applied(comparingSrc.value, cloneFn);
+    event: (u) => {
+      const comparingDetached = silentium.applied(comparingSrc.event, cloneFn);
       silentium.all(
         comparingDetached,
         baseEntitySource
@@ -111,8 +111,8 @@ const dirty = (baseEntitySource, alwaysKeep = [], excludeKeys = [], cloneFn) => 
         );
       });
     },
-    give: (v) => {
-      comparingSrc.give(v);
+    use: (v) => {
+      comparingSrc.use(v);
     }
   };
 };
@@ -161,12 +161,12 @@ const onlyChanged = (baseSrc) => {
 };
 
 const part = (baseSrc, keySrc) => {
-  const baseSync = silentium.primitive(baseSrc.value);
+  const baseSync = silentium.primitive(baseSrc.event);
   const keySync = silentium.primitive(keySrc);
   return {
-    value: (u) => {
+    event: (u) => {
       silentium.all(
-        baseSrc.value,
+        baseSrc.event,
         keySrc
       )(([base, key]) => {
         const keyChunks = key.split(".");
@@ -179,10 +179,10 @@ const part = (baseSrc, keySrc) => {
         }
       });
     },
-    give: (value) => {
+    use: (value) => {
       const key = keySync.primitive();
       if (silentium.isFilled(key)) {
-        baseSrc.give({
+        baseSrc.use({
           ...baseSync.primitive(),
           [key]: value
         });
