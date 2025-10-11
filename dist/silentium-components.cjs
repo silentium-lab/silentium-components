@@ -69,14 +69,10 @@ const deferred = (baseSrc, triggerSrc) => {
 };
 
 const detached = (baseSrc) => {
-  const p = silentium.primitive(baseSrc);
-  let v = p.primitive();
   return function Detached(user) {
+    const v = silentium.primitive(baseSrc).primitive();
     if (silentium.isFilled(v)) {
       user(v);
-    } else {
-      v = p.primitive();
-      Detached(user);
     }
   };
 };

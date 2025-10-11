@@ -6,10 +6,10 @@ test("Detached.test.ts", function DetachedTest() {
   const l = lateShared(1);
   const l2 = detached(l.event);
 
-  l.use(2);
-
   const g1 = vi.fn();
   l2(g1);
+
+  l.use(2);
 
   expect(g1).toHaveBeenCalledWith(1);
 
