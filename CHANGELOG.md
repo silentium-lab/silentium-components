@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.66](https://github.com/silentium-lab/silentium-components/compare/v0.0.65...v0.0.66) (2025-10-13)
+
+
+### Bug Fixes
+
+* **main:** components starts from uppercase ([6007b84](https://github.com/silentium-lab/silentium-components/commit/6007b845d5d2d14f4a5d9a539e844590daecc9ca))
+* **main:** uppercase refactoring ([f0947ba](https://github.com/silentium-lab/silentium-components/commit/f0947ba8938117f3f02e1f2f694ad3c2bc10d4c7))
+
 ### [0.0.65](https://github.com/silentium-lab/silentium-components/compare/v0.0.64...v0.0.65) (2025-10-13)
 
 
