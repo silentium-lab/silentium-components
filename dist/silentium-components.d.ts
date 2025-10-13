@@ -1,9 +1,14 @@
-import { EventType, EventUserType, SourceType, ConstructorType } from 'silentium';
+import { EventType, ConstructorType, EventUserType, SourceType } from 'silentium';
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
 declare const branch: <Then, Else>(conditionSrc: EventType<boolean>, leftSrc: EventType<Then>, rightSrc?: EventType<Else>) => EventType<Then | Else>;
+
+/**
+ * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
+ */
+declare const branchLazy: <Then, Else>(conditionSrc: EventType<boolean>, leftSrc: ConstructorType<[], EventType<Then>>, rightSrc?: ConstructorType<[], EventType<Else>>) => EventType<Then | Else>;
 
 declare const constant: <T>(permanentValue: T, triggerSrc: EventType) => EventType<T>;
 
@@ -180,5 +185,5 @@ declare const toJson: (dataSrc: EventType, errorOwner?: EventUserType) => EventT
  */
 declare const first: <T extends Array<unknown>>(baseSrc: EventType<T>) => EventType<T[0]>;
 
-export { and, bool, branch, concatenated, constant, deadline, deferred, detached, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
+export { and, bool, branch, branchLazy, concatenated, constant, deadline, deferred, detached, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
 export type { Route };

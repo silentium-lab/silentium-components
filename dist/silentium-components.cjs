@@ -23,6 +23,29 @@ const branch = (conditionSrc, leftSrc, rightSrc) => {
   };
 };
 
+const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
+  return (u) => {
+    let destructor;
+    conditionSrc((v) => {
+      if (destructor !== void 0 && typeof destructor === "function") {
+        destructor();
+      }
+      let instance = null;
+      if (v) {
+        instance = leftSrc();
+      } else if (rightSrc) {
+        instance = rightSrc();
+      }
+      if (instance) {
+        destructor = instance(u);
+      }
+    });
+    return () => {
+      destructor?.();
+    };
+  };
+};
+
 const constant = (permanentValue, triggerSrc) => {
   return (u) => {
     triggerSrc(() => {
@@ -338,29 +361,6 @@ const template = (theSrc = silentium.of(""), placesSrc = silentium.of({})) => {
   };
 };
 
-const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
-  return (u) => {
-    let destructor;
-    conditionSrc((v) => {
-      if (destructor !== void 0 && typeof destructor === "function") {
-        destructor();
-      }
-      let instance = null;
-      if (v) {
-        instance = leftSrc();
-      } else if (rightSrc) {
-        instance = rightSrc();
-      }
-      if (instance) {
-        destructor = instance(u);
-      }
-    });
-    return () => {
-      destructor?.();
-    };
-  };
-};
-
 const regexpMatched = (patternSrc, valueSrc, flagsSrc = silentium.of("")) => {
   return (u) => {
     silentium.all(
@@ -525,6 +525,7 @@ const first = (baseSrc) => {
 exports.and = and;
 exports.bool = bool;
 exports.branch = branch;
+exports.branchLazy = branchLazy;
 exports.concatenated = concatenated;
 exports.constant = constant;
 exports.deadline = deadline;

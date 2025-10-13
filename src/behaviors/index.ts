@@ -1,4 +1,5 @@
 export * from "./Branch";
+export * from "./BranchLazy";
 export * from "./Const";
 export * from "./Deadline";
 export * from "./Deferred";

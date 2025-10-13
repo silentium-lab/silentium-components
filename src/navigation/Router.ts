@@ -7,8 +7,8 @@ import {
   of,
   ConstructorType,
 } from "silentium";
-import { branchLazy } from "../behaviors/BranchLazy";
 import { regexpMatched } from "../system";
+import { branchLazy } from "../behaviors";
 
 export interface Route<T> {
   pattern: string;

@@ -21,6 +21,29 @@ const branch = (conditionSrc, leftSrc, rightSrc) => {
   };
 };
 
+const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
+  return (u) => {
+    let destructor;
+    conditionSrc((v) => {
+      if (destructor !== void 0 && typeof destructor === "function") {
+        destructor();
+      }
+      let instance = null;
+      if (v) {
+        instance = leftSrc();
+      } else if (rightSrc) {
+        instance = rightSrc();
+      }
+      if (instance) {
+        destructor = instance(u);
+      }
+    });
+    return () => {
+      destructor?.();
+    };
+  };
+};
+
 const constant = (permanentValue, triggerSrc) => {
   return (u) => {
     triggerSrc(() => {
@@ -336,29 +359,6 @@ const template = (theSrc = of(""), placesSrc = of({})) => {
   };
 };
 
-const branchLazy = (conditionSrc, leftSrc, rightSrc) => {
-  return (u) => {
-    let destructor;
-    conditionSrc((v) => {
-      if (destructor !== void 0 && typeof destructor === "function") {
-        destructor();
-      }
-      let instance = null;
-      if (v) {
-        instance = leftSrc();
-      } else if (rightSrc) {
-        instance = rightSrc();
-      }
-      if (instance) {
-        destructor = instance(u);
-      }
-    });
-    return () => {
-      destructor?.();
-    };
-  };
-};
-
 const regexpMatched = (patternSrc, valueSrc, flagsSrc = of("")) => {
   return (u) => {
     all(
@@ -520,5 +520,5 @@ const first = (baseSrc) => {
   };
 };
 
-export { and, bool, branch, concatenated, constant, deadline, deferred, detached, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
+export { and, bool, branch, branchLazy, concatenated, constant, deadline, deferred, detached, dirty, first, fromJson, hashTable, loading, lock, memo, not, onlyChanged, or, part, path, polling, recordOf, regexpMatch, regexpMatched, regexpReplaced, router, set, shot, task, template, tick, toJson };
 //# sourceMappingURL=silentium-components.mjs.map
