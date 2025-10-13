@@ -1,11 +1,11 @@
-import { of } from "silentium";
+import { Of } from "silentium";
 import { concatenated } from "../strings/Concatenated";
 import { expect, test, vi } from "vitest";
 
 test("Concatenated.test", () => {
   const concatenatedSrc = concatenated(
-    [of("one"), of("two"), of("three")],
-    of("-"),
+    [Of("one"), Of("two"), Of("three")],
+    Of("-"),
   );
   const g = vi.fn();
   concatenatedSrc(g);

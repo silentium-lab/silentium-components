@@ -1,10 +1,10 @@
-import { late, shared } from "silentium";
+import { Late, Shared } from "silentium";
 import { onlyChanged } from "../behaviors/OnlyChanged";
 import { expect, test, vi } from "vitest";
 
 test("OnlyChanged.test", () => {
-  const src = late<number>(1);
-  const changedSrc = shared(onlyChanged(src.event));
+  const src = Late<number>(1);
+  const changedSrc = Shared(onlyChanged(src.event));
 
   const g = vi.fn();
   changedSrc.event(g);

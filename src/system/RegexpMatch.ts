@@ -1,16 +1,16 @@
-import { all, EventType, of } from "silentium";
+import { All, EventType, Of } from "silentium";
 
 /**
- * First match of regexp
+ * First match Of regexp
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
  */
 export const regexpMatch = (
   patternSrc: EventType<string>,
   valueSrc: EventType<string>,
-  flagsSrc: EventType<string> = of(""),
+  flagsSrc: EventType<string> = Of(""),
 ): EventType<string[]> => {
   return (u) => {
-    all(
+    All(
       patternSrc,
       valueSrc,
       flagsSrc,

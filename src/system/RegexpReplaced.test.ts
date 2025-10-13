@@ -1,10 +1,10 @@
-import { late, of } from "silentium";
+import { Late, Of } from "silentium";
 import { regexpReplaced } from "../system/RegexpReplaced";
 import { expect, test, vi } from "vitest";
 
 test("RegexpReplaced.test", () => {
-  const urlSrc = late<string>("http://domain.com/some/url/");
-  const matchedSrc = regexpReplaced(urlSrc.event, of("some/url/"), of(""));
+  const urlSrc = Late<string>("http://domain.com/some/url/");
+  const matchedSrc = regexpReplaced(urlSrc.event, Of("some/url/"), Of(""));
   const g = vi.fn();
   matchedSrc(g);
 

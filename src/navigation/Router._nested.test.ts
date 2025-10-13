@@ -1,17 +1,17 @@
-import { lateShared, of } from "silentium";
+import { LateShared, Of } from "silentium";
 import { describe, expect, test } from "vitest";
 import { detached } from "../behaviors/Detached";
 import { router } from "../navigation/Router";
 
 describe("Router._nested.test", () => {
   test("Вложенные роуты", () => {
-    const urlSrc = lateShared("/");
+    const urlSrc = LateShared("/");
     const routerSrc = router(
       urlSrc.event,
-      of([
+      Of([
         {
           pattern: "^/$",
-          template: () => of<string>("home"),
+          template: () => Of<string>("home"),
         },
         {
           pattern: "/admin.*",
@@ -22,18 +22,18 @@ describe("Router._nested.test", () => {
 
               const r = router(
                 localUrlSrc,
-                of([
+                Of([
                   {
                     pattern: "^/admin/articles$",
-                    template: () => of("articles list"),
+                    template: () => Of("articles list"),
                   },
                   {
                     pattern: "^/admin/articles/create$",
-                    template: () => of("articles create"),
+                    template: () => Of("articles create"),
                   },
                   {
                     pattern: "^/admin/articles/update$",
-                    template: () => of("articles update"),
+                    template: () => Of("articles update"),
                   },
                   {
                     pattern: "^/admin/nested/.*$",
@@ -43,13 +43,13 @@ describe("Router._nested.test", () => {
 
                         const r = router(
                           localUrlSrc,
-                          of([
+                          Of([
                             {
                               pattern: "^/admin/nested/list$",
-                              template: () => of("admin nested list"),
+                              template: () => Of("admin nested list"),
                             },
                           ]),
-                          () => of<string>("admin nested not found"),
+                          () => Of<string>("admin nested not found"),
                         );
                         const rDestructor = r(user);
 
@@ -60,7 +60,7 @@ describe("Router._nested.test", () => {
                     },
                   },
                 ]),
-                () => of<string>("admin not found"),
+                () => Of<string>("admin not found"),
               );
               const rDestructor = r(user);
 
@@ -71,7 +71,7 @@ describe("Router._nested.test", () => {
           },
         },
       ]),
-      () => of("not found"),
+      () => Of("not found"),
     );
     const d: string[] = [];
     routerSrc((v) => {

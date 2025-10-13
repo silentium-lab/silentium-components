@@ -1,4 +1,4 @@
-import { all, applied, EventType, late, SourceType } from "silentium";
+import { All, Applied, EventType, Late, SourceType } from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -11,7 +11,7 @@ export const dirty = <T>(
   excludeKeys: string[] = [],
   cloneFn?: (v: T) => T,
 ): SourceType<T> => {
-  const comparingSrc = late<T>();
+  const comparingSrc = Late<T>();
 
   if (cloneFn === undefined) {
     cloneFn = (value) => JSON.parse(JSON.stringify(value));
@@ -19,9 +19,9 @@ export const dirty = <T>(
 
   return {
     event: (u) => {
-      const comparingDetached = applied(comparingSrc.event, cloneFn);
+      const comparingDetached = Applied(comparingSrc.event, cloneFn);
 
-      all(
+      All(
         comparingDetached,
         baseEntitySource,
       )(([comparing, base]) => {

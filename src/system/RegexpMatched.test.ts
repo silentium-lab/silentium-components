@@ -1,10 +1,10 @@
-import { late, of } from "silentium";
+import { Late, Of } from "silentium";
 import { regexpMatched } from "../system/RegexpMatched";
 import { expect, test, vi } from "vitest";
 
 test("RegexpMatched.test", () => {
-  const urlI = late<string>("http://domain.com/some/url/");
-  const matchedSrc = regexpMatched(of("/some/url"), urlI.event);
+  const urlI = Late<string>("http://domain.com/some/url/");
+  const matchedSrc = regexpMatched(Of("/some/url"), urlI.event);
   const g = vi.fn();
   matchedSrc(g);
 

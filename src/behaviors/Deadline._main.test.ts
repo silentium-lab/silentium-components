@@ -1,5 +1,5 @@
-import { late, of } from "silentium";
-import { deadline } from "../behaviors/Deadline";
+import { Late, Of } from "silentium";
+import { Deadline } from "../behaviors/Deadline";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
 beforeEach(() => {
@@ -12,10 +12,10 @@ afterEach(() => {
 });
 
 test("Deadline._main.test", () => {
-  const l = late();
+  const l = Late();
   const errorGuest = vi.fn();
   const g = vi.fn();
-  deadline(errorGuest, l.event, of(20))(g);
+  Deadline(errorGuest, l.event, Of(20))(g);
 
   vi.runAllTimers();
 

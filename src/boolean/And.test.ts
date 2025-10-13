@@ -1,10 +1,10 @@
-import { late } from "silentium";
+import { Late } from "silentium";
 import { expect, test, vi } from "vitest";
 import { and } from "../boolean/And";
 
 test("And.test", () => {
-  const one = late<boolean>(false);
-  const two = late<boolean>(false);
+  const one = Late<boolean>(false);
+  const two = Late<boolean>(false);
   const result = and(one.event, two.event);
   const g = vi.fn();
   result(g);

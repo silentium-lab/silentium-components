@@ -1,13 +1,13 @@
-import { applied, late, of, shared } from "silentium";
+import { Applied, Late, Of, Shared } from "silentium";
 import { expect, test, vi } from "vitest";
-import { branch } from "../behaviors/Branch";
+import { Branch } from "../behaviors/Branch";
 
 test("Branch.dontRespondAfterRespond.test", () => {
-  const l = late<number>(1);
-  const ti = of<any>("then");
-  const branchI = shared(
-    branch(
-      applied(l.event, (t) => t === 2),
+  const l = Late<number>(1);
+  const ti = Of<any>("then");
+  const branchI = Shared(
+    Branch(
+      Applied(l.event, (t) => t === 2),
       ti,
     ),
     true,

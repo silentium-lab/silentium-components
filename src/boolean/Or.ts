@@ -1,4 +1,4 @@
-import { all, EventType } from "silentium";
+import { All, EventType } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/or
@@ -8,7 +8,7 @@ export const or = (
   twoSrc: EventType<boolean>,
 ): EventType<boolean> => {
   return (u) => {
-    all(
+    All(
       oneSrc,
       twoSrc,
     )(([one, two]) => {

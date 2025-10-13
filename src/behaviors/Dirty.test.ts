@@ -1,9 +1,9 @@
-import { late } from "silentium";
+import { Late } from "silentium";
 import { dirty } from "../behaviors/Dirty";
 import { expect, test, vi } from "vitest";
 
 test("Dirty.test", () => {
-  const form = late({
+  const form = Late({
     name: "one",
     surname: "two",
   });

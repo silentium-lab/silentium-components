@@ -1,7 +1,7 @@
 import { EventType } from "silentium";
 
 /**
- * Accumulates the last value of the source and returns one result once per tick
+ * Accumulates the last value Of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
 export const tick = <T>(baseSrc: EventType<T>): EventType<T> => {

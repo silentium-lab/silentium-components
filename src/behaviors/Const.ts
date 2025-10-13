@@ -1,12 +1,12 @@
 import { EventType } from "silentium";
 
-export const constant = <T>(
+export function Constant<T>(
   permanentValue: T,
   triggerSrc: EventType,
-): EventType<T> => {
-  return (u) => {
+): EventType<T> {
+  return (user) => {
     triggerSrc(() => {
-      u(permanentValue);
+      user(permanentValue);
     });
   };
-};
+}

@@ -1,12 +1,12 @@
-import { applied, EventType } from "silentium";
+import { Applied, EventType } from "silentium";
 
 /**
- * Represents the first element of an array.
+ * Represents the first element Of an array.
  */
 export const first = <T extends Array<unknown>>(
   baseSrc: EventType<T>,
 ): EventType<T[0]> => {
   return (u) => {
-    applied(baseSrc, (a) => a[0])(u);
+    Applied(baseSrc, (a) => a[0])(u);
   };
 };

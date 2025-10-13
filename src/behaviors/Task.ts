@@ -1,4 +1,4 @@
-import { EventType, executorApplied } from "silentium";
+import { EventType, ExecutorApplied } from "silentium";
 
 export const task = <T>(
   baseSrc: EventType<T>,
@@ -6,7 +6,7 @@ export const task = <T>(
 ): EventType<T> => {
   return (u) => {
     let prevTimer: unknown | null = null;
-    executorApplied(baseSrc, (fn) => {
+    ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
         if (prevTimer) {
           clearTimeout(prevTimer as number);

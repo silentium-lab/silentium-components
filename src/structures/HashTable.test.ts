@@ -1,9 +1,9 @@
-import { late } from "silentium";
+import { Late } from "silentium";
 import { hashTable } from "../structures/HashTable";
 import { expect, test, vi } from "vitest";
 
 test("HashTable.test", () => {
-  const entrySource = late<[string, string]>();
+  const entrySource = Late<[string, string]>();
   const hashTableSrc = hashTable(entrySource.event);
   const g = vi.fn();
   hashTableSrc(g);

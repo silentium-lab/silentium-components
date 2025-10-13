@@ -1,12 +1,12 @@
-import { late, shared } from "silentium";
+import { Late, Shared } from "silentium";
 import { shot } from "../behaviors/Shot";
 import { expect, test, vi } from "vitest";
 
 test("Shot._main.test", () => {
-  const baseSrc = late();
-  const shotSrc = late();
+  const baseSrc = Late();
+  const shotSrc = Late();
 
-  const shotResult = shared(shot(baseSrc.event, shotSrc.event));
+  const shotResult = Shared(shot(baseSrc.event, shotSrc.event));
   const g = vi.fn();
   shotResult.event(g);
 

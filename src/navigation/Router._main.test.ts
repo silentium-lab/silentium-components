@@ -1,4 +1,4 @@
-import { applied, late, of, shared } from "silentium";
+import { Applied, Late, Of, Shared } from "silentium";
 import { router } from "../navigation/Router";
 import { expect, test, vi } from "vitest";
 
@@ -7,24 +7,24 @@ const drop = (dropPart: string) => (value: string) => {
 };
 
 test("Router._main.test", () => {
-  const urlSrc = late<string>("http://domain.com/");
-  const urlPathSrc = shared(applied(urlSrc.event, drop("http://domain.com")));
+  const urlSrc = Late<string>("http://domain.com/");
+  const urlPathSrc = Shared(Applied(urlSrc.event, drop("http://domain.com")));
   const g = vi.fn();
   urlPathSrc.event(g);
 
   const routerSrc = router(
     urlPathSrc.event,
-    of([
+    Of([
       {
         pattern: "^/$",
-        template: () => of("page/home.html"),
+        template: () => Of("page/home.html"),
       },
       {
         pattern: "/some/contacts",
-        template: () => of("page/contacts.html"),
+        template: () => Of("page/contacts.html"),
       },
     ]),
-    () => of<string>("page/404.html"),
+    () => Of<string>("page/404.html"),
   );
   const g2 = vi.fn();
   routerSrc(g2);

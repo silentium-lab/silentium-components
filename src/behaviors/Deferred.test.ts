@@ -1,12 +1,12 @@
-import { late, primitive, shared } from "silentium";
+import { Late, Primitive, Shared } from "silentium";
 import { deferred } from "../behaviors/Deferred";
 import { expect, test, vi } from "vitest";
 
 test("Deferred.test", () => {
-  const urlSrc = late<string>("http://hello.com");
-  const layoutSrc = late<string>();
+  const urlSrc = Late<string>("http://hello.com");
+  const layoutSrc = Late<string>();
 
-  const urlWithLayoutSrc = shared(deferred(urlSrc.event, layoutSrc.event));
+  const urlWithLayoutSrc = Shared(deferred(urlSrc.event, layoutSrc.event));
 
   const g1 = vi.fn();
   urlWithLayoutSrc.event(g1);
@@ -19,7 +19,7 @@ test("Deferred.test", () => {
   urlSrc.use("http://new.com");
   expect(g2).toHaveBeenCalledWith("http://hello.com");
 
-  const urlSync = primitive(urlWithLayoutSrc.event);
+  const urlSync = Primitive(urlWithLayoutSrc.event);
 
   expect(urlSync.primitive()).toBe("http://hello.com");
 

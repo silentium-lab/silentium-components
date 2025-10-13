@@ -1,19 +1,19 @@
-import { EventType, primitive } from "silentium";
+import { EventType, Primitive } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
-export const branch = <Then, Else>(
+export function Branch<Then, Else>(
   conditionSrc: EventType<boolean>,
   leftSrc: EventType<Then>,
   rightSrc?: EventType<Else>,
-): EventType<Then | Else> => {
-  return (u) => {
-    const leftSync = primitive(leftSrc);
-    let rightSync: ReturnType<typeof primitive<Else>>;
+): EventType<Then | Else> {
+  return (user) => {
+    const leftSync = Primitive(leftSrc);
+    let rightSync: ReturnType<typeof Primitive<Else>>;
 
     if (rightSrc !== undefined) {
-      rightSync = primitive(rightSrc);
+      rightSync = Primitive(rightSrc);
     }
 
     conditionSrc((v) => {
@@ -25,8 +25,8 @@ export const branch = <Then, Else>(
       }
 
       if (result !== null) {
-        u(result);
+        user(result);
       }
     });
   };
-};
+}

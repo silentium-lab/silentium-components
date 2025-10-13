@@ -3,16 +3,16 @@ import { EventType, DestructorType, ConstructorType } from "silentium";
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
-export const branchLazy = <Then, Else>(
+export function BranchLazy<Then, Else>(
   conditionSrc: EventType<boolean>,
   leftSrc: ConstructorType<[], EventType<Then>>,
   rightSrc?: ConstructorType<[], EventType<Else>>,
-): EventType<Then | Else> => {
-  return (u) => {
-    let destructor: DestructorType | void;
+): EventType<Then | Else> {
+  return (user) => {
+    let Destructor: DestructorType | void;
     conditionSrc((v) => {
-      if (destructor !== undefined && typeof destructor === "function") {
-        destructor();
+      if (Destructor !== undefined && typeof Destructor === "function") {
+        Destructor();
       }
       let instance: EventType<Then | Else> | null = null;
       if (v) {
@@ -21,12 +21,12 @@ export const branchLazy = <Then, Else>(
         instance = rightSrc();
       }
       if (instance) {
-        destructor = instance(u);
+        Destructor = instance(user);
       }
     });
 
     return () => {
-      destructor?.();
+      Destructor?.();
     };
   };
-};
+}

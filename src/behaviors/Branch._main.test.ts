@@ -1,15 +1,15 @@
-import { applied, late, of } from "silentium";
-import { branch } from "../behaviors/Branch";
+import { Applied, Late, Of } from "silentium";
+import { Branch } from "../behaviors/Branch";
 import { expect, test, vi } from "vitest";
 
 test("Branch._main.test", () => {
-  const l = late<number>(2);
-  const res = branch(
-    applied(l.event, (t) => {
+  const l = Late<number>(2);
+  const res = Branch(
+    Applied(l.event, (t) => {
       return t === 2;
     }),
-    of("Then ветка"),
-    of("Else ветка"),
+    Of("Then ветка"),
+    Of("Else ветка"),
   );
 
   const g = vi.fn();

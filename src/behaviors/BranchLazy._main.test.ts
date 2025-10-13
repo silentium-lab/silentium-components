@@ -1,15 +1,15 @@
-import { applied, late, of } from "silentium";
-import { branchLazy } from "../behaviors/BranchLazy";
+import { Applied, Late, Of } from "silentium";
+import { BranchLazy } from "../behaviors/BranchLazy";
 import { expect, test, vi } from "vitest";
 
 test("BranchLazy._main.test", () => {
-  const l = late<number>(2);
-  const res = branchLazy(
-    applied(l.event, (t) => {
+  const l = Late<number>(2);
+  const res = BranchLazy(
+    Applied(l.event, (t) => {
       return t === 2;
     }),
-    () => of("Then branch"),
-    () => of("Else branch"),
+    () => Of("Then branch"),
+    () => Of("Else branch"),
   );
 
   const g = vi.fn();

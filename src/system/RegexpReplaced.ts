@@ -1,4 +1,4 @@
-import { all, EventType, of } from "silentium";
+import { All, EventType, Of } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
@@ -8,10 +8,10 @@ export const regexpReplaced = (
   valueSrc: EventType<string>,
   patternSrc: EventType<string>,
   replaceValueSrc: EventType<string>,
-  flagsSrc: EventType<string> = of(""),
+  flagsSrc: EventType<string> = Of(""),
 ): EventType<string> => {
   return (u) => {
-    all(
+    All(
       patternSrc,
       valueSrc,
       replaceValueSrc,

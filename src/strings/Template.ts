@@ -1,26 +1,26 @@
 import {
-  all,
-  applied,
+  All,
+  Applied,
   EventType,
-  destructor,
+  Destructor,
   DestructorType,
-  of,
+  Of,
 } from "silentium";
 import { recordOf } from "../structures";
 
 export const template = (
-  theSrc: EventType<string> = of(""),
-  placesSrc: EventType<Record<string, unknown>> = of({}),
+  theSrc: EventType<string> = Of(""),
+  placesSrc: EventType<Record<string, unknown>> = Of({}),
 ) => {
   let placesCounter = 0;
   const vars: Record<string, EventType> = {
-    $TPL: of("$TPL"),
+    $TPL: Of("$TPL"),
   };
   const destructors: DestructorType[] = [];
   return {
     value: <EventType<string>>((u) => {
       const varsSrc = recordOf(vars);
-      applied(all(theSrc, placesSrc, varsSrc), ([base, rules, vars]) => {
+      Applied(All(theSrc, placesSrc, varsSrc), ([base, rules, vars]) => {
         Object.entries(rules).forEach(([ph, val]) => {
           base = base.replaceAll(ph, String(val));
         });
@@ -32,18 +32,18 @@ export const template = (
       })(u);
     }),
     template: (value: string) => {
-      theSrc = of(value);
+      theSrc = Of(value);
     },
     /**
      * Ability to register variable
-     * in concrete place of template
+     * in concrete place Of template
      */
     var: (src: EventType<string>) => {
       const varName = `$var${placesCounter}`;
       placesCounter += 1;
-      vars[varName] = destructor(src, (d: DestructorType) => {
+      vars[varName] = Destructor(src, (d: DestructorType) => {
         destructors.push(d);
-      }).value;
+      }).event;
       return varName;
     },
     destroy() {

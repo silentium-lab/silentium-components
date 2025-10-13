@@ -1,7 +1,7 @@
-import { EventType, isFilled, primitive } from "silentium";
+import { EventType, IsFilled, Primitive } from "silentium";
 
 /**
- * Helps to represent only last fresh value of some source, refreshing controls by shotSrc
+ * Helps to represent only last fresh value Of some source, refreshing controls by shotSrc
  * https://silentium-lab.github.io/silentium-components/#/behaviors/shot
  */
 export const shot = <T>(
@@ -9,11 +9,11 @@ export const shot = <T>(
   triggerSrc: EventType,
 ): EventType<T> => {
   return (u) => {
-    const targetSync = primitive(targetSrc);
+    const targetSync = Primitive(targetSrc);
 
     triggerSrc(() => {
-      const value = targetSync.primitive();
-      if (isFilled(value)) {
+      const value = targetSync.Primitive();
+      if (IsFilled(value)) {
         u(value);
       }
     });

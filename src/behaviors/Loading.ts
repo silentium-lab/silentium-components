@@ -1,7 +1,7 @@
 import { EventType } from "silentium";
 
 /**
- * Representation of loading process
+ * Representation Of loading process
  * first informatin source begins loading
  * second information source stops loading
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading

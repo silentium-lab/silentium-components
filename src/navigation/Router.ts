@@ -1,14 +1,14 @@
 import {
-  all,
-  applied,
+  All,
+  Applied,
   EventType,
-  destructor,
+  Destructor,
   DestructorType,
-  of,
+  Of,
   ConstructorType,
 } from "silentium";
 import { regexpMatched } from "../system";
-import { branchLazy } from "../behaviors";
+import { BranchLazy } from "../behaviors";
 
 export interface Route<T> {
   pattern: string;
@@ -16,7 +16,7 @@ export interface Route<T> {
   template: ConstructorType<[], EventType<T>>;
 }
 
-const emptySrc = () => of(false);
+const emptySrc = () => Of(false);
 
 /**
  * Router component what will return template if url matches pattern
@@ -33,34 +33,34 @@ export const router = <T = "string">(
       destructors.forEach((d) => d());
       destructors.length = 0;
     };
-    all(
+    All(
       routesSrc,
       urlSrc,
     )(([routes, url]) => {
       destroyAllData();
-      const instance = all(
+      const instance = All(
         defaultSrc(),
-        all(
+        All(
           ...routes.map(
             (r) =>
-              destructor(
-                branchLazy(
+              Destructor(
+                BranchLazy(
                   regexpMatched(
-                    of(r.pattern),
-                    of(url),
-                    r.patternFlags ? of(r.patternFlags) : undefined,
+                    Of(r.pattern),
+                    Of(url),
+                    r.patternFlags ? Of(r.patternFlags) : undefined,
                   ),
                   r.template,
                   emptySrc,
                 ),
                 (d: DestructorType) => destructors.push(d),
-              ).value,
+              ).event,
           ),
         ),
       );
 
       // Return first not false or default
-      applied(instance, (r) => {
+      Applied(instance, (r) => {
         const firstReal = r[1].find((r) => r !== false);
 
         if (firstReal) {

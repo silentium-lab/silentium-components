@@ -1,10 +1,10 @@
-import { late } from "silentium";
+import { Late } from "silentium";
 import { loading } from "../behaviors/Loading";
 import { expect, test, vi } from "vitest";
 
 test("Loading.test", () => {
-  const loadingStartSource = late();
-  const loadingFinishSource = late();
+  const loadingStartSource = Late();
+  const loadingFinishSource = Late();
   const loadingSrc = loading(
     loadingStartSource.event,
     loadingFinishSource.event,

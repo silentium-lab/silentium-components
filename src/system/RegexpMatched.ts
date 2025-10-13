@@ -1,4 +1,4 @@
-import { all, EventType, of } from "silentium";
+import { All, EventType, Of } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
@@ -7,10 +7,10 @@ import { all, EventType, of } from "silentium";
 export const regexpMatched = (
   patternSrc: EventType<string>,
   valueSrc: EventType<string>,
-  flagsSrc: EventType<string> = of(""),
+  flagsSrc: EventType<string> = Of(""),
 ): EventType<boolean> => {
   return (u) => {
-    all(
+    All(
       patternSrc,
       valueSrc,
       flagsSrc,

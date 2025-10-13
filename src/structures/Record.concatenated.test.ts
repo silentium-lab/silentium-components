@@ -1,17 +1,17 @@
-import { late, of, shared } from "silentium";
+import { Late, Of, Shared } from "silentium";
 import { concatenated } from "../strings";
 import { recordOf } from "../structures/RecordOf";
 import { expect, test, vi } from "vitest";
 
 test("Record.concatenated.test", () => {
-  const three = of<string>("three");
-  const concatPart = late<string>("part");
-  const r = shared(
+  const three = Of<string>("three");
+  const concatPart = Late<string>("part");
+  const r = Shared(
     recordOf({
-      one: of("one"),
-      two: of("two"),
+      one: Of("one"),
+      two: Of("two"),
       three,
-      nested: concatenated([of("one"), concatPart.event]),
+      nested: concatenated([Of("one"), concatPart.event]),
     }),
   );
   const g = vi.fn();

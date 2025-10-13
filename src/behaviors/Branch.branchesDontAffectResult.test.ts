@@ -1,13 +1,13 @@
-import { applied, late, of } from "silentium";
-import { branch } from "../behaviors/Branch";
+import { Applied, Late, Of } from "silentium";
+import { Branch } from "../behaviors/Branch";
 import { expect, test, vi } from "vitest";
 
 test("Branch.branchesDontAffectResult.test", () => {
-  const l = late<number>(2);
-  const el = late<string>("else");
-  const boolSync = branch(
-    applied(l.event, (t) => t === 2),
-    of("then"),
+  const l = Late<number>(2);
+  const el = Late<string>("else");
+  const boolSync = Branch(
+    Applied(l.event, (t) => t === 2),
+    Of("then"),
     el.event,
   );
   const g = vi.fn();

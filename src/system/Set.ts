@@ -1,4 +1,4 @@
-import { all, EventType } from "silentium";
+import { All, EventType } from "silentium";
 
 /**
  * Ability to mutate some object, helpful when integrate to procedure systems
@@ -10,7 +10,7 @@ export const set = <T extends Record<string, unknown>>(
   valueSrc: EventType<unknown>,
 ): EventType<T> => {
   return (u) => {
-    all(
+    All(
       baseSrc,
       keySrc,
       valueSrc,

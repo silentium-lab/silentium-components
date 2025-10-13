@@ -1,7 +1,7 @@
-import { EventType, isFilled, primitive } from "silentium";
+import { EventType, isFilled, Primitive } from "silentium";
 
 /**
- * Defer one source after another, gives values of baseSrc only when triggerSrc responds
+ * Defer one source after another, gives values Of baseSrc only when triggerSrc responds
  * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
  */
 export const deferred = <T>(
@@ -9,7 +9,7 @@ export const deferred = <T>(
   triggerSrc: EventType<unknown>,
 ): EventType<T> => {
   return (u) => {
-    const baseSync = primitive(baseSrc);
+    const baseSync = Primitive(baseSrc);
     triggerSrc(() => {
       const value = baseSync.primitive();
       if (isFilled(value)) {

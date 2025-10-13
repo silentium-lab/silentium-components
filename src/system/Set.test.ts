@@ -1,13 +1,13 @@
-import { late, of } from "silentium";
+import { Late, Of } from "silentium";
 import { set } from "../system/Set";
 import { expect, test, vi } from "vitest";
 
 test("Set.test", () => {
-  const value = late<string>();
+  const value = Late<string>();
   const object = {
     value: "hello",
   };
-  const obj = set(of(object), of("value"), value.event);
+  const obj = set(Of(object), Of("value"), value.event);
   const g = vi.fn();
   obj(g);
 

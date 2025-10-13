@@ -1,19 +1,19 @@
-import { all, EventType } from "silentium";
+import { All, EventType } from "silentium";
 
 /**
- * Return source of record path
+ * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
 export const path = <
   R,
-  T extends Record<string, unknown> | Array<unknown> = any,
-  K extends string = any,
+  T extends Record<string, unknown> | Array<unknown> = Any,
+  K extends string = Any,
 >(
   baseSrc: EventType<T>,
   keySrc: EventType<K>,
 ): EventType<R> => {
   return (u) => {
-    all(
+    All(
       baseSrc,
       keySrc,
     )(([base, key]) => {

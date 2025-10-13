@@ -1,4 +1,4 @@
-import { any, late, shared } from "silentium";
+import { Any, Late, Shared } from "silentium";
 import { tick } from "../behaviors/Tick";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
@@ -12,9 +12,9 @@ afterEach(() => {
 });
 
 test("Tick.test", async () => {
-  const s1 = late<number>(1);
-  const s2 = late<number>(2);
-  const tickSrc = shared(tick(any(s1.event, s2.event)), true);
+  const s1 = Late<number>(1);
+  const s2 = Late<number>(2);
+  const tickSrc = Shared(tick(Any(s1.event, s2.event)), true);
 
   const g = vi.fn();
   tickSrc.event(g);

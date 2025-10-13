@@ -1,7 +1,7 @@
 import { EventType } from "silentium";
 
 /**
- * Didn't respond if new value of baseSrc equals to old value
+ * Didn't respond if new value Of baseSrc equals to old value
  * https://silentium-lab.github.io/silentium-components/#/behaviors/memo
  */
 export const memo = <T>(baseSrc: EventType<T>): EventType<T> => {
