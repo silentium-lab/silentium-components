@@ -3,10 +3,10 @@ import { EventType } from "silentium";
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/not
  */
-export const not = (baseSrc: EventType<boolean>): EventType<boolean> => {
-  return (u) => {
+export function Not(baseSrc: EventType<boolean>): EventType<boolean> {
+  return (user) => {
     baseSrc((v) => {
-      u(!v);
+      user(!v);
     });
   };
-};
+}

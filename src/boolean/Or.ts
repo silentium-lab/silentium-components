@@ -3,16 +3,16 @@ import { All, EventType } from "silentium";
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/or
  */
-export const or = (
+export function Or(
   oneSrc: EventType<boolean>,
   twoSrc: EventType<boolean>,
-): EventType<boolean> => {
-  return (u) => {
+): EventType<boolean> {
+  return (user) => {
     All(
       oneSrc,
       twoSrc,
     )(([one, two]) => {
-      u(one || two);
+      user(one || two);
     });
   };
-};
+}

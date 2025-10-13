@@ -1,5 +1,5 @@
 import { Late, Of, SharedSource } from "silentium";
-import { part } from "../behaviors/Part";
+import { Part } from "../behaviors/Part";
 import { expect, test, vi } from "vitest";
 
 test("Part.test", () => {
@@ -9,7 +9,7 @@ test("Part.test", () => {
       surname: "Parker",
     }),
   );
-  const nameSrc = part<string>(recordSrc, Of("name"));
+  const nameSrc = Part<string>(recordSrc, Of("name"));
   const g = vi.fn();
   recordSrc.event(g);
   expect(g).toHaveBeenLastCalledWith({ name: "Peter", surname: "Parker" });

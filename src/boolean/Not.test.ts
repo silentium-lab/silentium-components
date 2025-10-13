@@ -1,10 +1,10 @@
 import { Late } from "silentium";
-import { not } from "../boolean/Not";
+import { Not } from "../boolean/Not";
 import { expect, test, vi } from "vitest";
 
 test("Not.test", () => {
   const one = Late<boolean>(false);
-  const result = not(one.event);
+  const result = Not(one.event);
   const g = vi.fn();
   result(g);
   expect(g).toHaveBeenLastCalledWith(true);

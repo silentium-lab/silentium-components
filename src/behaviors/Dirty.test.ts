@@ -1,5 +1,5 @@
 import { Late } from "silentium";
-import { dirty } from "../behaviors/Dirty";
+import { Dirty } from "../behaviors/Dirty";
 import { expect, test, vi } from "vitest";
 
 test("Dirty.test", () => {
@@ -7,7 +7,7 @@ test("Dirty.test", () => {
     name: "one",
     surname: "two",
   });
-  const d = dirty(form.event);
+  const d = Dirty(form.event);
   const g = vi.fn();
   d.event(g);
 

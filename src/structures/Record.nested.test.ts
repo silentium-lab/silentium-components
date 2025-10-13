@@ -1,14 +1,14 @@
 import { Of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { recordOf } from "./RecordOf";
+import { RecordOf } from "./RecordOf";
 
 test("Record.nested.test", () => {
   const three = Of<string>("three");
-  const recordSrc = recordOf({
+  const recordSrc = RecordOf({
     one: Of("one"),
     two: Of("two"),
     three,
-    nested: recordOf({
+    nested: RecordOf({
       four: Of("four"),
       five: Of("five"),
     }),

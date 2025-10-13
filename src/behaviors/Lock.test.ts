@@ -1,12 +1,12 @@
 import { Late, Shared } from "silentium";
-import { lock } from "../behaviors/Lock";
+import { Lock } from "../behaviors/Lock";
 import { expect, test, vi } from "vitest";
 
 test("Lock.test", () => {
   const source = Late<number>(1);
   const lockSrc = Late<boolean>(false);
 
-  const ls = lock(source.event, lockSrc.event);
+  const ls = Lock(source.event, lockSrc.event);
   const lockedSrc = Shared(ls);
   const g = vi.fn();
   lockedSrc.event(g);

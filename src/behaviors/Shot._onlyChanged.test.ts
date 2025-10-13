@@ -1,12 +1,12 @@
 import { Late, Shared } from "silentium";
-import { onlyChanged } from "../behaviors/OnlyChanged";
-import { shot } from "../behaviors/Shot";
+import { OnlyChanged } from "../behaviors/OnlyChanged";
+import { Shot } from "../behaviors/Shot";
 import { expect, test } from "vitest";
 
 test("Shot._onlyChanged.test", () => {
   const baseSrc = Late<number>(123);
   const sharedBase = Shared(baseSrc.event, true);
-  const resultSrc = shot(sharedBase.event, onlyChanged(sharedBase.event));
+  const resultSrc = Shot(sharedBase.event, OnlyChanged(sharedBase.event));
 
   const vals: number[] = [];
 

@@ -1,6 +1,6 @@
 import { EventType, Late, Primitive } from "silentium";
 import { expect, test } from "vitest";
-import { polling } from "../behaviors/Polling";
+import { Polling } from "../behaviors/Polling";
 
 test("Polling.test", () => {
   const triggerSrc = Late(1);
@@ -9,17 +9,17 @@ test("Polling.test", () => {
     calls += 1;
     o(calls);
   };
-  const s = Primitive(polling(callsSrc, triggerSrc.event));
+  const s = Primitive(Polling(callsSrc, triggerSrc.event));
 
-  expect(s.Primitive()).toBe(1);
-
-  triggerSrc.use(1);
-
-  expect(s.Primitive()).toBe(2);
+  expect(s.primitive()).toBe(1);
 
   triggerSrc.use(1);
+
+  expect(s.primitive()).toBe(2);
+
+  triggerSrc.use(1);
   triggerSrc.use(1);
   triggerSrc.use(1);
 
-  expect(s.Primitive()).toBe(5);
+  expect(s.primitive()).toBe(5);
 });

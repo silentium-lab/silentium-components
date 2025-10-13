@@ -4,8 +4,8 @@ import { EventType } from "silentium";
  * Accumulates the last value Of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-export const tick = <T>(baseSrc: EventType<T>): EventType<T> => {
-  return (u) => {
+export function Tick<T>(baseSrc: EventType<T>): EventType<T> {
+  return (user) => {
     let microtaskScheduled = false;
     let lastValue: T | null = null;
 
@@ -14,7 +14,7 @@ export const tick = <T>(baseSrc: EventType<T>): EventType<T> => {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          u(lastValue);
+          user(lastValue);
           lastValue = null;
         }
       });
@@ -27,4 +27,4 @@ export const tick = <T>(baseSrc: EventType<T>): EventType<T> => {
       }
     });
   };
-};
+}

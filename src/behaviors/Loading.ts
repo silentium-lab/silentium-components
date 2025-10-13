@@ -6,12 +6,12 @@ import { EventType } from "silentium";
  * second information source stops loading
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
-export const loading = (
+export function Loading(
   loadingStartSrc: EventType<unknown>,
   loadingFinishSrc: EventType<unknown>,
-): EventType<boolean> => {
-  return (u) => {
-    loadingStartSrc(() => u(true));
-    loadingFinishSrc(() => u(false));
+): EventType<boolean> {
+  return (user) => {
+    loadingStartSrc(() => user(true));
+    loadingFinishSrc(() => user(false));
   };
-};
+}

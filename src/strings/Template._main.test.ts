@@ -1,12 +1,12 @@
 import { Of } from "silentium";
-import { template } from "../strings/Template";
-import { recordOf } from "../structures";
+import { Template } from "../strings/Template";
+import { RecordOf } from "../structures";
 import { expect, test, vi } from "vitest";
 
 test("Template._main.test", () => {
-  const tpl = template(
+  const tpl = Template(
     Of("<h1>$1</h1>"),
-    recordOf({
+    RecordOf({
       $1: Of("one value"),
     }),
   );
@@ -15,9 +15,9 @@ test("Template._main.test", () => {
 
   expect(g).toHaveBeenLastCalledWith("<h1>one value</h1>");
 
-  const tpl2 = template(
+  const tpl2 = Template(
     Of("<h2>$1</h2>"),
-    recordOf({
+    RecordOf({
       $1: Of("second value"),
     }),
   );

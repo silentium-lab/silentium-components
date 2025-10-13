@@ -3,11 +3,11 @@ import { EventType, Filtered, Shared, EventUserType } from "silentium";
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-export const Deadline = <T>(
+export function Deadline<T>(
   error: EventUserType<Error>,
   baseSrc: EventType<T>,
   timeoutSrc: EventType<number>,
-): EventType<T> => {
+): EventType<T> {
   return (user) => {
     let timerHead: unknown = null;
 
@@ -35,4 +35,4 @@ export const Deadline = <T>(
       });
     });
   };
-};
+}

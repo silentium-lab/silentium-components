@@ -3,17 +3,17 @@ import { EventType, EventUserType } from "silentium";
 /**
  * Represents object from json
  */
-export const fromJson = <T = Record<string, unknown>>(
+export function FromJson<T = Record<string, unknown>>(
   jsonSrc: EventType<string>,
   errorOwner?: EventUserType,
-): EventType<T> => {
-  return (u) => {
+): EventType<T> {
+  return (user) => {
     jsonSrc((json) => {
       try {
-        u(JSON.parse(json));
+        user(JSON.parse(json));
       } catch (error) {
         errorOwner?.(new Error(`Failed to parse JSON: ${error}`));
       }
     });
   };
-};
+}

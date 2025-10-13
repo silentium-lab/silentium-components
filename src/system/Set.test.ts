@@ -1,5 +1,5 @@
 import { Late, Of } from "silentium";
-import { set } from "../system/Set";
+import { Set } from "../system/Set";
 import { expect, test, vi } from "vitest";
 
 test("Set.test", () => {
@@ -7,7 +7,7 @@ test("Set.test", () => {
   const object = {
     value: "hello",
   };
-  const obj = set(Of(object), Of("value"), value.event);
+  const obj = Set(Of(object), Of("value"), value.event);
   const g = vi.fn();
   obj(g);
 

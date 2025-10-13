@@ -1,12 +1,12 @@
 import { Late, Primitive, Shared } from "silentium";
-import { deferred } from "../behaviors/Deferred";
+import { Deferred } from "../behaviors/Deferred";
 import { expect, test, vi } from "vitest";
 
 test("Deferred.test", () => {
   const urlSrc = Late<string>("http://hello.com");
   const layoutSrc = Late<string>();
 
-  const urlWithLayoutSrc = Shared(deferred(urlSrc.event, layoutSrc.event));
+  const urlWithLayoutSrc = Shared(Deferred(urlSrc.event, layoutSrc.event));
 
   const g1 = vi.fn();
   urlWithLayoutSrc.event(g1);

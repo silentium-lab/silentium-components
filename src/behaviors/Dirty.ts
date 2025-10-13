@@ -5,12 +5,12 @@ import { All, Applied, EventType, Late, SourceType } from "silentium";
  * returns new record, what will contain only fields what was changed
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
-export const dirty = <T>(
+export function Dirty<T>(
   baseEntitySource: EventType<T>,
   alwaysKeep: string[] = [],
   excludeKeys: string[] = [],
   cloneFn?: (v: T) => T,
-): SourceType<T> => {
+): SourceType<T> {
   const comparingSrc = Late<T>();
 
   if (cloneFn === undefined) {
@@ -18,7 +18,7 @@ export const dirty = <T>(
   }
 
   return {
-    event: (u) => {
+    event: (user) => {
       const comparingDetached = Applied(comparingSrc.event, cloneFn);
 
       All(
@@ -29,7 +29,7 @@ export const dirty = <T>(
           return;
         }
 
-        u(
+        user(
           Object.fromEntries(
             Object.entries(comparing).filter(([key, value]) => {
               if (alwaysKeep.includes(key)) {
@@ -48,4 +48,4 @@ export const dirty = <T>(
       comparingSrc.use(v);
     },
   };
-};
+}

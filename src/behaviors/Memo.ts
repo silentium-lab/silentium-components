@@ -4,15 +4,15 @@ import { EventType } from "silentium";
  * Didn't respond if new value Of baseSrc equals to old value
  * https://silentium-lab.github.io/silentium-components/#/behaviors/memo
  */
-export const memo = <T>(baseSrc: EventType<T>): EventType<T> => {
-  return (u) => {
+export function Memo<T>(baseSrc: EventType<T>): EventType<T> {
+  return (user) => {
     let lastValue: T | null = null;
 
     baseSrc((v) => {
       if (v !== lastValue) {
-        u(v);
+        user(v);
         lastValue = v;
       }
     });
   };
-};
+}

@@ -1,12 +1,12 @@
 import { LateShared, Of } from "silentium";
 import { describe, expect, test } from "vitest";
-import { detached } from "../behaviors/Detached";
-import { router } from "../navigation/Router";
+import { Detached } from "../behaviors/Detached";
+import { Router } from "../navigation/Router";
 
 describe("Router._nested.test", () => {
   test("Вложенные роуты", () => {
     const urlSrc = LateShared("/");
-    const routerSrc = router(
+    const routerSrc = Router(
       urlSrc.event,
       Of([
         {
@@ -18,9 +18,9 @@ describe("Router._nested.test", () => {
           template: () => {
             return (user) => {
               // need to replace with detached component
-              const localUrlSrc = detached(urlSrc.event);
+              const localUrlSrc = Detached(urlSrc.event);
 
-              const r = router(
+              const r = Router(
                 localUrlSrc,
                 Of([
                   {
@@ -39,9 +39,9 @@ describe("Router._nested.test", () => {
                     pattern: "^/admin/nested/.*$",
                     template: () => {
                       return (user) => {
-                        const localUrlSrc = detached(urlSrc.event);
+                        const localUrlSrc = Detached(urlSrc.event);
 
-                        const r = router(
+                        const r = Router(
                           localUrlSrc,
                           Of([
                             {

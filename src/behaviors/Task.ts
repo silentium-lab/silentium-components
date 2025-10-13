@@ -1,10 +1,10 @@
 import { EventType, ExecutorApplied } from "silentium";
 
-export const task = <T>(
+export function Task<T>(
   baseSrc: EventType<T>,
   delay: number = 0,
-): EventType<T> => {
-  return (u) => {
+): EventType<T> {
+  return (user) => {
     let prevTimer: unknown | null = null;
     ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
@@ -15,6 +15,6 @@ export const task = <T>(
           fn(v);
         }, delay);
       };
-    })(u);
+    })(user);
   };
-};
+}

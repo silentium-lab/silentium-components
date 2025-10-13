@@ -6,20 +6,20 @@ import {
   DestructorType,
   Of,
 } from "silentium";
-import { recordOf } from "../structures";
+import { RecordOf } from "../structures";
 
-export const template = (
+export function Template(
   theSrc: EventType<string> = Of(""),
   placesSrc: EventType<Record<string, unknown>> = Of({}),
-) => {
+) {
   let placesCounter = 0;
   const vars: Record<string, EventType> = {
     $TPL: Of("$TPL"),
   };
   const destructors: DestructorType[] = [];
   return {
-    value: <EventType<string>>((u) => {
-      const varsSrc = recordOf(vars);
+    value: <EventType<string>>((user) => {
+      const varsSrc = RecordOf(vars);
       Applied(All(theSrc, placesSrc, varsSrc), ([base, rules, vars]) => {
         Object.entries(rules).forEach(([ph, val]) => {
           base = base.replaceAll(ph, String(val));
@@ -29,7 +29,7 @@ export const template = (
         });
 
         return base;
-      })(u);
+      })(user);
     }),
     template: (value: string) => {
       theSrc = Of(value);
@@ -50,4 +50,4 @@ export const template = (
       destructors.forEach((d) => d());
     },
   };
-};
+}

@@ -1,10 +1,10 @@
 import { Late, Of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { recordOf } from "./RecordOf";
+import { RecordOf } from "./RecordOf";
 
 test("Record._main.test", () => {
   const three = Late<string>("three");
-  const recordSrc = recordOf({
+  const recordSrc = RecordOf({
     one: Of("one"),
     two: Of(2),
     three: three.event,

@@ -1,5 +1,5 @@
 import { Applied, Late, Of, Shared } from "silentium";
-import { router } from "../navigation/Router";
+import { Router } from "../navigation/Router";
 import { expect, test, vi } from "vitest";
 
 const drop = (dropPart: string) => (value: string) => {
@@ -12,7 +12,7 @@ test("Router._main.test", () => {
   const g = vi.fn();
   urlPathSrc.event(g);
 
-  const routerSrc = router(
+  const routerSrc = Router(
     urlPathSrc.event,
     Of([
       {

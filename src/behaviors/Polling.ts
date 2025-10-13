@@ -1,12 +1,12 @@
 import { EventType } from "silentium";
 
-export const polling = <T>(
+export function Polling<T>(
   baseSrc: EventType<T>,
   triggerSrc: EventType<T>,
-): EventType<T> => {
-  return (u) => {
+): EventType<T> {
+  return (user) => {
     triggerSrc(() => {
-      baseSrc(u);
+      baseSrc(user);
     });
   };
-};
+}

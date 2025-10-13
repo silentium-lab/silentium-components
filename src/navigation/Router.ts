@@ -7,7 +7,7 @@ import {
   Of,
   ConstructorType,
 } from "silentium";
-import { regexpMatched } from "../system";
+import { RegexpMatched } from "../system";
 import { BranchLazy } from "../behaviors";
 
 export interface Route<T> {
@@ -22,12 +22,12 @@ const emptySrc = () => Of(false);
  * Router component what will return template if url matches pattern
  * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
-export const router = <T = "string">(
+export function Router<T = "string">(
   urlSrc: EventType<string>,
   routesSrc: EventType<Route<T>[]>,
   defaultSrc: ConstructorType<[], EventType<T>>,
-): EventType<T> => {
-  return (u) => {
+): EventType<T> {
+  return (user) => {
     const destructors: DestructorType[] = [];
     const destroyAllData = () => {
       destructors.forEach((d) => d());
@@ -45,7 +45,7 @@ export const router = <T = "string">(
             (r) =>
               Destructor(
                 BranchLazy(
-                  regexpMatched(
+                  RegexpMatched(
                     Of(r.pattern),
                     Of(url),
                     r.patternFlags ? Of(r.patternFlags) : undefined,
@@ -68,9 +68,9 @@ export const router = <T = "string">(
         }
 
         return r[0];
-      })(u);
+      })(user);
     });
 
     return destroyAllData;
   };
-};
+}

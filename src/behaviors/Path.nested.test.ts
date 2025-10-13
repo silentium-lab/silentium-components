@@ -1,5 +1,5 @@
 import { Of } from "silentium";
-import { path } from "../behaviors/Path";
+import { Path } from "../behaviors/Path";
 import { expect, test, vi } from "vitest";
 
 test("Path.nested.test", () => {
@@ -10,7 +10,7 @@ test("Path.nested.test", () => {
       name: "spider-man",
     },
   };
-  const typeName = path(Of(record), Of("type.name"));
+  const typeName = Path(Of(record), Of("type.name"));
   const g = vi.fn();
   typeName(g);
   expect(g).toHaveBeenLastCalledWith("spider-man");

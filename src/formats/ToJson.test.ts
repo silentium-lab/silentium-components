@@ -1,10 +1,10 @@
 import { Of, Primitive } from "silentium";
 import { expect, test } from "vitest";
-import { toJson } from "../formats/ToJson";
+import { ToJson } from "../formats/ToJson";
 
 test("ToJson.test", () => {
   const one = Of({ hello: "world" });
-  const objectSync = Primitive(toJson(one));
+  const objectSync = Primitive(ToJson(one));
 
-  expect(objectSync.Primitive()).toBe('{"hello":"world"}');
+  expect(objectSync.primitive()).toBe('{"hello":"world"}');
 });

@@ -1,6 +1,6 @@
 import { Of } from "silentium";
 import { expect, test, vi } from "vitest";
-import { path } from "./Path";
+import { Path } from "./Path";
 
 test("Path.index.test", () => {
   const record = {
@@ -11,7 +11,7 @@ test("Path.index.test", () => {
       name: "spider-man",
     },
   };
-  const bestColor = path(Of(record), Of("colors.0"));
+  const bestColor = Path(Of(record), Of("colors.0"));
   const g = vi.fn();
   bestColor(g);
   expect(g).toHaveBeenLastCalledWith("blue");

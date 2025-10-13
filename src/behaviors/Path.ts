@@ -4,15 +4,12 @@ import { All, EventType } from "silentium";
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-export const path = <
+export function Path<
   R,
-  T extends Record<string, unknown> | Array<unknown> = Any,
-  K extends string = Any,
->(
-  baseSrc: EventType<T>,
-  keySrc: EventType<K>,
-): EventType<R> => {
-  return (u) => {
+  T extends Record<string, unknown> | Array<unknown> = any,
+  K extends string = any,
+>(baseSrc: EventType<T>, keySrc: EventType<K>): EventType<R> {
+  return (user) => {
     All(
       baseSrc,
       keySrc,
@@ -24,8 +21,8 @@ export const path = <
       });
 
       if (value !== undefined && value !== base) {
-        u(value as R);
+        user(value as R);
       }
     });
   };
-};
+}
