@@ -61,13 +61,13 @@ declare function OnlyChanged<T>(baseSrc: EventType<T>): EventType<T>;
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Part<R, T extends Record<string, unknown> | Array<unknown> = any, K extends string = any>(baseSrc: SourceType<T>, keySrc: EventType<K>): SourceType<R>;
+declare function Part<R, T extends object | Array<any>, K extends string = any>(baseSrc: SourceType<T>, keySrc: EventType<K>): SourceType<R>;
 
 /**
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Path<R, T extends Record<string, unknown> | Array<unknown> = any, K extends string = any>(baseSrc: EventType<T>, keySrc: EventType<K>): EventType<R>;
+declare function Path<R, T extends object | Array<any>, K extends string = any>(baseSrc: EventType<T>, keySrc: EventType<K>): EventType<R>;
 
 declare function Polling<T>(baseSrc: EventType<T>, triggerSrc: EventType<T>): EventType<T>;
 

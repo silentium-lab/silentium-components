@@ -4,11 +4,10 @@ import { All, EventType } from "silentium";
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-export function Path<
-  R,
-  T extends Record<string, unknown> | Array<unknown> = any,
-  K extends string = any,
->(baseSrc: EventType<T>, keySrc: EventType<K>): EventType<R> {
+export function Path<R, T extends object | Array<any>, K extends string = any>(
+  baseSrc: EventType<T>,
+  keySrc: EventType<K>,
+): EventType<R> {
   return (user) => {
     All(
       baseSrc,

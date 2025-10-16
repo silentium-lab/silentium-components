@@ -4,11 +4,10 @@ import { All, EventType, isFilled, Primitive, SourceType } from "silentium";
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-export function Part<
-  R,
-  T extends Record<string, unknown> | Array<unknown> = any,
-  K extends string = any,
->(baseSrc: SourceType<T>, keySrc: EventType<K>): SourceType<R> {
+export function Part<R, T extends object | Array<any>, K extends string = any>(
+  baseSrc: SourceType<T>,
+  keySrc: EventType<K>,
+): SourceType<R> {
   const baseSync = Primitive(baseSrc.event);
   const keySync = Primitive(keySrc);
   return {
