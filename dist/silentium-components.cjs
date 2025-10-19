@@ -291,15 +291,19 @@ function Transaction($base, eventBuilder, ...args) {
   const $res = silentium.LateShared();
   const destructors = [];
   $base((v) => {
-    destructors.forEach((d) => d.destroy());
-    destructors.length = 0;
     const $event = silentium.Destructor(
       eventBuilder(silentium.Of(v), ...args.map((a) => Detached(a)))
     );
     destructors.push($event);
     $event.event($res.use);
   });
-  return $res.event;
+  return (user) => {
+    $res.event(user);
+    return () => {
+      destructors.forEach((d) => d.destroy());
+      destructors.length = 0;
+    };
+  };
 }
 
 function HashTable(baseSrc) {

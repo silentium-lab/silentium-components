@@ -19,13 +19,11 @@ export function Transaction<T, R = unknown>(
     EventType<R>
   >,
   ...args: EventType[]
-) {
+): EventType<R> {
   const $res = LateShared<R>();
   const destructors: DestroyableType[] = [];
 
   $base((v) => {
-    destructors.forEach((d) => d.destroy());
-    destructors.length = 0;
     const $event = Destructor(
       eventBuilder(Of(v), ...args.map((a) => Detached(a))),
     );
@@ -33,5 +31,12 @@ export function Transaction<T, R = unknown>(
     $event.event($res.use);
   });
 
-  return $res.event;
+  return (user) => {
+    $res.event(user);
+
+    return () => {
+      destructors.forEach((d) => d.destroy());
+      destructors.length = 0;
+    };
+  };
 }
