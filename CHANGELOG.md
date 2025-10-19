@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.69](https://github.com/silentium-lab/silentium-components/compare/v0.0.68...v0.0.69) (2025-10-19)
+
+
+### Bug Fixes
+
+* **main:** controllable destructor ([bc116da](https://github.com/silentium-lab/silentium-components/commit/bc116da6eef723769639137724002420ff3f174a))
+
 ### [0.0.68](https://github.com/silentium-lab/silentium-components/compare/v0.0.67...v0.0.68) (2025-10-19)
 
 
