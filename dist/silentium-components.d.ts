@@ -86,6 +86,15 @@ declare function Task<T>(baseSrc: EventType<T>, delay?: number): EventType<T>;
 declare function Tick<T>(baseSrc: EventType<T>): EventType<T>;
 
 /**
+ * Do something on event value.
+ * Each event value will create new eventBuilder instance
+ */
+declare function Transaction<T, R = unknown>($base: EventType<T>, eventBuilder: ConstructorType<[
+    EventType<T>,
+    ...EventType<any>[]
+], EventType<R>>, ...args: EventType[]): EventType<R>;
+
+/**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 declare function HashTable<T>(baseSrc: EventType<[string, unknown]>): EventType<T>;
@@ -185,5 +194,5 @@ declare function ToJson(dataSrc: EventType, errorOwner?: EventUserType): EventTy
  */
 declare function First<T extends Array<unknown>>(baseSrc: EventType<T>): EventType<T[0]>;
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transaction };
 export type { Route };

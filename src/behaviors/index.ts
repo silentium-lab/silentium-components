@@ -15,3 +15,4 @@ export * from "./Polling";
 export * from "./Shot";
 export * from "./Task";
 export * from "./Tick";
+export * from "./Transaction";

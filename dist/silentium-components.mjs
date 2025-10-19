@@ -1,4 +1,4 @@
-import { Primitive, Shared, Filtered, isFilled, Late, Applied, All, ExecutorApplied, Of, Destructor } from 'silentium';
+import { Primitive, Shared, Filtered, isFilled, Late, Applied, All, ExecutorApplied, LateShared, Destructor, Of } from 'silentium';
 
 function Branch(conditionSrc, leftSrc, rightSrc) {
   return (user) => {
@@ -285,6 +285,21 @@ function Tick(baseSrc) {
   };
 }
 
+function Transaction($base, eventBuilder, ...args) {
+  const $res = LateShared();
+  const destructors = [];
+  $base((v) => {
+    destructors.forEach((d) => d.destroy());
+    destructors.length = 0;
+    const $event = Destructor(
+      eventBuilder(Of(v), ...args.map((a) => Detached(a)))
+    );
+    destructors.push($event);
+    $event.event($res.use);
+  });
+  return $res.event;
+}
+
 function HashTable(baseSrc) {
   return (user) => {
     const record = {};
@@ -520,5 +535,5 @@ function First(baseSrc) {
   };
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transaction };
 //# sourceMappingURL=silentium-components.mjs.map

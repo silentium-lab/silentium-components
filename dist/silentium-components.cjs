@@ -287,6 +287,21 @@ function Tick(baseSrc) {
   };
 }
 
+function Transaction($base, eventBuilder, ...args) {
+  const $res = silentium.LateShared();
+  const destructors = [];
+  $base((v) => {
+    destructors.forEach((d) => d.destroy());
+    destructors.length = 0;
+    const $event = silentium.Destructor(
+      eventBuilder(silentium.Of(v), ...args.map((a) => Detached(a)))
+    );
+    destructors.push($event);
+    $event.event($res.use);
+  });
+  return $res.event;
+}
+
 function HashTable(baseSrc) {
   return (user) => {
     const record = {};
@@ -555,4 +570,5 @@ exports.Task = Task;
 exports.Template = Template;
 exports.Tick = Tick;
 exports.ToJson = ToJson;
+exports.Transaction = Transaction;
 //# sourceMappingURL=silentium-components.cjs.map
