@@ -288,16 +288,16 @@ function Tick(baseSrc) {
 }
 
 function Transaction($base, eventBuilder, ...args) {
-  const $res = silentium.LateShared();
-  const destructors = [];
-  $base((v) => {
-    const $event = silentium.Destructor(
-      eventBuilder(silentium.Of(v), ...args.map((a) => Detached(a)))
-    );
-    destructors.push($event);
-    $event.event($res.use);
-  });
   return (user) => {
+    const $res = silentium.LateShared();
+    const destructors = [];
+    $base((v) => {
+      const $event = silentium.Destructor(
+        eventBuilder(silentium.Of(v), ...args.map((a) => Detached(a)))
+      );
+      destructors.push($event);
+      $event.event($res.use);
+    });
     $res.event(user);
     return () => {
       destructors.forEach((d) => d.destroy());

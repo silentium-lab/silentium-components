@@ -31,11 +31,10 @@ describe("Transaction.test", () => {
 
     expect(Primitive(t).primitiveWithException()).toBe(4);
 
-    // $mult changed after $base, hence result is 6, 3 * 2
     $base.use(3);
     $mult.use(3);
 
-    expect(Primitive(t).primitiveWithException()).toBe(6);
+    expect(Primitive(t).primitiveWithException()).toBe(9);
 
     // $mult is of value 3, hence result will be 12
     $base.use(4);

@@ -286,16 +286,16 @@ function Tick(baseSrc) {
 }
 
 function Transaction($base, eventBuilder, ...args) {
-  const $res = LateShared();
-  const destructors = [];
-  $base((v) => {
-    const $event = Destructor(
-      eventBuilder(Of(v), ...args.map((a) => Detached(a)))
-    );
-    destructors.push($event);
-    $event.event($res.use);
-  });
   return (user) => {
+    const $res = LateShared();
+    const destructors = [];
+    $base((v) => {
+      const $event = Destructor(
+        eventBuilder(Of(v), ...args.map((a) => Detached(a)))
+      );
+      destructors.push($event);
+      $event.event($res.use);
+    });
     $res.event(user);
     return () => {
       destructors.forEach((d) => d.destroy());
