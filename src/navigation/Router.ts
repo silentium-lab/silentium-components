@@ -6,6 +6,8 @@ import {
   DestructorType,
   Of,
   ConstructorType,
+  Event,
+  Transport,
 } from "silentium";
 import { RegexpMatched } from "../system";
 import { BranchLazy } from "../behaviors";
@@ -27,50 +29,49 @@ export function Router<T = "string">(
   routesSrc: EventType<Route<T>[]>,
   defaultSrc: ConstructorType<[], EventType<T>>,
 ): EventType<T> {
-  return (user) => {
+  return Event((user) => {
     const destructors: DestructorType[] = [];
     const destroyAllData = () => {
       destructors.forEach((d) => d());
       destructors.length = 0;
     };
-    All(
-      routesSrc,
-      urlSrc,
-    )(([routes, url]) => {
-      destroyAllData();
-      const instance = All(
-        defaultSrc(),
-        All(
-          ...routes.map(
-            (r) =>
-              Destructor(
-                BranchLazy(
-                  RegexpMatched(
-                    Of(r.pattern),
-                    Of(url),
-                    r.patternFlags ? Of(r.patternFlags) : undefined,
+    All(routesSrc, urlSrc).event(
+      Transport(([routes, url]) => {
+        destroyAllData();
+        const instance = All(
+          defaultSrc(),
+          All(
+            ...routes.map(
+              (r) =>
+                Destructor(
+                  BranchLazy(
+                    RegexpMatched(
+                      Of(r.pattern),
+                      Of(url),
+                      r.patternFlags ? Of(r.patternFlags) : undefined,
+                    ),
+                    r.template,
+                    emptySrc,
                   ),
-                  r.template,
-                  emptySrc,
-                ),
-                (d: DestructorType) => destructors.push(d),
-              ).event,
+                  (d: DestructorType) => destructors.push(d),
+                ).event,
+            ),
           ),
-        ),
-      );
+        );
 
-      // Return first not false or default
-      Applied(instance, (r) => {
-        const firstReal = r[1].find((r) => r !== false);
+        // Return first not false or default
+        Applied(instance, (r) => {
+          const firstReal = r[1].find((r: unknown) => r !== false);
 
-        if (firstReal) {
-          return firstReal as T;
-        }
+          if (firstReal) {
+            return firstReal as T;
+          }
 
-        return r[0];
-      })(user);
-    });
+          return r[0];
+        }).event(user);
+      }),
+    );
 
     return destroyAllData;
-  };
+  });
 }

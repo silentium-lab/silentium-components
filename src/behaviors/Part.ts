@@ -26,20 +26,20 @@ class PartEvent<R, T extends object | Array<any>, K extends string = any>
   implements SourceType<R>
 {
   private $base: SourceType<T>;
-  private $key: EventType<K>;
+  private $keyed: EventType<K>;
 
   public constructor($base: SourceType<T>, $key: EventType<K>) {
     this.$base = SharedSource($base);
-    this.$key = Shared($key);
+    this.$keyed = Shared($key);
   }
 
   public event(transport: TransportType<R, null>): this {
-    All(this.$base, this.$key).event(
-      Transport(([base, key]) => {
-        const chunks = key.split(".");
+    All(this.$base, this.$keyed).event(
+      Transport(([base, keyed]) => {
+        const keys = keyed.split(".");
         let value: unknown = base;
-        chunks.forEach((chunk) => {
-          value = (value as Record<string, unknown>)[chunk];
+        keys.forEach((key) => {
+          value = (value as Record<string, unknown>)[key];
         });
         if (value !== undefined && value !== base) {
           transport.use(value as R);
@@ -50,7 +50,7 @@ class PartEvent<R, T extends object | Array<any>, K extends string = any>
   }
 
   public use(value: R): this {
-    const key = Primitive(this.$key);
+    const key = Primitive(this.$keyed);
     if (isFilled(key)) {
       const base = Primitive(this.$base);
       this.$base.use({

@@ -1,11 +1,11 @@
-import { EventType } from "silentium";
+import { Event, EventType, Transport } from "silentium";
 
 /**
  * Accumulates the last value Of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-export function Tick<T>(baseSrc: EventType<T>): EventType<T> {
-  return (user) => {
+export function Tick<T>($base: EventType<T>): EventType<T> {
+  return Event((transport) => {
     let microtaskScheduled = false;
     let lastValue: T | null = null;
 
@@ -14,17 +14,19 @@ export function Tick<T>(baseSrc: EventType<T>): EventType<T> {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          user(lastValue);
+          transport.use(lastValue);
           lastValue = null;
         }
       });
     };
 
-    baseSrc((v) => {
-      lastValue = v;
-      if (!microtaskScheduled) {
-        scheduleMicrotask();
-      }
-    });
-  };
+    $base.event(
+      Transport((v) => {
+        lastValue = v;
+        if (!microtaskScheduled) {
+          scheduleMicrotask();
+        }
+      }),
+    );
+  });
 }

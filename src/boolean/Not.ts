@@ -1,12 +1,14 @@
-import { EventType } from "silentium";
+import { Event, EventType, Transport } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/not
  */
-export function Not(baseSrc: EventType<boolean>): EventType<boolean> {
-  return (user) => {
-    baseSrc((v) => {
-      user(!v);
-    });
-  };
+export function Not($base: EventType<boolean>): EventType<boolean> {
+  return Event((transport) => {
+    $base.event(
+      Transport((v) => {
+        transport.use(!v);
+      }),
+    );
+  });
 }

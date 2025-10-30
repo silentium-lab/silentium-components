@@ -1,34 +1,36 @@
-import { Late, Shared } from "silentium";
+import { Late, Shared, Transport } from "silentium";
 import { OnlyChanged } from "../behaviors/OnlyChanged";
 import { Shot } from "../behaviors/Shot";
 import { expect, test } from "vitest";
 
 test("Shot._onlyChanged.test", () => {
-  const baseSrc = Late<number>(123);
-  const sharedBase = Shared(baseSrc.event, true);
-  const resultSrc = Shot(sharedBase.event, OnlyChanged(sharedBase.event));
+  const $base = Late<number>(123);
+  const $shared = Shared($base, true);
+  const $result = Shot($shared, OnlyChanged($shared));
 
   const vals: number[] = [];
 
-  resultSrc((v) => {
-    vals.push(v);
-  });
+  $result.event(
+    Transport((v) => {
+      vals.push(v);
+    }),
+  );
 
   expect(vals).toStrictEqual([]);
 
-  baseSrc.use(222);
+  $base.use(222);
 
   expect(vals).toStrictEqual([]);
 
-  baseSrc.use(222);
+  $base.use(222);
 
   expect(vals).toStrictEqual([222]);
 
-  baseSrc.use(333);
+  $base.use(333);
 
   expect(vals).toStrictEqual([222, 333]);
 
-  baseSrc.use(123);
+  $base.use(123);
 
   expect(vals).toStrictEqual([222, 333, 123]);
 });

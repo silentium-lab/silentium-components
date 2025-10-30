@@ -1,10 +1,11 @@
 import {
   ConstructorType,
   DestroyableType,
-  Destructor,
+  Event,
   EventType,
   LateShared,
   Of,
+  Transport,
 } from "silentium";
 import { Detached } from "../behaviors/Detached";
 
@@ -20,22 +21,22 @@ export function Transaction<T, R = unknown>(
   >,
   ...args: EventType[]
 ): EventType<R> {
-  return (user) => {
+  return Event((user) => {
     const $res = LateShared<R>();
     const destructors: DestroyableType[] = [];
 
-    $base((v) => {
-      const $event = Destructor(
-        eventBuilder(Of(v), ...args.map((a) => Detached(a))),
-      );
-      destructors.push($event);
-      $event.event($res.use);
-    });
+    $base.event(
+      Transport((v) => {
+        const $event = eventBuilder(Of(v), ...args.map((a) => Detached(a)));
+        destructors.push($event as unknown as DestroyableType);
+        $event.event($res);
+      }),
+    );
     $res.event(user);
 
     return () => {
-      destructors.forEach((d) => d.destroy());
+      destructors.forEach((d) => d?.destroy());
       destructors.length = 0;
     };
-  };
+  });
 }

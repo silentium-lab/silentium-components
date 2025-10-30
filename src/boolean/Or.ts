@@ -1,18 +1,17 @@
-import { All, EventType } from "silentium";
+import { All, Event, EventType, Transport } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/boolean/or
  */
 export function Or(
-  oneSrc: EventType<boolean>,
-  twoSrc: EventType<boolean>,
+  $one: EventType<boolean>,
+  $two: EventType<boolean>,
 ): EventType<boolean> {
-  return (user) => {
-    All(
-      oneSrc,
-      twoSrc,
-    )(([one, two]) => {
-      user(one || two);
-    });
-  };
+  return Event((transport) => {
+    All($one, $two).event(
+      Transport(([one, two]) => {
+        transport.use(one || two);
+      }),
+    );
+  });
 }

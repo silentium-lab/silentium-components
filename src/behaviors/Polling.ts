@@ -1,12 +1,14 @@
-import { EventType } from "silentium";
+import { Event, EventType, Transport } from "silentium";
 
 export function Polling<T>(
-  baseSrc: EventType<T>,
-  triggerSrc: EventType<T>,
+  $base: EventType<T>,
+  $trigger: EventType<T>,
 ): EventType<T> {
-  return (user) => {
-    triggerSrc(() => {
-      baseSrc(user);
-    });
-  };
+  return Event((transport) => {
+    $trigger.event(
+      Transport(() => {
+        $base.event(transport);
+      }),
+    );
+  });
 }

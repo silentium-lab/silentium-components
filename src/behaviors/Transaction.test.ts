@@ -6,7 +6,7 @@ describe("Transaction.test", () => {
   test("value inside transaction", () => {
     const $base = LateShared(1);
 
-    const t = Transaction($base.event, ($b) => {
+    const t = Transaction($base, ($b) => {
       return Applied($b, (x) => x * 2);
     });
 
@@ -18,11 +18,11 @@ describe("Transaction.test", () => {
     const $mult = LateShared(2);
 
     const t = Transaction(
-      $base.event,
+      $base,
       ($b, $m) => {
         return Applied(All($b, $m), ([x, m]) => x * m);
       },
-      $mult.event,
+      $mult,
     );
 
     expect(Primitive(t).primitiveWithException()).toBe(2);

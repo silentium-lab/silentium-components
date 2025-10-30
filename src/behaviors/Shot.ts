@@ -1,21 +1,23 @@
-import { EventType, isFilled, Primitive } from "silentium";
+import { Event, EventType, isFilled, Primitive, Transport } from "silentium";
 
 /**
  * Helps to represent only last fresh value Of some source, refreshing controls by shotSrc
  * https://silentium-lab.github.io/silentium-components/#/behaviors/shot
  */
 export function Shot<T>(
-  targetSrc: EventType<T>,
-  triggerSrc: EventType,
+  $target: EventType<T>,
+  $trigger: EventType,
 ): EventType<T> {
-  return (user) => {
-    const targetSync = Primitive(targetSrc);
+  return Event((transport) => {
+    const targetSync = Primitive($target);
 
-    triggerSrc(() => {
-      const value = targetSync.primitive();
-      if (isFilled(value)) {
-        user(value);
-      }
-    });
-  };
+    $trigger.event(
+      Transport(() => {
+        const value = targetSync.primitive();
+        if (isFilled(value)) {
+          transport.use(value);
+        }
+      }),
+    );
+  });
 }
