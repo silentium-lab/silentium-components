@@ -1,19 +1,21 @@
-import { Late } from "silentium";
+import { Late, Transport } from "silentium";
 import { Constant } from "../behaviors/Const";
 import { expect, test } from "vitest";
 
 test("Const.test", () => {
-  const triggerSrc = Late(1);
-  const src = Constant("val", triggerSrc.event);
+  const $trigger = Late(1);
+  const src = Constant("val", $trigger);
   const data: string[] = [];
-  src((v) => {
-    data.push(v);
-  });
+  src.event(
+    Transport((v) => {
+      data.push(v);
+    }),
+  );
 
   expect(data).toStrictEqual(["val"]);
 
-  triggerSrc.use(1);
-  triggerSrc.use(1);
+  $trigger.use(1);
+  $trigger.use(1);
 
   expect(data).toStrictEqual(["val", "val", "val"]);
 });

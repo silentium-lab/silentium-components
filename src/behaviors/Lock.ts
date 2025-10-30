@@ -1,18 +1,20 @@
-import { EventType, Filtered } from "silentium";
+import { Event, EventType, Filtered, Transport } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
  */
 export function Lock<T>(
-  baseSrc: EventType<T>,
-  lockSrc: EventType<boolean>,
+  $base: EventType<T>,
+  $lock: EventType<boolean>,
 ): EventType<T> {
-  return (user) => {
+  return Event((transport) => {
     let locked = false;
-    lockSrc((newLock) => {
-      locked = newLock;
-    });
-    const i = Filtered(baseSrc, () => !locked);
-    i(user);
-  };
+    $lock.event(
+      Transport((newLock) => {
+        locked = newLock;
+      }),
+    );
+    const i = Filtered($base, () => !locked);
+    i.event(transport);
+  });
 }

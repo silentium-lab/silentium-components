@@ -1,29 +1,29 @@
-import { Late, Primitive, Shared } from "silentium";
+import { Late, Primitive, Shared, Transport } from "silentium";
 import { Deferred } from "../behaviors/Deferred";
 import { expect, test, vi } from "vitest";
 
 test("Deferred.test", () => {
-  const urlSrc = Late<string>("http://hello.com");
-  const layoutSrc = Late<string>();
+  const $url = Late<string>("http://hello.com");
+  const $layout = Late<string>();
 
-  const urlWithLayoutSrc = Shared(Deferred(urlSrc.event, layoutSrc.event));
+  const urlWithLayoutSrc = Shared(Deferred($url, $layout));
 
   const g1 = vi.fn();
-  urlWithLayoutSrc.event(g1);
+  urlWithLayoutSrc.event(Transport(g1));
   expect(g1).not.toHaveBeenCalled();
 
-  layoutSrc.use("layout here");
+  $layout.use("layout here");
 
   const g2 = vi.fn();
-  urlWithLayoutSrc.event(g2);
-  urlSrc.use("http://new.com");
+  urlWithLayoutSrc.event(Transport(g2));
+  $url.use("http://new.com");
   expect(g2).toHaveBeenCalledWith("http://hello.com");
 
-  const urlSync = Primitive(urlWithLayoutSrc.event);
+  const urlSync = Primitive(urlWithLayoutSrc);
 
   expect(urlSync.primitive()).toBe("http://hello.com");
 
-  layoutSrc.use("layout here again");
+  $layout.use("layout here again");
 
   expect(urlSync.primitive()).toBe("http://new.com");
 });

@@ -1,17 +1,17 @@
-import { EventType } from "silentium";
+import { Event, EventType, Transport } from "silentium";
 
 /**
  * Representation Of loading process
- * first informatin source begins loading
- * second information source stops loading
+ * first event begins loading
+ * second event stops loading
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
 export function Loading(
-  loadingStartSrc: EventType<unknown>,
-  loadingFinishSrc: EventType<unknown>,
+  $loadingStart: EventType<unknown>,
+  $loadingFinish: EventType<unknown>,
 ): EventType<boolean> {
-  return (user) => {
-    loadingStartSrc(() => user(true));
-    loadingFinishSrc(() => user(false));
-  };
+  return Event((transport) => {
+    $loadingStart.event(Transport(() => transport.use(true)));
+    $loadingFinish.event(Transport(() => transport.use(false)));
+  });
 }

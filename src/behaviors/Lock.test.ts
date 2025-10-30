@@ -1,4 +1,4 @@
-import { Late, Shared } from "silentium";
+import { Late, Shared, Transport } from "silentium";
 import { Lock } from "../behaviors/Lock";
 import { expect, test, vi } from "vitest";
 
@@ -6,10 +6,10 @@ test("Lock.test", () => {
   const source = Late<number>(1);
   const lockSrc = Late<boolean>(false);
 
-  const ls = Lock(source.event, lockSrc.event);
+  const ls = Lock(source, lockSrc);
   const lockedSrc = Shared(ls);
   const g = vi.fn();
-  lockedSrc.event(g);
+  lockedSrc.event(Transport(g));
 
   expect(g).toHaveBeenLastCalledWith(1);
 

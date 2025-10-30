@@ -1,18 +1,15 @@
-import { Late } from "silentium";
+import { Late, Transport } from "silentium";
 import { Loading } from "../behaviors/Loading";
 import { expect, test, vi } from "vitest";
 
 test("Loading.test", () => {
-  const loadingStartSource = Late();
-  const loadingFinishSource = Late();
-  const loadingSrc = Loading(
-    loadingStartSource.event,
-    loadingFinishSource.event,
-  );
+  const $loadingStart = Late();
+  const $loadingFinish = Late();
+  const $loading = Loading($loadingStart, $loadingFinish);
   const g = vi.fn();
-  loadingSrc(g);
-  loadingStartSource.use({});
+  $loading.event(Transport(g));
+  $loadingStart.use({});
   expect(g).toHaveBeenLastCalledWith(true);
-  loadingFinishSource.use({});
+  $loadingFinish.use({});
   expect(g).toHaveBeenLastCalledWith(false);
 });

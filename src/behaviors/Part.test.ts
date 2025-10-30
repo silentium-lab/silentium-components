@@ -1,19 +1,19 @@
-import { Late, Of, SharedSource } from "silentium";
-import { Part } from "../behaviors/Part";
+import { Late, Of, SharedSource, Transport } from "silentium";
 import { expect, test, vi } from "vitest";
+import { Part } from "../behaviors/Part";
 
 test("Part.test", () => {
-  const recordSrc = SharedSource(
+  const $record = SharedSource(
     Late({
       name: "Peter",
       surname: "Parker",
     }),
   );
-  const nameSrc = Part<string>(recordSrc, Of("name"));
+  const $name = Part<string>($record, Of("name"));
   const g = vi.fn();
-  recordSrc.event(g);
+  $record.event(Transport(g));
   expect(g).toHaveBeenLastCalledWith({ name: "Peter", surname: "Parker" });
 
-  nameSrc.use("Shmiter");
+  $name.use("Shmiter");
   expect(g).toHaveBeenLastCalledWith({ name: "Shmiter", surname: "Parker" });
 });

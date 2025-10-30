@@ -1,10 +1,10 @@
-import { EventType, isFilled, Primitive } from "silentium";
+import { Event, EventType, isFilled, Primitive } from "silentium";
 
-export function Detached<T>(baseSrc: EventType<T>): EventType<T> {
-  return function Detached(user) {
-    const v = Primitive(baseSrc).primitive();
+export function Detached<T>($base: EventType<T>): EventType<T> {
+  return Event((transport) => {
+    const v = Primitive($base).primitive();
     if (isFilled(v)) {
-      user(v);
+      transport.use(v);
     }
-  };
+  });
 }

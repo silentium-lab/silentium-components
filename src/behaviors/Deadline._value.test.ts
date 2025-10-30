@@ -1,4 +1,4 @@
-import { Late, Of } from "silentium";
+import { Late, Of, Transport } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { Deadline } from "../behaviors/Deadline";
 
@@ -12,19 +12,19 @@ afterEach(() => {
 });
 
 test("Deadline._value.test", () => {
-  const errorGuest = vi.fn();
+  const error = vi.fn();
   const l = Late<number>();
 
   setTimeout(() => {
     l.use(11);
   }, 10);
 
-  const dl = Deadline(errorGuest, l.event, Of(200));
+  const dl = Deadline(Transport(error), l, Of(200));
   const g = vi.fn();
-  dl(g);
+  dl.event(Transport(g));
 
   vi.runAllTimers();
 
-  expect(errorGuest).not.toHaveBeenCalled();
+  expect(error).not.toHaveBeenCalled();
   expect(g).toHaveBeenCalledWith(11);
 });

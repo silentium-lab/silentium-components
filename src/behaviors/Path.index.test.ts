@@ -1,4 +1,4 @@
-import { Of } from "silentium";
+import { Of, Transport } from "silentium";
 import { expect, test, vi } from "vitest";
 import { Path } from "./Path";
 
@@ -13,6 +13,6 @@ test("Path.index.test", () => {
   };
   const bestColor = Path(Of(record), Of("colors.0"));
   const g = vi.fn();
-  bestColor(g);
+  bestColor.event(Transport(g));
   expect(g).toHaveBeenLastCalledWith("blue");
 });

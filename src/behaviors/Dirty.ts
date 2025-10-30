@@ -1,4 +1,12 @@
-import { All, Applied, EventType, Late, SourceType } from "silentium";
+import {
+  All,
+  Applied,
+  EventType,
+  Late,
+  SourceType,
+  Transport,
+  TransportType,
+} from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -6,46 +14,58 @@ import { All, Applied, EventType, Late, SourceType } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
 export function Dirty<T>(
-  baseEntitySource: EventType<T>,
-  alwaysKeep: string[] = [],
-  excludeKeys: string[] = [],
-  cloneFn?: (v: T) => T,
+  $base: EventType<T>,
+  keep: string[] = [],
+  exclude: string[] = [],
+  cloner?: (v: T) => T,
 ): SourceType<T> {
-  const comparingSrc = Late<T>();
+  return new DirtySource($base, keep, exclude, cloner);
+}
 
-  if (cloneFn === undefined) {
-    cloneFn = (value) => JSON.parse(JSON.stringify(value));
+class DirtySource<T> implements SourceType<T> {
+  private $comparing = Late<T>();
+  private cloner: (v: T) => T;
+
+  public constructor(
+    private $base: EventType<T>,
+    private keep: string[] = [],
+    private exclude: string[] = [],
+    cloner?: (v: T) => T,
+  ) {
+    if (cloner === undefined) {
+      this.cloner = (value) => JSON.parse(JSON.stringify(value));
+    } else {
+      this.cloner = cloner;
+    }
   }
 
-  return {
-    event: (user) => {
-      const comparingDetached = Applied(comparingSrc.event, cloneFn);
-
-      All(
-        comparingDetached,
-        baseEntitySource,
-      )(([comparing, base]) => {
+  public event(transport: TransportType<T>) {
+    const $comparing = Applied(this.$comparing, this.cloner);
+    All($comparing, this.$base).event(
+      Transport(([comparing, base]) => {
         if (!comparing) {
           return;
         }
-
-        user(
+        transport.use(
           Object.fromEntries(
             Object.entries(comparing).filter(([key, value]) => {
-              if (alwaysKeep.includes(key)) {
+              if (this.keep.includes(key)) {
                 return true;
               }
-              if (excludeKeys.includes(key)) {
+              if (this.exclude.includes(key)) {
                 return false;
               }
               return value !== (base as any)[key];
             }),
           ) as T,
         );
-      });
-    },
-    use: (v) => {
-      comparingSrc.use(v);
-    },
-  };
+      }),
+    );
+    return this;
+  }
+
+  public use(v: T) {
+    this.$comparing.use(v);
+    return this;
+  }
 }

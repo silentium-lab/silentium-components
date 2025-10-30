@@ -1,12 +1,11 @@
-import { EventType } from "silentium";
+import { Event, EventType, Transport } from "silentium";
 
-export function Constant<T>(
-  permanentValue: T,
-  triggerSrc: EventType,
-): EventType<T> {
-  return (user) => {
-    triggerSrc(() => {
-      user(permanentValue);
-    });
-  };
+export function Constant<T>(permanent: T, $trigger: EventType): EventType<T> {
+  return Event((transport) => {
+    $trigger.event(
+      Transport(() => {
+        transport.use(permanent);
+      }),
+    );
+  });
 }
