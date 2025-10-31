@@ -1,88 +1,96 @@
-import { LateShared, Of } from "silentium";
+import { Event, LateShared, Of, Transport, TransportEvent } from "silentium";
 import { describe, expect, test } from "vitest";
 import { Detached } from "../behaviors/Detached";
 import { Router } from "../navigation/Router";
 
 describe("Router._nested.test", () => {
   test("Вложенные роуты", () => {
-    const urlSrc = LateShared("/");
-    const routerSrc = Router(
-      urlSrc.event,
+    const $url = LateShared("/");
+    const $router = Router(
+      $url,
       Of([
         {
           pattern: "^/$",
-          template: () => Of<string>("home"),
+          event: TransportEvent(() => Of<string>("home")),
         },
         {
           pattern: "/admin.*",
-          template: () => {
-            return (user) => {
+          event: TransportEvent(() => {
+            return Event((transport) => {
               // need to replace with detached component
-              const localUrlSrc = Detached(urlSrc.event);
+              const localUrlSrc = Detached($url);
 
               const r = Router(
                 localUrlSrc,
                 Of([
                   {
                     pattern: "^/admin/articles$",
-                    template: () => Of("articles list"),
+                    event: TransportEvent(() => Of("articles list")),
                   },
                   {
                     pattern: "^/admin/articles/create$",
-                    template: () => Of("articles create"),
+                    event: TransportEvent(() => Of("articles create")),
                   },
                   {
                     pattern: "^/admin/articles/update$",
-                    template: () => Of("articles update"),
+                    event: TransportEvent(() => Of("articles update")),
                   },
                   {
                     pattern: "^/admin/nested/.*$",
-                    template: () => {
-                      return (user) => {
-                        const localUrlSrc = Detached(urlSrc.event);
+                    event: TransportEvent(() => {
+                      return Event((transport) => {
+                        const localUrlSrc = Detached($url);
 
                         const r = Router(
                           localUrlSrc,
                           Of([
                             {
                               pattern: "^/admin/nested/list$",
-                              template: () => Of("admin nested list"),
+                              event: TransportEvent(() =>
+                                Of("admin nested list"),
+                              ),
                             },
                           ]),
-                          () => Of<string>("admin nested not found"),
+                          TransportEvent(() =>
+                            Of<string>("admin nested not found"),
+                          ),
                         );
-                        const rDestructor = r(user);
+
+                        r.event(transport);
 
                         return function AdminDestroy() {
-                          rDestructor?.();
+                          r.destroy();
                         };
-                      };
-                    },
+                      });
+                    }),
                   },
                 ]),
-                () => Of<string>("admin not found"),
+                TransportEvent(() => Of<string>("admin not found")),
               );
-              const rDestructor = r(user);
+
+              r.event(transport);
 
               return function AdminDestroy() {
-                rDestructor?.();
+                r.destroy();
               };
-            };
-          },
+            });
+          }),
         },
       ]),
-      () => Of("not found"),
+      TransportEvent(() => Of("not found")),
     );
     const d: string[] = [];
-    routerSrc((v) => {
-      d.push(v);
-    });
+    $router.event(
+      Transport((v) => {
+        d.push(v);
+      }),
+    );
     const pd = () => d.join("\n");
 
-    urlSrc.use("/admin/articles");
-    urlSrc.use("/admin/nested/list");
-    urlSrc.use("/admin/articles/create");
-    urlSrc.use("/admin/articles/update");
+    $url.use("/admin/articles");
+    $url.use("/admin/nested/list");
+    $url.use("/admin/articles/create");
+    $url.use("/admin/articles/update");
 
     expect(pd()).toBe(`home
 articles list

@@ -4,7 +4,7 @@ export function Task<T>(
   baseSrc: EventType<T>,
   delay: number = 0,
 ): EventType<T> {
-  return Event((user) => {
+  return Event((transport) => {
     let prevTimer: unknown | null = null;
     ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
@@ -15,6 +15,6 @@ export function Task<T>(
           fn(v);
         }, delay);
       };
-    }).event(user);
+    }).event(transport);
   });
 }

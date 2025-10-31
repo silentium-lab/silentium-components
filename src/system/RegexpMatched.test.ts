@@ -1,16 +1,16 @@
-import { Late, Of } from "silentium";
+import { Late, Of, Transport } from "silentium";
 import { RegexpMatched } from "../system/RegexpMatched";
 import { expect, test, vi } from "vitest";
 
 test("RegexpMatched.test", () => {
-  const urlI = Late<string>("http://domain.com/some/url/");
-  const matchedSrc = RegexpMatched(Of("/some/url"), urlI.event);
+  const $url = Late<string>("http://domain.com/some/url/");
+  const $matched = RegexpMatched(Of("/some/url"), $url);
   const g = vi.fn();
-  matchedSrc(g);
+  $matched.event(Transport(g));
 
   expect(g).toHaveBeenLastCalledWith(true);
 
-  urlI.use("http://domain.com/changed");
+  $url.use("http://domain.com/changed");
 
   expect(g).toHaveBeenLastCalledWith(false);
 });

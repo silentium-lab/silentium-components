@@ -1,9 +1,9 @@
 import {
-  ConstructorType,
   DestroyableType,
   Event,
   EventType,
   Transport,
+  TransportType,
 } from "silentium";
 
 /**
@@ -11,8 +11,8 @@ import {
  */
 export function BranchLazy<Then, Else>(
   $condition: EventType<boolean>,
-  $left: ConstructorType<[], EventType<Then>>,
-  $right?: ConstructorType<[], EventType<Else>>,
+  $left: TransportType<void, EventType<Then>>,
+  $right?: TransportType<void, EventType<Else>>,
 ): EventType<Then | Else> {
   return Event((transport) => {
     let destructor: () => void | void;
@@ -23,9 +23,9 @@ export function BranchLazy<Then, Else>(
         }
         let instance: EventType<Then | Else> | null = null;
         if (v) {
-          instance = $left();
+          instance = $left.use();
         } else if ($right) {
-          instance = $right();
+          instance = $right.use();
         }
         if (instance) {
           instance.event(transport);

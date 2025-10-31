@@ -21,7 +21,7 @@ export function Transaction<T, R = unknown>(
   >,
   ...args: EventType[]
 ): EventType<R> {
-  return Event((user) => {
+  return Event((transport) => {
     const $res = LateShared<R>();
     const destructors: DestroyableType[] = [];
 
@@ -32,7 +32,7 @@ export function Transaction<T, R = unknown>(
         $event.event($res);
       }),
     );
-    $res.event(user);
+    $res.event(transport);
 
     return () => {
       destructors.forEach((d) => d?.destroy());

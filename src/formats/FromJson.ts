@@ -7,11 +7,11 @@ export function FromJson<T = Record<string, unknown>>(
   $json: EventType<string>,
   error?: TransportType,
 ): EventType<T> {
-  return Event((user) => {
+  return Event((transport) => {
     $json.event(
       Transport((json) => {
         try {
-          user.use(JSON.parse(json));
+          transport.use(JSON.parse(json));
         } catch (e) {
           error?.use(new Error(`Failed to parse JSON: ${e}`));
         }

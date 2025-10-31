@@ -1,77 +1,73 @@
 import {
   All,
   Applied,
-  EventType,
-  Destructor,
-  DestructorType,
-  Of,
-  ConstructorType,
   Event,
+  EventType,
+  Of,
   Transport,
+  TransportDestroyable,
+  TransportEvent,
+  TransportType,
 } from "silentium";
-import { RegexpMatched } from "../system";
 import { BranchLazy } from "../behaviors";
+import { RegexpMatched } from "../system";
 
 export interface Route<T> {
   pattern: string;
   patternFlags?: string;
-  template: ConstructorType<[], EventType<T>>;
+  event: TransportType<[], EventType<T>>;
 }
 
-const emptySrc = () => Of(false);
+const $empty = TransportEvent(() => Of(false));
 
 /**
  * Router component what will return template if url matches pattern
  * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
 export function Router<T = "string">(
-  urlSrc: EventType<string>,
-  routesSrc: EventType<Route<T>[]>,
-  defaultSrc: ConstructorType<[], EventType<T>>,
-): EventType<T> {
-  return Event((user) => {
-    const destructors: DestructorType[] = [];
-    const destroyAllData = () => {
+  $url: EventType<string>,
+  $routes: EventType<Route<T>[]>,
+  $default: TransportType<void, EventType<T>>,
+) {
+  return Event<T>((transport) => {
+    const destructors: (() => void)[] = [];
+    const destructor = () => {
       destructors.forEach((d) => d());
       destructors.length = 0;
     };
-    All(routesSrc, urlSrc).event(
+    All($routes, $url).event(
       Transport(([routes, url]) => {
-        destroyAllData();
+        destructor();
         const instance = All(
-          defaultSrc(),
+          $default.use(),
           All(
-            ...routes.map(
-              (r) =>
-                Destructor(
-                  BranchLazy(
-                    RegexpMatched(
-                      Of(r.pattern),
-                      Of(url),
-                      r.patternFlags ? Of(r.patternFlags) : undefined,
-                    ),
-                    r.template,
-                    emptySrc,
-                  ),
-                  (d: DestructorType) => destructors.push(d),
-                ).event,
-            ),
+            ...routes.map((r) => {
+              const $template = TransportDestroyable(r.event);
+              destructors.push($template.destroy);
+              return BranchLazy(
+                RegexpMatched(
+                  Of(r.pattern),
+                  Of(url),
+                  r.patternFlags ? Of(r.patternFlags) : undefined,
+                ),
+                $template,
+                $empty,
+              );
+            }),
           ),
         );
 
         // Return first not false or default
         Applied(instance, (r) => {
-          const firstReal = r[1].find((r: unknown) => r !== false);
-
-          if (firstReal) {
-            return firstReal as T;
+          const first = r[1].find((r: unknown) => r !== false);
+          if (first) {
+            return first as T;
           }
-
           return r[0];
-        }).event(user);
+        }).event(transport);
       }),
     );
 
-    return destroyAllData;
+    return destructor;
   });
 }

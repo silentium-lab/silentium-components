@@ -1,4 +1,4 @@
-import { All, EventType, Of } from "silentium";
+import { All, Event, EventType, Of, Transport } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
@@ -9,13 +9,11 @@ export function RegexpMatched(
   valueSrc: EventType<string>,
   flagsSrc: EventType<string> = Of(""),
 ): EventType<boolean> {
-  return (user) => {
-    All(
-      patternSrc,
-      valueSrc,
-      flagsSrc,
-    )(([pattern, value, flags]) => {
-      user(new RegExp(pattern, flags).test(value));
-    });
-  };
+  return Event((transport) => {
+    All(patternSrc, valueSrc, flagsSrc).event(
+      Transport(([pattern, value, flags]) => {
+        transport.use(new RegExp(pattern, flags).test(value));
+      }),
+    );
+  });
 }

@@ -6,7 +6,7 @@ import { Applied, Event, EventType } from "silentium";
 export function First<T extends Array<unknown>>(
   $base: EventType<T>,
 ): EventType<T[0]> {
-  return Event((user) => {
-    Applied($base, (a) => a[0]).event(user);
+  return Event((transport) => {
+    Applied($base, (a) => a[0]).event(transport);
   });
 }

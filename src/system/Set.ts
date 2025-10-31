@@ -1,4 +1,4 @@
-import { All, EventType } from "silentium";
+import { All, Event, EventType, Transport } from "silentium";
 
 /**
  * Ability to mutate some object, helpful when integrate to procedure systems
@@ -9,14 +9,12 @@ export function Set<T extends Record<string, unknown>>(
   keySrc: EventType<string>,
   valueSrc: EventType<unknown>,
 ): EventType<T> {
-  return (user) => {
-    All(
-      baseSrc,
-      keySrc,
-      valueSrc,
-    )(([base, key, value]) => {
-      (base as Record<string, unknown>)[key] = value;
-      user(base);
-    });
-  };
+  return Event((transport) => {
+    All(baseSrc, keySrc, valueSrc).event(
+      Transport(([base, key, value]) => {
+        (base as Record<string, unknown>)[key] = value;
+        transport.use(base);
+      }),
+    );
+  });
 }

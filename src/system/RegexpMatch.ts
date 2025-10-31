@@ -1,4 +1,4 @@
-import { All, EventType, Of } from "silentium";
+import { All, Event, EventType, Of, Transport } from "silentium";
 
 /**
  * First match Of regexp
@@ -9,14 +9,12 @@ export function RegexpMatch(
   valueSrc: EventType<string>,
   flagsSrc: EventType<string> = Of(""),
 ): EventType<string[]> {
-  return (user) => {
-    All(
-      patternSrc,
-      valueSrc,
-      flagsSrc,
-    )(([pattern, value, flags]) => {
-      const result = new RegExp(pattern, flags).exec(value);
-      user(result ?? []);
-    });
-  };
+  return Event((transport) => {
+    All(patternSrc, valueSrc, flagsSrc).event(
+      Transport(([pattern, value, flags]) => {
+        const result = new RegExp(pattern, flags).exec(value);
+        transport.use(result ?? []);
+      }),
+    );
+  });
 }

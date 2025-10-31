@@ -1,4 +1,11 @@
-import { Applied, Late, Of, Shared } from "silentium";
+import {
+  Applied,
+  Late,
+  Of,
+  Shared,
+  Transport,
+  TransportEvent,
+} from "silentium";
 import { Router } from "../navigation/Router";
 import { expect, test, vi } from "vitest";
 
@@ -7,40 +14,40 @@ const drop = (dropPart: string) => (value: string) => {
 };
 
 test("Router._main.test", () => {
-  const urlSrc = Late<string>("http://domain.com/");
-  const urlPathSrc = Shared(Applied(urlSrc.event, drop("http://domain.com")));
+  const $url = Late<string>("http://domain.com/");
+  const $urlPath = Shared(Applied($url, drop("http://domain.com")));
   const g = vi.fn();
-  urlPathSrc.event(g);
+  $urlPath.event(Transport(g));
 
-  const routerSrc = Router(
-    urlPathSrc.event,
+  const $router = Router(
+    $urlPath,
     Of([
       {
         pattern: "^/$",
-        template: () => Of("page/home.html"),
+        event: TransportEvent(() => Of("page/home.html")),
       },
       {
         pattern: "/some/contacts",
-        template: () => Of("page/contacts.html"),
+        event: TransportEvent(() => Of("page/contacts.html")),
       },
     ]),
-    () => Of<string>("page/404.html"),
+    TransportEvent(() => Of<string>("page/404.html")),
   );
   const g2 = vi.fn();
-  routerSrc(g2);
+  $router.event(Transport(g2));
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 
-  urlSrc.use("http://domain.com/some/contacts");
+  $url.use("http://domain.com/some/contacts");
 
   expect(g).toHaveBeenLastCalledWith("/some/contacts");
   expect(g2).toHaveBeenLastCalledWith("page/contacts.html");
 
-  urlSrc.use("http://domain.com/some/unknown/");
+  $url.use("http://domain.com/some/unknown/");
 
   expect(g2).toHaveBeenLastCalledWith("page/404.html");
 
-  urlSrc.use("http://domain.com/");
+  $url.use("http://domain.com/");
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 });

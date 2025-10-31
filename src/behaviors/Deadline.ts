@@ -15,7 +15,7 @@ export function Deadline<T>(
   $base: EventType<T>,
   $timeout: EventType<number>,
 ): EventType<T> {
-  return Event((user) => {
+  return Event((transport) => {
     let timer: unknown = null;
     const base = Shared($base, true);
     $timeout.event(
@@ -34,7 +34,7 @@ export function Deadline<T>(
         }, timeout);
 
         const f = Filtered(base, () => !timeoutReached);
-        f.event(user);
+        f.event(transport);
 
         base.event(
           Transport(() => {
