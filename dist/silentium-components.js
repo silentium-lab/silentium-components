@@ -1,253 +1,299 @@
-import { Primitive, Shared, Filtered, isFilled, Late, Applied, All, ExecutorApplied, LateShared, Destructor, Of } from 'silentium';
+import { Event, Primitive, Transport, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, DestroyContainer, isDestroyable, TransportEvent, TransportDestroyable } from 'silentium';
 
-function Branch(conditionSrc, leftSrc, rightSrc) {
-  return (user) => {
-    const leftSync = Primitive(leftSrc);
-    let rightSync;
-    if (rightSrc !== void 0) {
-      rightSync = Primitive(rightSrc);
+function Branch($condition, $left, $right) {
+  return Event((transport) => {
+    const left = Primitive($left);
+    let right;
+    if ($right !== void 0) {
+      right = Primitive($right);
     }
-    conditionSrc((v) => {
-      let result = null;
-      if (v) {
-        result = leftSync.primitive();
-      } else if (rightSync) {
-        result = rightSync.primitive();
-      }
-      if (result !== null) {
-        user(result);
-      }
-    });
-  };
-}
-
-function BranchLazy(conditionSrc, leftSrc, rightSrc) {
-  return (user) => {
-    let Destructor;
-    conditionSrc((v) => {
-      if (Destructor !== void 0 && typeof Destructor === "function") {
-        Destructor();
-      }
-      let instance = null;
-      if (v) {
-        instance = leftSrc();
-      } else if (rightSrc) {
-        instance = rightSrc();
-      }
-      if (instance) {
-        Destructor = instance(user);
-      }
-    });
-    return () => {
-      Destructor?.();
-    };
-  };
-}
-
-function Constant(permanentValue, triggerSrc) {
-  return (user) => {
-    triggerSrc(() => {
-      user(permanentValue);
-    });
-  };
-}
-
-function Deadline(error, baseSrc, timeoutSrc) {
-  return (user) => {
-    let timerHead = null;
-    const s = Shared(baseSrc, true);
-    timeoutSrc((timeout) => {
-      if (timerHead) {
-        clearTimeout(timerHead);
-      }
-      let timeoutReached = false;
-      timerHead = setTimeout(() => {
-        if (timeoutReached) {
-          return;
+    $condition.event(
+      Transport((v) => {
+        let result = null;
+        if (v) {
+          result = left.primitive();
+        } else if (right) {
+          result = right.primitive();
         }
-        timeoutReached = true;
-        error(new Error("Timeout reached in Deadline class"));
-      }, timeout);
-      const f = Filtered(s.event, () => !timeoutReached);
-      f(user);
-      s.event(() => {
-        timeoutReached = true;
-      });
-    });
-  };
+        if (result !== null) {
+          transport.use(result);
+        }
+      })
+    );
+  });
 }
 
-function Deferred(baseSrc, triggerSrc) {
-  return (user) => {
-    const baseSync = Primitive(baseSrc);
-    triggerSrc(() => {
-      const value = baseSync.primitive();
-      if (isFilled(value)) {
-        user(value);
-      }
-    });
-  };
+function BranchLazy($condition, $left, $right) {
+  return Event((transport) => {
+    let destructor;
+    $condition.event(
+      Transport((v) => {
+        if (destructor !== void 0 && typeof destructor === "function") {
+          destructor();
+        }
+        let instance = null;
+        if (v) {
+          instance = $left.use();
+        } else if ($right) {
+          instance = $right.use();
+        }
+        if (instance) {
+          instance.event(transport);
+          destructor = instance.destroy;
+        }
+      })
+    );
+    return () => {
+      destructor?.();
+    };
+  });
 }
 
-function Detached(baseSrc) {
-  return function Detached2(user) {
-    const v = Primitive(baseSrc).primitive();
+function Constant(permanent, $trigger) {
+  return Event((transport) => {
+    $trigger.event(
+      Transport(() => {
+        transport.use(permanent);
+      })
+    );
+  });
+}
+
+function Deadline(error, $base, $timeout) {
+  return Event((transport) => {
+    let timer = null;
+    const base = Shared($base, true);
+    $timeout.event(
+      Transport((timeout) => {
+        if (timer) {
+          clearTimeout(timer);
+        }
+        let timeoutReached = false;
+        timer = setTimeout(() => {
+          if (timeoutReached) {
+            return;
+          }
+          timeoutReached = true;
+          error.use(new Error("Timeout reached in Deadline class"));
+        }, timeout);
+        const f = Filtered(base, () => !timeoutReached);
+        f.event(transport);
+        base.event(
+          Transport(() => {
+            timeoutReached = true;
+          })
+        );
+      })
+    );
+  });
+}
+
+function Deferred($base, $trigger) {
+  return Event((transport) => {
+    const base = Primitive($base);
+    $trigger.event(
+      Transport(() => {
+        const value = base.primitive();
+        if (isFilled(value)) {
+          transport.use(value);
+        }
+      })
+    );
+  });
+}
+
+function Detached($base) {
+  return Event((transport) => {
+    const v = Primitive($base).primitive();
     if (isFilled(v)) {
-      user(v);
+      transport.use(v);
     }
-  };
+  });
 }
 
-function Dirty(baseEntitySource, alwaysKeep = [], excludeKeys = [], cloneFn) {
-  const comparingSrc = Late();
-  if (cloneFn === void 0) {
-    cloneFn = (value) => JSON.parse(JSON.stringify(value));
+var __defProp$2 = Object.defineProperty;
+var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$2 = (obj, key, value) => __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
+function Dirty($base, keep = [], exclude = [], cloner) {
+  return new DirtySource($base, keep, exclude, cloner);
+}
+class DirtySource {
+  constructor($base, keep = [], exclude = [], cloner) {
+    this.$base = $base;
+    this.keep = keep;
+    this.exclude = exclude;
+    __publicField$2(this, "$comparing", Late());
+    __publicField$2(this, "cloner");
+    if (cloner === void 0) {
+      this.cloner = (value) => JSON.parse(JSON.stringify(value));
+    } else {
+      this.cloner = cloner;
+    }
   }
-  return {
-    event: (user) => {
-      const comparingDetached = Applied(comparingSrc.event, cloneFn);
-      All(
-        comparingDetached,
-        baseEntitySource
-      )(([comparing, base]) => {
+  event(transport) {
+    const $comparing = Applied(this.$comparing, this.cloner);
+    All($comparing, this.$base).event(
+      Transport(([comparing, base]) => {
         if (!comparing) {
           return;
         }
-        user(
+        transport.use(
           Object.fromEntries(
             Object.entries(comparing).filter(([key, value]) => {
-              if (alwaysKeep.includes(key)) {
+              if (this.keep.includes(key)) {
                 return true;
               }
-              if (excludeKeys.includes(key)) {
+              if (this.exclude.includes(key)) {
                 return false;
               }
               return value !== base[key];
             })
           )
         );
-      });
-    },
-    use: (v) => {
-      comparingSrc.use(v);
-    }
-  };
+      })
+    );
+    return this;
+  }
+  use(v) {
+    this.$comparing.use(v);
+    return this;
+  }
 }
 
-function Loading(loadingStartSrc, loadingFinishSrc) {
-  return (user) => {
-    loadingStartSrc(() => user(true));
-    loadingFinishSrc(() => user(false));
-  };
+function Loading($loadingStart, $loadingFinish) {
+  return Event((transport) => {
+    $loadingStart.event(Transport(() => transport.use(true)));
+    $loadingFinish.event(Transport(() => transport.use(false)));
+  });
 }
 
-function Lock(baseSrc, lockSrc) {
-  return (user) => {
+function Lock($base, $lock) {
+  return Event((transport) => {
     let locked = false;
-    lockSrc((newLock) => {
-      locked = newLock;
-    });
-    const i = Filtered(baseSrc, () => !locked);
-    i(user);
-  };
+    $lock.event(
+      Transport((newLock) => {
+        locked = newLock;
+      })
+    );
+    const i = Filtered($base, () => !locked);
+    i.event(transport);
+  });
 }
 
-function Memo(baseSrc) {
-  return (user) => {
-    let lastValue = null;
-    baseSrc((v) => {
-      if (v !== lastValue) {
-        user(v);
-        lastValue = v;
-      }
-    });
-  };
+function Memo($base) {
+  return Event((transport) => {
+    let last = null;
+    $base.event(
+      Transport((v) => {
+        if (v !== last) {
+          transport.use(v);
+          last = v;
+        }
+      })
+    );
+  });
 }
 
-function OnlyChanged(baseSrc) {
-  return (user) => {
-    let firstValue = false;
-    baseSrc((v) => {
-      if (firstValue === false) {
-        firstValue = true;
-      } else {
-        user(v);
-      }
-    });
-  };
+function OnlyChanged($base) {
+  return Event((transport) => {
+    let first = false;
+    $base.event(
+      Transport((v) => {
+        if (first === false) {
+          first = true;
+        } else {
+          transport.use(v);
+        }
+      })
+    );
+  });
 }
 
-function Part(baseSrc, keySrc) {
-  const baseSync = Primitive(baseSrc.event);
-  const keySync = Primitive(keySrc);
-  return {
-    event: (user) => {
-      All(
-        baseSrc.event,
-        keySrc
-      )(([base, key]) => {
-        const keyChunks = key.split(".");
+var __defProp$1 = Object.defineProperty;
+var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
+function Part($base, $key) {
+  return new PartEvent($base, $key);
+}
+class PartEvent {
+  constructor($base, $key) {
+    __publicField$1(this, "$base");
+    __publicField$1(this, "$keyed");
+    this.$base = SharedSource($base);
+    this.$keyed = Shared($key);
+  }
+  event(transport) {
+    All(this.$base, this.$keyed).event(
+      Transport(([base, keyed]) => {
+        const keys = keyed.split(".");
         let value = base;
-        keyChunks.forEach((keyChunk) => {
-          value = value[keyChunk];
+        keys.forEach((key) => {
+          value = value[key];
         });
         if (value !== void 0 && value !== base) {
-          user(value);
+          transport.use(value);
         }
+      })
+    );
+    return this;
+  }
+  use(value) {
+    const key = Primitive(this.$keyed);
+    if (isFilled(key)) {
+      const base = Primitive(this.$base);
+      this.$base.use({
+        ...base.primitiveWithException(),
+        [key.primitiveWithException()]: value
       });
-    },
-    use: (value) => {
-      const key = keySync.primitive();
-      if (isFilled(key)) {
-        baseSrc.use({
-          ...baseSync.primitive(),
-          [key]: value
-        });
-      }
     }
-  };
+    return this;
+  }
 }
 
-function Path(baseSrc, keySrc) {
-  return (user) => {
-    All(
-      baseSrc,
-      keySrc
-    )(([base, key]) => {
-      const keyChunks = key.split(".");
-      let value = base;
-      keyChunks.forEach((keyChunk) => {
-        value = value[keyChunk];
-      });
-      if (value !== void 0 && value !== base) {
-        user(value);
-      }
-    });
-  };
+function Path($base, $keyed) {
+  return Event((transport) => {
+    All($base, $keyed).event(
+      Transport(([base, keyed]) => {
+        const keys = keyed.split(".");
+        let value = base;
+        keys.forEach((key) => {
+          value = value[key];
+        });
+        if (value !== void 0 && value !== base) {
+          transport.use(value);
+        }
+      })
+    );
+  });
 }
 
-function Polling(baseSrc, triggerSrc) {
-  return (user) => {
-    triggerSrc(() => {
-      baseSrc(user);
-    });
-  };
+function Polling($base, $trigger) {
+  return Event((transport) => {
+    $trigger.event(
+      Transport(() => {
+        $base.event(transport);
+      })
+    );
+  });
 }
 
-function Shot(targetSrc, triggerSrc) {
-  return (user) => {
-    const targetSync = Primitive(targetSrc);
-    triggerSrc(() => {
-      const value = targetSync.primitive();
-      if (isFilled(value)) {
-        user(value);
-      }
-    });
-  };
+function Shot($target, $trigger) {
+  return Event((transport) => {
+    const targetSync = Primitive($target);
+    targetSync.primitive();
+    $trigger.event(
+      Transport(() => {
+        const value = targetSync.primitive();
+        if (isFilled(value)) {
+          transport.use(value);
+        }
+      })
+    );
+  });
 }
 
 function Task(baseSrc, delay = 0) {
-  return (user) => {
+  return Event((transport) => {
     let prevTimer = null;
     ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
@@ -258,12 +304,12 @@ function Task(baseSrc, delay = 0) {
           fn(v);
         }, delay);
       };
-    })(user);
-  };
+    }).event(transport);
+  });
 }
 
-function Tick(baseSrc) {
-  return (user) => {
+function Tick($base) {
+  return Event((transport) => {
     let microtaskScheduled = false;
     let lastValue = null;
     const scheduleMicrotask = () => {
@@ -271,272 +317,281 @@ function Tick(baseSrc) {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          user(lastValue);
+          transport.use(lastValue);
           lastValue = null;
         }
       });
     };
-    baseSrc((v) => {
-      lastValue = v;
-      if (!microtaskScheduled) {
-        scheduleMicrotask();
-      }
-    });
-  };
+    $base.event(
+      Transport((v) => {
+        lastValue = v;
+        if (!microtaskScheduled) {
+          scheduleMicrotask();
+        }
+      })
+    );
+  });
 }
 
 function Transaction($base, eventBuilder, ...args) {
-  return (user) => {
+  return Event((transport) => {
     const $res = LateShared();
     const destructors = [];
-    $base((v) => {
-      const $event = Destructor(
-        eventBuilder(Of(v), ...args.map((a) => Detached(a)))
-      );
-      destructors.push($event);
-      $event.event($res.use);
-    });
-    $res.event(user);
+    $base.event(
+      Transport((v) => {
+        const $event = eventBuilder(Of(v), ...args.map((a) => Detached(a)));
+        destructors.push($event);
+        $event.event($res);
+      })
+    );
+    $res.event(transport);
     return () => {
-      destructors.forEach((d) => d.destroy());
+      destructors.forEach((d) => d?.destroy());
       destructors.length = 0;
     };
-  };
+  });
 }
 
-function HashTable(baseSrc) {
-  return (user) => {
+function HashTable($base) {
+  return Event((transport) => {
     const record = {};
-    baseSrc(([key, value]) => {
-      record[key] = value;
-      user(record);
-    });
-  };
+    $base.event(
+      Transport(([key, value]) => {
+        record[key] = value;
+        transport.use(record);
+      })
+    );
+  });
 }
 
-function RecordOf(recordSrc) {
-  return (user) => {
-    const keys = Object.keys(recordSrc);
-    All(...Object.values(recordSrc))((entries) => {
-      const record = {};
-      entries.forEach((entry, index) => {
-        record[keys[index]] = entry;
-      });
-      user(record);
-    });
-  };
+function RecordOf(record) {
+  return Event((transport) => {
+    const keys = Object.keys(record);
+    All(...Object.values(record)).event(
+      Transport((entries) => {
+        const record2 = {};
+        entries.forEach((entry, index) => {
+          record2[keys[index]] = entry;
+        });
+        transport.use(record2);
+      })
+    );
+  });
 }
 
 function Concatenated(sources, joinPartSrc = Of("")) {
-  return (user) => {
-    All(
-      joinPartSrc,
-      ...sources
-    )(([joinPart, ...strings]) => {
-      user(strings.join(joinPart));
-    });
-  };
+  return Event((transport) => {
+    All(joinPartSrc, ...sources).event(
+      Transport(([joinPart, ...strings]) => {
+        transport.use(strings.join(joinPart));
+      })
+    );
+  });
 }
 
-function Template(theSrc = Of(""), placesSrc = Of({})) {
-  let placesCounter = 0;
-  const vars = {
-    $TPL: Of("$TPL")
-  };
-  const destructors = [];
-  return {
-    value: (user) => {
-      const varsSrc = RecordOf(vars);
-      Applied(All(theSrc, placesSrc, varsSrc), ([base, rules, vars2]) => {
-        Object.entries(rules).forEach(([ph, val]) => {
-          base = base.replaceAll(ph, String(val));
-        });
-        Object.entries(vars2).forEach(([ph, val]) => {
-          base = base.replaceAll(ph, String(val));
-        });
-        return base;
-      })(user);
-    },
-    template: (value) => {
-      theSrc = Of(value);
-    },
-    /**
-     * Ability to register variable
-     * in concrete place Of template
-     */
-    var: (src) => {
-      const varName = `$var${placesCounter}`;
-      placesCounter += 1;
-      vars[varName] = Destructor(src, (d) => {
-        destructors.push(d);
-      }).event;
-      return varName;
-    },
-    destroy() {
-      destructors.forEach((d) => d());
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+function Template($src = Of(""), $places = Of({})) {
+  return new TemplateEvent($src, $places);
+}
+class TemplateEvent {
+  constructor($src = Of(""), $places = Of({})) {
+    this.$src = $src;
+    this.$places = $places;
+    __publicField(this, "dc", DestroyContainer());
+    __publicField(this, "vars", {
+      $TPL: Of("$TPL")
+    });
+  }
+  event(transport) {
+    const $vars = RecordOf(this.vars);
+    Applied(All(this.$src, this.$places, $vars), ([base, rules, vars]) => {
+      Object.entries(rules).forEach(([ph, val]) => {
+        base = base.replaceAll(ph, String(val));
+      });
+      Object.entries(vars).forEach(([ph, val]) => {
+        base = base.replaceAll(ph, String(val));
+      });
+      return base;
+    }).event(transport);
+    return this;
+  }
+  template(value) {
+    this.$src = Of(value);
+  }
+  /**
+   * Ability to register variable
+   * in concrete place Of template
+   */
+  var(src) {
+    const places = Object.keys(this.vars).length;
+    const varName = `$var${places}`;
+    if (isDestroyable(src)) {
+      this.dc.add(src);
     }
-  };
+    this.vars[varName] = src;
+    return varName;
+  }
+  destroy() {
+    return this;
+  }
 }
 
 function RegexpMatched(patternSrc, valueSrc, flagsSrc = Of("")) {
-  return (user) => {
-    All(
-      patternSrc,
-      valueSrc,
-      flagsSrc
-    )(([pattern, value, flags]) => {
-      user(new RegExp(pattern, flags).test(value));
-    });
-  };
+  return Event((transport) => {
+    All(patternSrc, valueSrc, flagsSrc).event(
+      Transport(([pattern, value, flags]) => {
+        transport.use(new RegExp(pattern, flags).test(value));
+      })
+    );
+  });
 }
 
 function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = Of("")) {
-  return (user) => {
-    All(
-      patternSrc,
-      valueSrc,
-      replaceValueSrc,
-      flagsSrc
-    )(([pattern, value, replaceValue, flags]) => {
-      user(String(value).replace(new RegExp(pattern, flags), replaceValue));
-    });
-  };
+  return Event((transport) => {
+    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).event(
+      Transport(([pattern, value, replaceValue, flags]) => {
+        transport.use(
+          String(value).replace(new RegExp(pattern, flags), replaceValue)
+        );
+      })
+    );
+  });
 }
 
 function RegexpMatch(patternSrc, valueSrc, flagsSrc = Of("")) {
-  return (user) => {
-    All(
-      patternSrc,
-      valueSrc,
-      flagsSrc
-    )(([pattern, value, flags]) => {
-      const result = new RegExp(pattern, flags).exec(value);
-      user(result ?? []);
-    });
-  };
+  return Event((transport) => {
+    All(patternSrc, valueSrc, flagsSrc).event(
+      Transport(([pattern, value, flags]) => {
+        const result = new RegExp(pattern, flags).exec(value);
+        transport.use(result ?? []);
+      })
+    );
+  });
 }
 
 function Set(baseSrc, keySrc, valueSrc) {
-  return (user) => {
-    All(
-      baseSrc,
-      keySrc,
-      valueSrc
-    )(([base, key, value]) => {
-      base[key] = value;
-      user(base);
-    });
-  };
+  return Event((transport) => {
+    All(baseSrc, keySrc, valueSrc).event(
+      Transport(([base, key, value]) => {
+        base[key] = value;
+        transport.use(base);
+      })
+    );
+  });
 }
 
-const emptySrc = () => Of(false);
-function Router(urlSrc, routesSrc, defaultSrc) {
-  return (user) => {
+const $empty = TransportEvent(() => Of(false));
+function Router($url, $routes, $default) {
+  return Event((transport) => {
     const destructors = [];
-    const destroyAllData = () => {
-      destructors.forEach((d) => d());
+    const destructor = () => {
+      destructors.forEach((d) => d.destroy());
       destructors.length = 0;
     };
-    All(
-      routesSrc,
-      urlSrc
-    )(([routes, url]) => {
-      destroyAllData();
-      const instance = All(
-        defaultSrc(),
-        All(
-          ...routes.map(
-            (r) => Destructor(
-              BranchLazy(
+    All($routes, $url).event(
+      Transport(([routes, url]) => {
+        destructor();
+        const instance = All(
+          $default.use(),
+          All(
+            ...routes.map((r) => {
+              const $template = TransportDestroyable(r.event);
+              destructors.push($template);
+              return BranchLazy(
                 RegexpMatched(
                   Of(r.pattern),
                   Of(url),
                   r.patternFlags ? Of(r.patternFlags) : void 0
                 ),
-                r.template,
-                emptySrc
-              ),
-              (d) => destructors.push(d)
-            ).event
+                $template,
+                $empty
+              );
+            })
           )
-        )
-      );
-      Applied(instance, (r) => {
-        const firstReal = r[1].find((r2) => r2 !== false);
-        if (firstReal) {
-          return firstReal;
+        );
+        Applied(instance, (r) => {
+          const first = r[1].find((r2) => r2 !== false);
+          if (first) {
+            return first;
+          }
+          return r[0];
+        }).event(transport);
+      })
+    );
+    return destructor;
+  });
+}
+
+function And($one, $two) {
+  return Event((transport) => {
+    All($one, $two).event(
+      Transport(([one, two]) => {
+        transport.use(one && two);
+      })
+    );
+  });
+}
+
+function Or($one, $two) {
+  return Event((transport) => {
+    All($one, $two).event(
+      Transport(([one, two]) => {
+        transport.use(one || two);
+      })
+    );
+  });
+}
+
+function Not($base) {
+  return Event((transport) => {
+    $base.event(
+      Transport((v) => {
+        transport.use(!v);
+      })
+    );
+  });
+}
+
+function Bool($base) {
+  return Event((transport) => {
+    Applied($base, Boolean).event(transport);
+  });
+}
+
+function FromJson($json, error) {
+  return Event((transport) => {
+    $json.event(
+      Transport((json) => {
+        try {
+          transport.use(JSON.parse(json));
+        } catch (e) {
+          error?.use(new Error(`Failed to parse JSON: ${e}`));
         }
-        return r[0];
-      })(user);
-    });
-    return destroyAllData;
-  };
+      })
+    );
+  });
 }
 
-function And(oneSrc, twoSrc) {
-  return (user) => {
-    All(
-      oneSrc,
-      twoSrc
-    )(([one, two]) => {
-      user(one && two);
-    });
-  };
+function ToJson($data, error) {
+  return Event((transport) => {
+    $data.event(
+      Transport((data) => {
+        try {
+          transport.use(JSON.stringify(data));
+        } catch {
+          error?.use(new Error("Failed to convert to JSON"));
+        }
+      })
+    );
+  });
 }
 
-function Or(oneSrc, twoSrc) {
-  return (user) => {
-    All(
-      oneSrc,
-      twoSrc
-    )(([one, two]) => {
-      user(one || two);
-    });
-  };
-}
-
-function Not(baseSrc) {
-  return (user) => {
-    baseSrc((v) => {
-      user(!v);
-    });
-  };
-}
-
-function Bool(baseSrc) {
-  return (user) => {
-    Applied(baseSrc, Boolean)(user);
-  };
-}
-
-function FromJson(jsonSrc, errorOwner) {
-  return (user) => {
-    jsonSrc((json) => {
-      try {
-        user(JSON.parse(json));
-      } catch (error) {
-        errorOwner?.(new Error(`Failed to parse JSON: ${error}`));
-      }
-    });
-  };
-}
-
-function ToJson(dataSrc, errorOwner) {
-  return (user) => {
-    dataSrc((data) => {
-      try {
-        user(JSON.stringify(data));
-      } catch {
-        errorOwner?.(new Error("Failed to convert to JSON"));
-      }
-    });
-  };
-}
-
-function First(baseSrc) {
-  return (user) => {
-    Applied(baseSrc, (a) => a[0])(user);
-  };
+function First($base) {
+  return Event((transport) => {
+    Applied($base, (a) => a[0]).event(transport);
+  });
 }
 
 export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transaction };

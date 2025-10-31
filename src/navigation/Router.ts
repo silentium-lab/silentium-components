@@ -29,7 +29,7 @@ export function Router<T = "string">(
   $url: EventType<string>,
   $routes: EventType<Route<T>[]>,
   $default: TransportType<void, EventType<T>>,
-) {
+): EventType<T> & DestroyableType {
   return Event<T>((transport) => {
     const destructors: DestroyableType[] = [];
     const destructor = () => {
