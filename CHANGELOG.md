@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.71](https://github.com/silentium-lab/silentium-components/compare/v0.0.70...v0.0.71) (2025-10-31)
+
+
+### Bug Fixes
+
+* **main:** branch component ([c3c6b93](https://github.com/silentium-lab/silentium-components/commit/c3c6b932d06f712216a688361899d9ea90524ec9))
+* **main:** component to oop ([41ba9b6](https://github.com/silentium-lab/silentium-components/commit/41ba9b675229dda9bb2e40e5dd0d6b3699f47ecd))
+* **main:** components ([c145760](https://github.com/silentium-lab/silentium-components/commit/c145760772ec6384039318c00b5e3d7e131f4990))
+* **main:** components ([5ada880](https://github.com/silentium-lab/silentium-components/commit/5ada880e644589590051c468915755930b0632d1))
+* **main:** moving to objects ([a41797e](https://github.com/silentium-lab/silentium-components/commit/a41797e8a853296d3ce725bd73fab74df0e72845))
+* **main:** oop ([4abfa62](https://github.com/silentium-lab/silentium-components/commit/4abfa6215daf866a0ee1eaf75c39a0c7bb50405d))
+
 ### [0.0.70](https://github.com/silentium-lab/silentium-components/compare/v0.0.69...v0.0.70) (2025-10-20)
 
 
