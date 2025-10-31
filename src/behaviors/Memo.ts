@@ -1,4 +1,4 @@
-import { Event, EventType, Transport } from "silentium";
+import { Event, EventType, isFilled, Transport } from "silentium";
 
 /**
  * Didn't respond if new value Of baseSrc equals to old value
@@ -9,7 +9,7 @@ export function Memo<T>($base: EventType<T>): EventType<T> {
     let last: T | null = null;
     $base.event(
       Transport((v) => {
-        if (v !== last) {
+        if (v !== last && isFilled(v)) {
           transport.use(v);
           last = v;
         }

@@ -7,21 +7,18 @@ import {
   Transport,
 } from "silentium";
 
-/**
- * https://silentium-lab.github.io/silentium-components/#/behaviors/path
- */
 export function Deadline<T>(
   error: TransportType<Error>,
   $base: EventType<T>,
   $timeout: EventType<number>,
 ): EventType<T> {
   return Event((transport) => {
-    let timer: unknown = null;
+    let timer: ReturnType<typeof setTimeout> | number = 0;
     const base = Shared($base, true);
     $timeout.event(
       Transport((timeout) => {
         if (timer) {
-          clearTimeout(timer as number);
+          clearTimeout(timer);
         }
         let timeoutReached = false;
 
@@ -30,7 +27,7 @@ export function Deadline<T>(
             return;
           }
           timeoutReached = true;
-          error.use(new Error("Timeout reached in Deadline class"));
+          error.use(new Error("Timeout reached in Deadline"));
         }, timeout);
 
         const f = Filtered(base, () => !timeoutReached);

@@ -6,9 +6,6 @@ import {
   TransportType,
 } from "silentium";
 
-/**
- * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
- */
 export function BranchLazy<Then, Else>(
   $condition: EventType<boolean>,
   $left: TransportType<void, EventType<Then>>,
@@ -21,13 +18,13 @@ export function BranchLazy<Then, Else>(
         if (destructor !== undefined && typeof destructor === "function") {
           destructor();
         }
-        let instance: EventType<Then | Else> | null = null;
+        let instance: EventType<Then | Else> | undefined;
         if (v) {
           instance = $left.use();
         } else if ($right) {
           instance = $right.use();
         }
-        if (instance) {
+        if (instance !== undefined) {
           instance.event(transport);
           destructor = (instance as unknown as DestroyableType).destroy;
         }

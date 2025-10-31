@@ -55,7 +55,7 @@ class DirtySource<T> implements SourceType<T> {
               if (this.exclude.includes(key)) {
                 return false;
               }
-              return value !== (base as any)[key];
+              return value !== (base as Record<string, unknown>)[key];
             }),
           ) as T,
         );
