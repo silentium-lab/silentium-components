@@ -1,14 +1,14 @@
-import { Late } from "silentium";
+import { Late, Transport } from "silentium";
 import { HashTable } from "../structures/HashTable";
 import { expect, test, vi } from "vitest";
 
 test("HashTable.test", () => {
-  const entrySource = Late<[string, string]>();
-  const hashTableSrc = HashTable(entrySource.event);
+  const $entry = Late<[string, string]>();
+  const $hash = HashTable($entry);
   const g = vi.fn();
-  hashTableSrc(g);
-  entrySource.use(["key-one", "value-one"]);
-  entrySource.use(["key-two", "value-two"]);
+  $hash.event(Transport(g));
+  $entry.use(["key-one", "value-one"]);
+  $entry.use(["key-two", "value-two"]);
 
   expect(g).toHaveBeenLastCalledWith({
     "key-one": "value-one",

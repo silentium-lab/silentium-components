@@ -1,17 +1,19 @@
-import { EventType } from "silentium";
+import { Event, EventType, Transport } from "silentium";
 
 /**
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 export function HashTable<T>(
-  baseSrc: EventType<[string, unknown]>,
+  $base: EventType<[string, unknown]>,
 ): EventType<T> {
-  return (user) => {
+  return Event((transport) => {
     const record: Record<string, unknown> = {};
 
-    baseSrc(([key, value]) => {
-      record[key] = value;
-      user(record as T);
-    });
-  };
+    $base.event(
+      Transport(([key, value]) => {
+        record[key] = value;
+        transport.use(record as T);
+      }),
+    );
+  });
 }

@@ -1,6 +1,7 @@
 import {
   All,
   Applied,
+  DestroyableType,
   Event,
   EventType,
   Of,
@@ -30,9 +31,9 @@ export function Router<T = "string">(
   $default: TransportType<void, EventType<T>>,
 ) {
   return Event<T>((transport) => {
-    const destructors: (() => void)[] = [];
+    const destructors: DestroyableType[] = [];
     const destructor = () => {
-      destructors.forEach((d) => d());
+      destructors.forEach((d) => d.destroy());
       destructors.length = 0;
     };
     All($routes, $url).event(
@@ -43,7 +44,7 @@ export function Router<T = "string">(
           All(
             ...routes.map((r) => {
               const $template = TransportDestroyable(r.event);
-              destructors.push($template.destroy);
+              destructors.push($template);
               return BranchLazy(
                 RegexpMatched(
                   Of(r.pattern),

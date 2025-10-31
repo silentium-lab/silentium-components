@@ -1,4 +1,4 @@
-import { Of } from "silentium";
+import { Of, Transport } from "silentium";
 import { Template } from "../strings/Template";
 import { RecordOf } from "../structures";
 import { expect, test, vi } from "vitest";
@@ -11,7 +11,7 @@ test("Template._main.test", () => {
     }),
   );
   const g = vi.fn();
-  tpl.value(g);
+  tpl.event(Transport(g));
 
   expect(g).toHaveBeenLastCalledWith("<h1>one value</h1>");
 
@@ -22,7 +22,7 @@ test("Template._main.test", () => {
     }),
   );
   const g2 = vi.fn();
-  tpl2.value(g2);
+  tpl2.event(Transport(g2));
 
   expect(g2).toHaveBeenLastCalledWith("<h2>second value</h2>");
 });

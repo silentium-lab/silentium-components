@@ -1,4 +1,4 @@
-import { All, EventType } from "silentium";
+import { All, Event, EventType, Transport } from "silentium";
 
 type UnInformation<T> = T extends EventType<infer U> ? U : never;
 
@@ -7,16 +7,18 @@ type UnInformation<T> = T extends EventType<infer U> ? U : never;
  * https://silentium-lab.github.io/silentium-components/#/structures/record
  */
 export function RecordOf<T extends EventType>(
-  recordSrc: Record<string, T>,
+  record: Record<string, T>,
 ): EventType<Record<string, UnInformation<T>>> {
-  return (user) => {
-    const keys = Object.keys(recordSrc);
-    All(...Object.values(recordSrc))((entries) => {
-      const record: Record<string, any> = {};
-      entries.forEach((entry, index) => {
-        record[keys[index]] = entry;
-      });
-      user(record);
-    });
-  };
+  return Event((transport) => {
+    const keys = Object.keys(record);
+    All(...Object.values(record)).event(
+      Transport((entries) => {
+        const record: Record<string, any> = {};
+        entries.forEach((entry, index) => {
+          record[keys[index]] = entry;
+        });
+        transport.use(record);
+      }),
+    );
+  });
 }

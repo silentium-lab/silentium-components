@@ -1,4 +1,4 @@
-import { Applied, Late, Of, Transport } from "silentium";
+import { Applied, Late, Of, Transport, TransportEvent } from "silentium";
 import { BranchLazy } from "../behaviors/BranchLazy";
 import { expect, test, vi } from "vitest";
 
@@ -8,8 +8,8 @@ test("BranchLazy._main.test", () => {
     Applied(l, (t) => {
       return t === 2;
     }),
-    () => Of("Then branch"),
-    () => Of("Else branch"),
+    TransportEvent(() => Of("Then branch")),
+    TransportEvent(() => Of("Else branch")),
   );
 
   const g = vi.fn();

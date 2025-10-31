@@ -10,6 +10,7 @@ export function Shot<T>(
 ): EventType<T> {
   return Event((transport) => {
     const targetSync = Primitive($target);
+    targetSync.primitive();
 
     $trigger.event(
       Transport(() => {
