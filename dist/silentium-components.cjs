@@ -33,13 +33,13 @@ function BranchLazy($condition, $left, $right) {
         if (destructor !== void 0 && typeof destructor === "function") {
           destructor();
         }
-        let instance = null;
+        let instance;
         if (v) {
           instance = $left.use();
         } else if ($right) {
           instance = $right.use();
         }
-        if (instance) {
+        if (instance !== void 0) {
           instance.event(transport);
           destructor = instance.destroy;
         }
@@ -63,7 +63,7 @@ function Constant(permanent, $trigger) {
 
 function Deadline(error, $base, $timeout) {
   return silentium.Event((transport) => {
-    let timer = null;
+    let timer = 0;
     const base = silentium.Shared($base, true);
     $timeout.event(
       silentium.Transport((timeout) => {
@@ -76,7 +76,7 @@ function Deadline(error, $base, $timeout) {
             return;
           }
           timeoutReached = true;
-          error.use(new Error("Timeout reached in Deadline class"));
+          error.use(new Error("Timeout reached in Deadline"));
         }, timeout);
         const f = silentium.Filtered(base, () => !timeoutReached);
         f.event(transport);
@@ -187,7 +187,7 @@ function Memo($base) {
     let last = null;
     $base.event(
       silentium.Transport((v) => {
-        if (v !== last) {
+        if (v !== last && silentium.isFilled(v)) {
           transport.use(v);
           last = v;
         }

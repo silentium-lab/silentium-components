@@ -5,16 +5,10 @@ import { EventType, TransportType, SourceType, ConstructorType, DestroyableType 
  */
 declare function Branch<Then, Else>($condition: EventType<boolean>, $left: EventType<Then>, $right?: EventType<Else>): EventType<Then | Else>;
 
-/**
- * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
- */
 declare function BranchLazy<Then, Else>($condition: EventType<boolean>, $left: TransportType<void, EventType<Then>>, $right?: TransportType<void, EventType<Else>>): EventType<Then | Else>;
 
 declare function Constant<T>(permanent: T, $trigger: EventType): EventType<T>;
 
-/**
- * https://silentium-lab.github.io/silentium-components/#/behaviors/path
- */
 declare function Deadline<T>(error: TransportType<Error>, $base: EventType<T>, $timeout: EventType<number>): EventType<T>;
 
 /**

@@ -31,13 +31,13 @@ function BranchLazy($condition, $left, $right) {
         if (destructor !== void 0 && typeof destructor === "function") {
           destructor();
         }
-        let instance = null;
+        let instance;
         if (v) {
           instance = $left.use();
         } else if ($right) {
           instance = $right.use();
         }
-        if (instance) {
+        if (instance !== void 0) {
           instance.event(transport);
           destructor = instance.destroy;
         }
@@ -61,7 +61,7 @@ function Constant(permanent, $trigger) {
 
 function Deadline(error, $base, $timeout) {
   return Event((transport) => {
-    let timer = null;
+    let timer = 0;
     const base = Shared($base, true);
     $timeout.event(
       Transport((timeout) => {
@@ -74,7 +74,7 @@ function Deadline(error, $base, $timeout) {
             return;
           }
           timeoutReached = true;
-          error.use(new Error("Timeout reached in Deadline class"));
+          error.use(new Error("Timeout reached in Deadline"));
         }, timeout);
         const f = Filtered(base, () => !timeoutReached);
         f.event(transport);
@@ -185,7 +185,7 @@ function Memo($base) {
     let last = null;
     $base.event(
       Transport((v) => {
-        if (v !== last) {
+        if (v !== last && isFilled(v)) {
           transport.use(v);
           last = v;
         }
