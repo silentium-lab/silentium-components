@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.72](https://github.com/silentium-lab/silentium-components/compare/v0.0.71...v0.0.72) (2025-11-01)
+
+
+### Bug Fixes
+
+* **main:** silentium next version and npm audit fixes ([8156363](https://github.com/silentium-lab/silentium-components/commit/815636321cfeb5d189830514877ddf7066fcaa27))
+* **main:** small fixes ([cf3ba24](https://github.com/silentium-lab/silentium-components/commit/cf3ba242ef6920e1fe39e9e7b988f3ba93689036))
+
 ### [0.0.71](https://github.com/silentium-lab/silentium-components/compare/v0.0.70...v0.0.71) (2025-10-31)
 
 
