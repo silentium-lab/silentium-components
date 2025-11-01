@@ -10,7 +10,7 @@ export function BranchLazy<Then, Else>(
   $condition: EventType<boolean>,
   $left: TransportType<void, EventType<Then>>,
   $right?: TransportType<void, EventType<Else>>,
-): EventType<Then | Else> {
+): EventType<Then | Else> & DestroyableType {
   return Event((transport) => {
     let destructor: () => void | void;
     $condition.event(
