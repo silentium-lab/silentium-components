@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.77](https://github.com/silentium-lab/silentium-components/compare/v0.0.76...v0.0.77) (2025-11-03)
+
+
+### Bug Fixes
+
+* **main:** destroy template component variables ([5db198d](https://github.com/silentium-lab/silentium-components/commit/5db198d9710838ad5fe43d1b5d2bdde0be5e48ff))
+
 ### [0.0.76](https://github.com/silentium-lab/silentium-components/compare/v0.0.75...v0.0.76) (2025-11-03)
 
 ### [0.0.75](https://github.com/silentium-lab/silentium-components/compare/v0.0.74...v0.0.75) (2025-11-03)
