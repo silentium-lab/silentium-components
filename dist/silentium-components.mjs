@@ -438,6 +438,7 @@ class TemplateEvent {
     return varName;
   }
   destroy() {
+    this.dc.destroy();
     return this;
   }
 }

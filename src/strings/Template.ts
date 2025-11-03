@@ -62,6 +62,7 @@ class TemplateEvent implements EventType<string>, DestroyableType {
   }
 
   public destroy(): this {
+    this.dc.destroy();
     return this;
   }
 }
