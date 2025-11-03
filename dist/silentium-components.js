@@ -1,4 +1,4 @@
-import { Event, Primitive, Transport, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, DestroyContainer, isDestroyable, TransportEvent, TransportDestroyable } from 'silentium';
+import { Event, Primitive, Transport, isDestroyable, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, DestroyContainer, TransportEvent, TransportDestroyable } from 'silentium';
 
 function Branch($condition, $left, $right) {
   return Event((transport) => {
@@ -25,12 +25,16 @@ function Branch($condition, $left, $right) {
 
 function BranchLazy($condition, $left, $right) {
   return Event((transport) => {
-    let destructor;
+    let destroyable;
+    const destructor = () => {
+      if (destroyable !== void 0) {
+        destroyable.destroy();
+        destroyable = void 0;
+      }
+    };
     $condition.event(
       Transport((v) => {
-        if (destructor !== void 0 && typeof destructor === "function") {
-          destructor();
-        }
+        destructor();
         let instance;
         if (v) {
           instance = $left.use();
@@ -39,13 +43,13 @@ function BranchLazy($condition, $left, $right) {
         }
         if (instance !== void 0) {
           instance.event(transport);
-          destructor = instance.destroy;
+          if (isDestroyable(instance)) {
+            destroyable = instance;
+          }
         }
       })
     );
-    return () => {
-      destructor?.();
-    };
+    return destructor;
   });
 }
 
