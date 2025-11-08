@@ -1,25 +1,20 @@
 import {
   All,
-  Applied,
   DestroyableType,
   Event,
   EventType,
+  isDestroyable,
   Of,
   Transport,
-  TransportDestroyable,
-  TransportEvent,
   TransportType,
 } from "silentium";
-import { BranchLazy } from "../behaviors";
 import { RegexpMatched } from "../system";
 
 export interface Route<T> {
   pattern: string;
   patternFlags?: string;
-  event: TransportType<[], EventType<T>>;
+  event: TransportType<void, EventType<T>>;
 }
-
-const $empty = TransportEvent(() => Of(false));
 
 /**
  * Router component what will return template if url matches pattern
@@ -31,41 +26,45 @@ export function Router<T = "string">(
   $default: TransportType<void, EventType<T>>,
 ): EventType<T> & DestroyableType {
   return Event<T>((transport) => {
-    const destructors: DestroyableType[] = [];
+    const destroyableList: DestroyableType[] = [];
+    const checkDestroyable = (instance: unknown) => {
+      if (isDestroyable(instance)) {
+        destroyableList.push(instance);
+      }
+    };
     const destructor = () => {
-      destructors.forEach((d) => d.destroy());
-      destructors.length = 0;
+      destroyableList.forEach((d) => d.destroy());
+      destroyableList.length = 0;
     };
     All($routes, $url).event(
       Transport(([routes, url]) => {
         destructor();
-        const instance = All(
-          $default.use(),
-          All(
-            ...routes.map((r) => {
-              const $template = TransportDestroyable(r.event);
-              destructors.push($template);
-              return BranchLazy(
-                RegexpMatched(
-                  Of(r.pattern),
-                  Of(url),
-                  r.patternFlags ? Of(r.patternFlags) : undefined,
-                ),
-                $template,
-                $empty,
-              );
-            }),
+        const $matches = All(
+          ...routes.map((r) =>
+            RegexpMatched(
+              Of(r.pattern),
+              Of(url),
+              r.patternFlags ? Of(r.patternFlags) : undefined,
+            ),
           ),
         );
+        $matches.event(
+          Transport((matches) => {
+            const index = matches.findIndex((v) => v === true);
 
-        // Return first not false or default
-        Applied(instance, (r) => {
-          const first = r[1].find((r: unknown) => r !== false);
-          if (first) {
-            return first as T;
-          }
-          return r[0];
-        }).event(transport);
+            if (index === -1) {
+              const instance = $default.use();
+              checkDestroyable(instance);
+              instance.event(transport);
+            }
+
+            if (index > -1) {
+              const instance = routes[index].event.use();
+              checkDestroyable(instance);
+              instance.event(transport);
+            }
+          }),
+        );
       }),
     );
 
