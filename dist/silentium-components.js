@@ -1,4 +1,4 @@
-import { Event, Primitive, Transport, isDestroyable, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, DestroyContainer, TransportEvent, TransportDestroyable } from 'silentium';
+import { Event, Primitive, Transport, isDestroyable, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, DestroyContainer } from 'silentium';
 
 function Branch($condition, $left, $right) {
   return Event((transport) => {
@@ -487,42 +487,45 @@ function Set(baseSrc, keySrc, valueSrc) {
   });
 }
 
-const $empty = TransportEvent(() => Of(false));
 function Router($url, $routes, $default) {
   return Event((transport) => {
-    const destructors = [];
+    const destroyableList = [];
+    const checkDestroyable = (instance) => {
+      if (isDestroyable(instance)) {
+        destroyableList.push(instance);
+      }
+    };
     const destructor = () => {
-      destructors.forEach((d) => d.destroy());
-      destructors.length = 0;
+      destroyableList.forEach((d) => d.destroy());
+      destroyableList.length = 0;
     };
     All($routes, $url).event(
       Transport(([routes, url]) => {
         destructor();
-        const instance = All(
-          $default.use(),
-          All(
-            ...routes.map((r) => {
-              const $template = TransportDestroyable(r.event);
-              destructors.push($template);
-              return BranchLazy(
-                RegexpMatched(
-                  Of(r.pattern),
-                  Of(url),
-                  r.patternFlags ? Of(r.patternFlags) : void 0
-                ),
-                $template,
-                $empty
-              );
-            })
+        const $matches = All(
+          ...routes.map(
+            (r) => RegexpMatched(
+              Of(r.pattern),
+              Of(url),
+              r.patternFlags ? Of(r.patternFlags) : void 0
+            )
           )
         );
-        Applied(instance, (r) => {
-          const first = r[1].find((r2) => r2 !== false);
-          if (first) {
-            return first;
-          }
-          return r[0];
-        }).event(transport);
+        $matches.event(
+          Transport((matches) => {
+            const index = matches.findIndex((v) => v === true);
+            if (index === -1) {
+              const instance = $default.use();
+              checkDestroyable(instance);
+              instance.event(transport);
+            }
+            if (index > -1) {
+              const instance = routes[index].event.use();
+              checkDestroyable(instance);
+              instance.event(transport);
+            }
+          })
+        );
       })
     );
     return destructor;

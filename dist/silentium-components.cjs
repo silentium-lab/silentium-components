@@ -489,42 +489,45 @@ function Set(baseSrc, keySrc, valueSrc) {
   });
 }
 
-const $empty = silentium.TransportEvent(() => silentium.Of(false));
 function Router($url, $routes, $default) {
   return silentium.Event((transport) => {
-    const destructors = [];
+    const destroyableList = [];
+    const checkDestroyable = (instance) => {
+      if (silentium.isDestroyable(instance)) {
+        destroyableList.push(instance);
+      }
+    };
     const destructor = () => {
-      destructors.forEach((d) => d.destroy());
-      destructors.length = 0;
+      destroyableList.forEach((d) => d.destroy());
+      destroyableList.length = 0;
     };
     silentium.All($routes, $url).event(
       silentium.Transport(([routes, url]) => {
         destructor();
-        const instance = silentium.All(
-          $default.use(),
-          silentium.All(
-            ...routes.map((r) => {
-              const $template = silentium.TransportDestroyable(r.event);
-              destructors.push($template);
-              return BranchLazy(
-                RegexpMatched(
-                  silentium.Of(r.pattern),
-                  silentium.Of(url),
-                  r.patternFlags ? silentium.Of(r.patternFlags) : void 0
-                ),
-                $template,
-                $empty
-              );
-            })
+        const $matches = silentium.All(
+          ...routes.map(
+            (r) => RegexpMatched(
+              silentium.Of(r.pattern),
+              silentium.Of(url),
+              r.patternFlags ? silentium.Of(r.patternFlags) : void 0
+            )
           )
         );
-        silentium.Applied(instance, (r) => {
-          const first = r[1].find((r2) => r2 !== false);
-          if (first) {
-            return first;
-          }
-          return r[0];
-        }).event(transport);
+        $matches.event(
+          silentium.Transport((matches) => {
+            const index = matches.findIndex((v) => v === true);
+            if (index === -1) {
+              const instance = $default.use();
+              checkDestroyable(instance);
+              instance.event(transport);
+            }
+            if (index > -1) {
+              const instance = routes[index].event.use();
+              checkDestroyable(instance);
+              instance.event(transport);
+            }
+          })
+        );
       })
     );
     return destructor;

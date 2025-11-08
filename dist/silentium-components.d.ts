@@ -126,7 +126,7 @@ declare class TemplateEvent implements EventType<string>, DestroyableType {
 interface Route<T> {
     pattern: string;
     patternFlags?: string;
-    event: TransportType<[], EventType<T>>;
+    event: TransportType<void, EventType<T>>;
 }
 /**
  * Router component what will return template if url matches pattern
