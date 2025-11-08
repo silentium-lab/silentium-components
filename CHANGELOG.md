@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.78](https://github.com/silentium-lab/silentium-components/compare/v0.0.77...v0.0.78) (2025-11-08)
+
+
+### Bug Fixes
+
+* **main:** router fixed route sequence is predicatable now ([bfd19a1](https://github.com/silentium-lab/silentium-components/commit/bfd19a190accfc3cd82a5afe55e9413a8e5cbe77))
+
 ### [0.0.77](https://github.com/silentium-lab/silentium-components/compare/v0.0.76...v0.0.77) (2025-11-03)
 
 
