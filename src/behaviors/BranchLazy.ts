@@ -1,8 +1,8 @@
 import {
   DestroyableType,
+  DestroyContainer,
   Event,
   EventType,
-  isDestroyable,
   Transport,
   TransportType,
 } from "silentium";
@@ -13,12 +13,9 @@ export function BranchLazy<Then, Else>(
   $right?: TransportType<void, EventType<Else>>,
 ): EventType<Then | Else> & DestroyableType {
   return Event((transport) => {
-    let destroyable: DestroyableType | undefined;
+    const dc = DestroyContainer();
     const destructor = () => {
-      if (destroyable !== undefined) {
-        destroyable.destroy();
-        destroyable = undefined;
-      }
+      dc.destroy();
     };
     $condition.event(
       Transport((v) => {
@@ -31,9 +28,7 @@ export function BranchLazy<Then, Else>(
         }
         if (instance !== undefined) {
           instance.event(transport);
-          if (isDestroyable(instance)) {
-            destroyable = instance;
-          }
+          dc.add(instance);
         }
       }),
     );
