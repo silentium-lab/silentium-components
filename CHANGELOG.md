@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.79](https://github.com/silentium-lab/silentium-components/compare/v0.0.78...v0.0.79) (2025-11-10)
+
+
+### Bug Fixes
+
+* **main:** branch lazy builded ([5ba8f0c](https://github.com/silentium-lab/silentium-components/commit/5ba8f0c9aefee9f8b908bfcd5b32a2b0e7e15bbd))
+* **main:** branchLazy destruction fix ([bbc435e](https://github.com/silentium-lab/silentium-components/commit/bbc435e33909953e871b8cd8da56916b55b091bf))
+
 ### [0.0.78](https://github.com/silentium-lab/silentium-components/compare/v0.0.77...v0.0.78) (2025-11-08)
 
 
