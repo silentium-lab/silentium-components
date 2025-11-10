@@ -1,9 +1,9 @@
 import {
   All,
   DestroyableType,
+  DestroyContainer,
   Event,
   EventType,
-  isDestroyable,
   Of,
   Transport,
   TransportType,
@@ -26,15 +26,9 @@ export function Router<T = "string">(
   $default: TransportType<void, EventType<T>>,
 ): EventType<T> & DestroyableType {
   return Event<T>((transport) => {
-    const destroyableList: DestroyableType[] = [];
-    const checkDestroyable = (instance: unknown) => {
-      if (isDestroyable(instance)) {
-        destroyableList.push(instance);
-      }
-    };
+    const dc = DestroyContainer();
     const destructor = () => {
-      destroyableList.forEach((d) => d.destroy());
-      destroyableList.length = 0;
+      dc.destroy();
     };
     All($routes, $url).event(
       Transport(([routes, url]) => {
@@ -54,13 +48,13 @@ export function Router<T = "string">(
 
             if (index === -1) {
               const instance = $default.use();
-              checkDestroyable(instance);
+              dc.add(instance);
               instance.event(transport);
             }
 
             if (index > -1) {
               const instance = routes[index].event.use();
-              checkDestroyable(instance);
+              dc.add(instance);
               instance.event(transport);
             }
           }),

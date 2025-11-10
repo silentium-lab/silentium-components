@@ -486,15 +486,9 @@ function Set(baseSrc, keySrc, valueSrc) {
 
 function Router($url, $routes, $default) {
   return silentium.Event((transport) => {
-    const destroyableList = [];
-    const checkDestroyable = (instance) => {
-      if (silentium.isDestroyable(instance)) {
-        destroyableList.push(instance);
-      }
-    };
+    const dc = silentium.DestroyContainer();
     const destructor = () => {
-      destroyableList.forEach((d) => d.destroy());
-      destroyableList.length = 0;
+      dc.destroy();
     };
     silentium.All($routes, $url).event(
       silentium.Transport(([routes, url]) => {
@@ -513,12 +507,12 @@ function Router($url, $routes, $default) {
             const index = matches.findIndex((v) => v === true);
             if (index === -1) {
               const instance = $default.use();
-              checkDestroyable(instance);
+              dc.add(instance);
               instance.event(transport);
             }
             if (index > -1) {
               const instance = routes[index].event.use();
-              checkDestroyable(instance);
+              dc.add(instance);
               instance.event(transport);
             }
           })
