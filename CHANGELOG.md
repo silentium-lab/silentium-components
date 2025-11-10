@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.80](https://github.com/silentium-lab/silentium-components/compare/v0.0.79...v0.0.80) (2025-11-10)
+
+
+### Bug Fixes
+
+* **main:** router destroy logic and test ([25fb01e](https://github.com/silentium-lab/silentium-components/commit/25fb01e3b436fc480096449580d0e236aa61cc85))
+
 ### [0.0.79](https://github.com/silentium-lab/silentium-components/compare/v0.0.78...v0.0.79) (2025-11-10)
 
 
