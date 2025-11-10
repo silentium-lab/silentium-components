@@ -27,12 +27,9 @@ function Branch($condition, $left, $right) {
 
 function BranchLazy($condition, $left, $right) {
   return silentium.Event((transport) => {
-    let destroyable;
+    const dc = silentium.DestroyContainer();
     const destructor = () => {
-      if (destroyable !== void 0) {
-        destroyable.destroy();
-        destroyable = void 0;
-      }
+      dc.destroy();
     };
     $condition.event(
       silentium.Transport((v) => {
@@ -45,9 +42,7 @@ function BranchLazy($condition, $left, $right) {
         }
         if (instance !== void 0) {
           instance.event(transport);
-          if (silentium.isDestroyable(instance)) {
-            destroyable = instance;
-          }
+          dc.add(instance);
         }
       })
     );
