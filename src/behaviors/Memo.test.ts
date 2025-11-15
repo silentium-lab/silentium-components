@@ -6,10 +6,10 @@ test("Memo.test", () => {
   const l = Late<number>(1);
   const mem = Shared(Memo(l));
   const g = vi.fn();
-  mem.event(Transport(g));
+  mem.to(Transport(g));
   let counter = 0;
 
-  mem.event(
+  mem.to(
     Transport(() => {
       counter += 1;
     }),

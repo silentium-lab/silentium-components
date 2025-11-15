@@ -7,7 +7,7 @@ test("Loading.test", () => {
   const $loadingFinish = Late();
   const $loading = Loading($loadingStart, $loadingFinish);
   const g = vi.fn();
-  $loading.event(Transport(g));
+  $loading.to(Transport(g));
   $loadingStart.use({});
   expect(g).toHaveBeenLastCalledWith(true);
   $loadingFinish.use({});

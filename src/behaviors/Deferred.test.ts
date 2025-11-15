@@ -9,13 +9,13 @@ test("Deferred.test", () => {
   const urlWithLayoutSrc = Shared(Deferred($url, $layout));
 
   const g1 = vi.fn();
-  urlWithLayoutSrc.event(Transport(g1));
+  urlWithLayoutSrc.to(Transport(g1));
   expect(g1).not.toHaveBeenCalled();
 
   $layout.use("layout here");
 
   const g2 = vi.fn();
-  urlWithLayoutSrc.event(Transport(g2));
+  urlWithLayoutSrc.to(Transport(g2));
   $url.use("http://new.com");
   expect(g2).toHaveBeenCalledWith("http://hello.com");
 

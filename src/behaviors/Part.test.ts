@@ -11,7 +11,7 @@ test("Part.test", () => {
   );
   const $name = Part<string>($record, Of("name"));
   const g = vi.fn();
-  $record.event(Transport(g));
+  $record.to(Transport(g));
   expect(g).toHaveBeenLastCalledWith({ name: "Peter", surname: "Parker" });
 
   $name.use("Shmiter");

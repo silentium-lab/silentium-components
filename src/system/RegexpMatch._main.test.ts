@@ -7,7 +7,7 @@ test("RegexpMatch._main.test", () => {
   const $url = Of<string>("http://domain.com/some/url/");
   const $matched = Path(RegexpMatch(Of("/(s\\w+)/"), $url), Of("0"));
   const g = vi.fn();
-  $matched.event(Transport(g));
+  $matched.to(Transport(g));
 
   expect(g).toHaveBeenLastCalledWith("/some/");
 });

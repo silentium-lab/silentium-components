@@ -1,11 +1,11 @@
 import {
   Applied,
   Late,
+  Message,
   Of,
   Shared,
   Transport,
-  Event,
-  TransportEvent,
+  TransportMessage,
 } from "silentium";
 import { Router } from "../navigation/Router";
 import { expect, test, vi } from "vitest";
@@ -14,33 +14,33 @@ const drop = (dropPart: string) => (value: string) => {
   return value.replace(dropPart, "");
 };
 
-test("Router destroys previous route events when switching routes", () => {
+test("Router destroys previous route messages when switching routes", () => {
   const $url = Late<string>("http://domain.com/");
   const $urlPath = Shared(Applied($url, drop("http://domain.com")));
   const g = vi.fn();
-  $urlPath.event(Transport(g));
+  $urlPath.to(Transport(g));
 
-  // Create mock destroyable events for routes
+  // Create mock destroyable messages for routes
   const firstRouteDestroy = vi.fn();
   const secondRouteDestroy = vi.fn();
   const defaultDestroy = vi.fn();
 
-  const firstRouteEvent = TransportEvent(() =>
-    Event<string>((transport) => {
+  const $firstRoute = TransportMessage(() =>
+    Message<string>((transport) => {
       transport.use("first-route-response");
       return firstRouteDestroy;
     }),
   );
 
-  const secondRouteEvent = TransportEvent(() =>
-    Event<string>((transport) => {
+  const $secondRoute = TransportMessage(() =>
+    Message<string>((transport) => {
       transport.use("second-route-response");
       return secondRouteDestroy;
     }),
   );
 
-  const defaultEvent = TransportEvent(() =>
-    Event<string>((transport) => {
+  const $default = TransportMessage(() =>
+    Message<string>((transport) => {
       transport.use("default-response");
       return defaultDestroy;
     }),
@@ -51,18 +51,18 @@ test("Router destroys previous route events when switching routes", () => {
     Of([
       {
         pattern: "^/first$",
-        event: firstRouteEvent,
+        message: $firstRoute,
       },
       {
         pattern: "^/second$",
-        event: secondRouteEvent,
+        message: $secondRoute,
       },
     ]),
-    defaultEvent,
+    $default,
   );
 
   const g2 = vi.fn();
-  $router.event(Transport(g2));
+  $router.to(Transport(g2));
 
   // Initially no route matches, should use default
   expect(g2).toHaveBeenLastCalledWith("default-response");

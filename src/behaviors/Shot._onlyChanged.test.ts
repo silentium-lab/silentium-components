@@ -10,7 +10,7 @@ test("Shot._onlyChanged.test", () => {
 
   const vals: number[] = [];
 
-  $result.event(
+  $result.to(
     Transport((v) => {
       vals.push(v);
     }),

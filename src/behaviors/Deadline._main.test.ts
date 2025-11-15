@@ -15,7 +15,7 @@ test("Deadline._main.test", () => {
   const l = Late();
   const error = vi.fn();
   const g = vi.fn();
-  Deadline(Transport(error), l, Of(20)).event(Transport(g));
+  Deadline(Transport(error), l, Of(20)).to(Transport(g));
 
   vi.runAllTimers();
 

@@ -9,7 +9,7 @@ test("Lock.test", () => {
   const ls = Lock(source, lockSrc);
   const lockedSrc = Shared(ls);
   const g = vi.fn();
-  lockedSrc.event(Transport(g));
+  lockedSrc.to(Transport(g));
 
   expect(g).toHaveBeenLastCalledWith(1);
 

@@ -1,7 +1,7 @@
 import {
   All,
-  EventType,
   isFilled,
+  MessageType,
   Primitive,
   Shared,
   SharedSource,
@@ -18,23 +18,23 @@ export function Part<
   R,
   T extends object | Array<any> = any,
   K extends string = any,
->($base: SourceType<T>, $key: EventType<K>): SourceType<R> {
-  return new PartEvent($base, $key);
+>($base: SourceType<T>, $key: MessageType<K>): SourceType<R> {
+  return new PartImpl($base, $key);
 }
 
-class PartEvent<R, T extends object | Array<any>, K extends string = any>
+class PartImpl<R, T extends object | Array<any>, K extends string = any>
   implements SourceType<R>
 {
   private $base: SourceType<T>;
-  private $keyed: EventType<K>;
+  private $keyed: MessageType<K>;
 
-  public constructor($base: SourceType<T>, $key: EventType<K>) {
+  public constructor($base: SourceType<T>, $key: MessageType<K>) {
     this.$base = SharedSource($base);
     this.$keyed = Shared($key);
   }
 
-  public event(transport: TransportType<R, null>): this {
-    All(this.$base, this.$keyed).event(
+  public to(transport: TransportType<R, null>): this {
+    All(this.$base, this.$keyed).to(
       Transport(([base, keyed]) => {
         const keys = keyed.split(".");
         let value: unknown = base;

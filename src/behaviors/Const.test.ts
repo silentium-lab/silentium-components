@@ -6,7 +6,7 @@ test("Const.test", () => {
   const $trigger = Late(1);
   const src = Constant("val", $trigger);
   const data: string[] = [];
-  src.event(
+  src.to(
     Transport((v) => {
       data.push(v);
     }),

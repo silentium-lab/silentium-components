@@ -3,33 +3,38 @@ import {
   Applied,
   DestroyableType,
   DestroyContainer,
-  EventType,
   isDestroyable,
+  MessageType,
   Of,
   TransportType,
 } from "silentium";
-import { RecordOf } from "../structures";
+import { Record } from "../structures";
 
+/**
+ * Allows creating a string template with
+ * variables inserted into it; when variables change,
+ * the template value will change
+ */
 export function Template(
-  $src: EventType<string> = Of(""),
-  $places: EventType<Record<string, unknown>> = Of({}),
+  $src: MessageType<string> = Of(""),
+  $places: MessageType<Record<string, unknown>> = Of({}),
 ) {
-  return new TemplateEvent($src, $places);
+  return new TemplateImpl($src, $places);
 }
 
-class TemplateEvent implements EventType<string>, DestroyableType {
+class TemplateImpl implements MessageType<string>, DestroyableType {
   private dc = DestroyContainer();
-  private vars: Record<string, EventType> = {
+  private vars: Record<string, MessageType> = {
     $TPL: Of("$TPL"),
   };
 
   public constructor(
-    private $src: EventType<string> = Of(""),
-    private $places: EventType<Record<string, unknown>> = Of({}),
+    private $src: MessageType<string> = Of(""),
+    private $places: MessageType<Record<string, unknown>> = Of({}),
   ) {}
 
-  public event(transport: TransportType<string, null>): this {
-    const $vars = RecordOf(this.vars);
+  public to(transport: TransportType<string>): this {
+    const $vars = Record(this.vars);
     Applied(All(this.$src, this.$places, $vars), ([base, rules, vars]) => {
       Object.entries(rules).forEach(([ph, val]) => {
         base = base.replaceAll(ph, String(val));
@@ -39,7 +44,7 @@ class TemplateEvent implements EventType<string>, DestroyableType {
       });
 
       return base;
-    }).event(transport);
+    }).to(transport);
     return this;
   }
 
@@ -51,7 +56,7 @@ class TemplateEvent implements EventType<string>, DestroyableType {
    * Ability to register variable
    * in concrete place Of template
    */
-  public var(src: EventType<string>) {
+  public var(src: MessageType<string>) {
     const places = Object.keys(this.vars).length;
     const varName = `$var${places}`;
     if (isDestroyable(src)) {

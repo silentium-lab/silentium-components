@@ -9,7 +9,7 @@ test("Dirty.test", () => {
   });
   const d = Dirty(form);
   const g = vi.fn();
-  d.event(Transport(g));
+  d.to(Transport(g));
 
   d.use({
     name: "new",

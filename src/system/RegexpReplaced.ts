@@ -1,17 +1,17 @@
-import { All, Event, EventType, Of, Transport } from "silentium";
+import { All, Message, MessageType, Of, Transport } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-replaced
  */
 export function RegexpReplaced(
-  valueSrc: EventType<string>,
-  patternSrc: EventType<string>,
-  replaceValueSrc: EventType<string>,
-  flagsSrc: EventType<string> = Of(""),
-): EventType<string> {
-  return Event((transport) => {
-    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).event(
+  valueSrc: MessageType<string>,
+  patternSrc: MessageType<string>,
+  replaceValueSrc: MessageType<string>,
+  flagsSrc: MessageType<string> = Of(""),
+) {
+  return Message<string>((transport) => {
+    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).to(
       Transport(([pattern, value, replaceValue, flags]) => {
         transport.use(
           String(value).replace(new RegExp(pattern, flags), replaceValue),

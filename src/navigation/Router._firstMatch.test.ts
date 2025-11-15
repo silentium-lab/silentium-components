@@ -4,10 +4,10 @@ import {
   Of,
   Shared,
   Transport,
-  TransportEvent,
+  TransportMessage,
 } from "silentium";
-import { Router } from "../navigation/Router";
 import { expect, test, vi } from "vitest";
+import { Router } from "../navigation/Router";
 
 const drop = (dropPart: string) => (value: string) => {
   return value.replace(dropPart, "");
@@ -17,7 +17,7 @@ test("Router first matching route responds, not subsequent matches", () => {
   const $url = Late<string>("http://domain.com/page/general");
   const $urlPath = Shared(Applied($url, drop("http://domain.com")));
   const g = vi.fn();
-  $urlPath.event(Transport(g));
+  $urlPath.to(Transport(g));
 
   const firstRouteMock = vi.fn(() => Of("first-route-response"));
   const secondRouteMock = vi.fn(() => Of("second-route-response"));
@@ -27,17 +27,17 @@ test("Router first matching route responds, not subsequent matches", () => {
     Of([
       {
         pattern: "^/page/.*", // This matches /page/anything
-        event: TransportEvent(firstRouteMock),
+        message: TransportMessage(firstRouteMock),
       },
       {
         pattern: "^/page/specific$", // This also matches /page/specific
-        event: TransportEvent(secondRouteMock),
+        message: TransportMessage(secondRouteMock),
       },
     ]),
-    TransportEvent(() => Of<string>("page/404.html")),
+    TransportMessage(() => Of<string>("page/404.html")),
   );
   const g2 = vi.fn();
-  $router.event(Transport(g2));
+  $router.to(Transport(g2));
 
   // Initial URL should match first route
   expect(g2).toHaveBeenLastCalledWith("first-route-response");

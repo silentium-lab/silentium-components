@@ -8,7 +8,7 @@ test("Shot._main.test", () => {
 
   const $shotted = Shared(Shot($base, $trigger));
   const g = vi.fn();
-  $shotted.event(Transport(g));
+  $shotted.to(Transport(g));
 
   $base.use(1);
   $trigger.use(1);
@@ -24,6 +24,6 @@ test("Shot._main.test", () => {
   expect(g).toHaveBeenLastCalledWith(2);
 
   const g2 = vi.fn();
-  $shotted.event(Transport(g2));
+  $shotted.to(Transport(g2));
   expect(g2).toHaveBeenLastCalledWith(2);
 });

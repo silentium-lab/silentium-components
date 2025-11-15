@@ -4,6 +4,6 @@ import { expect, test, vi } from "vitest";
 
 test("Bool.test", () => {
   const o = vi.fn();
-  Bool(Of(1)).event(Transport(o));
+  Bool(Of(1)).to(Transport(o));
   expect(o).toHaveBeenCalledWith(true);
 });

@@ -9,7 +9,7 @@ test("Set.test", () => {
   };
   const obj = Set(Of(object), Of("value"), $value);
   const g = vi.fn();
-  obj.event(Transport(g));
+  obj.to(Transport(g));
 
   expect(object.value).toBe("hello");
 

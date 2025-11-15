@@ -17,7 +17,7 @@ test("Tick.test", async () => {
   const $tick = Shared(Tick(Any($s1, $s2)), true);
 
   const g = vi.fn();
-  $tick.event(Transport(g));
+  $tick.to(Transport(g));
 
   $s1.use(3);
   $s2.use(4);

@@ -7,14 +7,14 @@ test("Detached.test.ts", function DetachedTest() {
   const l2 = Detached(l);
 
   const g1 = vi.fn();
-  l2.event(Transport(g1));
+  l2.to(Transport(g1));
 
   l.use(2);
 
   expect(g1).toHaveBeenCalledWith(1);
 
   const g2 = vi.fn();
-  l.event(Transport(g2));
+  l.to(Transport(g2));
 
   expect(g2).toHaveBeenCalledWith(2);
 });

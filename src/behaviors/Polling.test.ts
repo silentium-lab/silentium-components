@@ -1,11 +1,11 @@
-import { Event, EventType, Late, Primitive } from "silentium";
+import { Late, Message, MessageType, Primitive } from "silentium";
 import { expect, test } from "vitest";
 import { Polling } from "../behaviors/Polling";
 
 test("Polling.test", () => {
   const $trigger = Late(1);
   let calls = 0;
-  const $calls: EventType<number> = Event((o) => {
+  const $calls: MessageType<number> = Message((o) => {
     calls += 1;
     o.use(calls);
   });

@@ -11,7 +11,7 @@ test("Branch.branchesDontAffectResult.test", () => {
     el,
   );
   const g = vi.fn();
-  boolSync.event(Transport(g));
+  boolSync.to(Transport(g));
 
   l.use(1);
   expect(g).toHaveBeenLastCalledWith("else");

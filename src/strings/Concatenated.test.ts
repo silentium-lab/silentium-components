@@ -8,7 +8,7 @@ test("Concatenated.test", () => {
     Of("-"),
   );
   const g = vi.fn();
-  $concatenated.event(Transport(g));
+  $concatenated.to(Transport(g));
 
   expect(g).toHaveBeenLastCalledWith("one-two-three");
 });

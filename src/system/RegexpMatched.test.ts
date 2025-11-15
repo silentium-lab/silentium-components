@@ -6,7 +6,7 @@ test("RegexpMatched.test", () => {
   const $url = Late<string>("http://domain.com/some/url/");
   const $matched = RegexpMatched(Of("/some/url"), $url);
   const g = vi.fn();
-  $matched.event(Transport(g));
+  $matched.to(Transport(g));
 
   expect(g).toHaveBeenLastCalledWith(true);
 

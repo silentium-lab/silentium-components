@@ -7,7 +7,7 @@ test("Or.test", () => {
   const two = Late<boolean>(false);
   const result = Or(one, two);
   const g = vi.fn();
-  result.event(Transport(g));
+  result.to(Transport(g));
   expect(g).toHaveBeenLastCalledWith(false);
 
   one.use(true);

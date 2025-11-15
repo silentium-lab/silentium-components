@@ -1,8 +1,8 @@
 import {
   All,
   Applied,
-  EventType,
   Late,
+  MessageType,
   SourceType,
   Transport,
   TransportType,
@@ -14,7 +14,7 @@ import {
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
 export function Dirty<T>(
-  $base: EventType<T>,
+  $base: MessageType<T>,
   keep: string[] = [],
   exclude: string[] = [],
   cloner?: (v: T) => T,
@@ -27,7 +27,7 @@ class DirtySource<T> implements SourceType<T> {
   private cloner: (v: T) => T;
 
   public constructor(
-    private $base: EventType<T>,
+    private $base: MessageType<T>,
     private keep: string[] = [],
     private exclude: string[] = [],
     cloner?: (v: T) => T,
@@ -39,9 +39,9 @@ class DirtySource<T> implements SourceType<T> {
     }
   }
 
-  public event(transport: TransportType<T>) {
+  public to(transport: TransportType<T>) {
     const $comparing = Applied(this.$comparing, this.cloner);
-    All($comparing, this.$base).event(
+    All($comparing, this.$base).to(
       Transport(([comparing, base]) => {
         if (!comparing) {
           return;

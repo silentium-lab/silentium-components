@@ -1,14 +1,12 @@
-import { All, Event, EventType, Transport } from "silentium";
+import { All, Message, MessageType, Transport } from "silentium";
 
 /**
+ * Logical AND over two messages
  * https://silentium-lab.github.io/silentium-components/#/boolean/and
  */
-export function And(
-  $one: EventType<boolean>,
-  $two: EventType<boolean>,
-): EventType<boolean> {
-  return Event((transport) => {
-    All($one, $two).event(
+export function And($one: MessageType<boolean>, $two: MessageType<boolean>) {
+  return Message<boolean>((transport) => {
+    All($one, $two).to(
       Transport(([one, two]) => {
         transport.use(one && two);
       }),

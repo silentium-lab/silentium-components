@@ -1,12 +1,12 @@
-import { Late, Of, Transport } from "silentium";
+import { Late, Transport } from "silentium";
 import { expect, test, vi } from "vitest";
 import { Record } from "./Record";
 
-test("Record._main.test", () => {
+test("Record._mixed.test", () => {
   const $three = Late<string>("three");
   const $record = Record({
-    one: Of("one"),
-    two: Of(2),
+    one: "one",
+    two: 2,
     three: $three,
   });
   const g = vi.fn();

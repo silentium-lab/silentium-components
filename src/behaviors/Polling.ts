@@ -1,13 +1,14 @@
-import { Event, EventType, Transport } from "silentium";
+import { Message, MessageType, Transport } from "silentium";
 
-export function Polling<T>(
-  $base: EventType<T>,
-  $trigger: EventType<T>,
-): EventType<T> {
-  return Event((transport) => {
-    $trigger.event(
+/**
+ * Active polling of $base message
+ * synchronized with $trigger message
+ */
+export function Polling<T>($base: MessageType<T>, $trigger: MessageType<T>) {
+  return Message<T>((transport) => {
+    $trigger.to(
       Transport(() => {
-        $base.event(transport);
+        $base.to(transport);
       }),
     );
   });

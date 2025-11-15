@@ -1,7 +1,12 @@
-import { Event, EventType, isFilled, Primitive } from "silentium";
+import { isFilled, Message, MessageType, Primitive } from "silentium";
 
-export function Detached<T>($base: EventType<T>): EventType<T> {
-  return Event((transport) => {
+/**
+ * Message separate from the base
+ * allows to take one value from the base
+ * but not react to new values of the base message
+ */
+export function Detached<T>($base: MessageType<T>): MessageType<T> {
+  return Message((transport) => {
     const v = Primitive($base).primitive();
     if (isFilled(v)) {
       transport.use(v);

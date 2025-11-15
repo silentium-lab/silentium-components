@@ -1,4 +1,4 @@
-import { All, Event, EventType, Transport } from "silentium";
+import { All, Message, MessageType, Transport } from "silentium";
 
 /**
  * Return source Of record path
@@ -8,9 +8,9 @@ export function Path<
   R,
   T extends object | Array<any> = any,
   K extends string = any,
->($base: EventType<T>, $keyed: EventType<K>): EventType<R> {
-  return Event((transport) => {
-    All($base, $keyed).event(
+>($base: MessageType<T>, $keyed: MessageType<K>) {
+  return Message<R>((transport) => {
+    All($base, $keyed).to(
       Transport(([base, keyed]) => {
         const keys = keyed.split(".");
         let value: unknown = base;

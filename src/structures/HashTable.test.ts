@@ -6,7 +6,7 @@ test("HashTable.test", () => {
   const $entry = Late<[string, string]>();
   const $hash = HashTable($entry);
   const g = vi.fn();
-  $hash.event(Transport(g));
+  $hash.to(Transport(g));
   $entry.use(["key-one", "value-one"]);
   $entry.use(["key-two", "value-two"]);
 

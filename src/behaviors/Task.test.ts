@@ -15,7 +15,7 @@ test("Task delays emission", () => {
   const $trigger = Late<string>();
   const delayed = Task($trigger, 100);
   const data: string[] = [];
-  delayed.event(
+  delayed.to(
     Transport((v) => {
       data.push(v);
     }),
@@ -36,7 +36,7 @@ test("Task emits only last value when multiple before delay", () => {
   const $trigger = Late<string>();
   const delayed = Task($trigger, 100);
   const data: string[] = [];
-  delayed.event(
+  delayed.to(
     Transport((v) => {
       data.push(v);
     }),

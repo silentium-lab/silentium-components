@@ -1,10 +1,12 @@
-import { Event, EventType, ExecutorApplied } from "silentium";
+import { ExecutorApplied, Message, MessageType } from "silentium";
 
-export function Task<T>(
-  baseSrc: EventType<T>,
-  delay: number = 0,
-): EventType<T> {
-  return Event((transport) => {
+/**
+ * Defer a message to the event loop
+ * so that it executes once within
+ * a certain timer firing interval
+ */
+export function Task<T>(baseSrc: MessageType<T>, delay: number = 0) {
+  return Message<T>((transport) => {
     let prevTimer: unknown | null = null;
     ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
@@ -15,6 +17,6 @@ export function Task<T>(
           fn(v);
         }, delay);
       };
-    }).event(transport);
+    }).to(transport);
   });
 }

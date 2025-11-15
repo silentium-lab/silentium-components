@@ -6,7 +6,7 @@ test("Not.test", () => {
   const one = Late<boolean>(false);
   const result = Not(one);
   const g = vi.fn();
-  result.event(Transport(g));
+  result.to(Transport(g));
   expect(g).toHaveBeenLastCalledWith(true);
 
   one.use(true);

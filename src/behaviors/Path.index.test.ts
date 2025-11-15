@@ -13,6 +13,6 @@ test("Path.index.test", () => {
   };
   const bestColor = Path(Of(record), Of("colors.0"));
   const g = vi.fn();
-  bestColor.event(Transport(g));
+  bestColor.to(Transport(g));
   expect(g).toHaveBeenLastCalledWith("blue");
 });

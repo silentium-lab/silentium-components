@@ -1,20 +1,20 @@
 import { Of, Transport } from "silentium";
 import { expect, test, vi } from "vitest";
-import { RecordOf } from "./RecordOf";
+import { Record } from "./Record";
 
 test("Record.nested.test", () => {
   const $three = Of<string>("three");
-  const $record = RecordOf({
+  const $record = Record({
     one: Of("one"),
     two: Of("two"),
     three: $three,
-    nested: RecordOf({
+    nested: Record({
       four: Of("four"),
       five: Of("five"),
     }),
   });
   const g = vi.fn();
-  $record.event(Transport(g));
+  $record.to(Transport(g));
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

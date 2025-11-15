@@ -21,7 +21,7 @@ test("Deadline._value.test", () => {
 
   const dl = Deadline(Transport(error), l, Of(200));
   const g = vi.fn();
-  dl.event(Transport(g));
+  dl.to(Transport(g));
 
   vi.runAllTimers();
 

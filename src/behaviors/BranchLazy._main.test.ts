@@ -1,6 +1,6 @@
-import { Applied, Late, Of, Transport, TransportEvent } from "silentium";
-import { BranchLazy } from "../behaviors/BranchLazy";
+import { Applied, Late, Of, Transport, TransportMessage } from "silentium";
 import { expect, test, vi } from "vitest";
+import { BranchLazy } from "../behaviors/BranchLazy";
 
 test("BranchLazy._main.test", () => {
   const l = Late<number>(2);
@@ -8,12 +8,12 @@ test("BranchLazy._main.test", () => {
     Applied(l, (t) => {
       return t === 2;
     }),
-    TransportEvent(() => Of("Then branch")),
-    TransportEvent(() => Of("Else branch")),
+    TransportMessage(() => Of("Then branch")),
+    TransportMessage(() => Of("Else branch")),
   );
 
   const g = vi.fn();
-  res.event(Transport(g));
+  res.to(Transport(g));
   expect(g).toBeCalledWith("Then branch");
 
   l.use(1);

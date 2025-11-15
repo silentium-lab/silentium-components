@@ -2,8 +2,8 @@ import {
   All,
   DestroyableType,
   DestroyContainer,
-  Event,
-  EventType,
+  Message,
+  MessageType,
   Of,
   Transport,
   TransportType,
@@ -13,7 +13,7 @@ import { RegexpMatched } from "../system";
 export interface Route<T> {
   pattern: string;
   patternFlags?: string;
-  event: TransportType<void, EventType<T>>;
+  message: TransportType<void, MessageType<T>>;
 }
 
 /**
@@ -21,16 +21,16 @@ export interface Route<T> {
  * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
 export function Router<T = "string">(
-  $url: EventType<string>,
-  $routes: EventType<Route<T>[]>,
-  $default: TransportType<void, EventType<T>>,
-): EventType<T> & DestroyableType {
-  return Event<T>((transport) => {
+  $url: MessageType<string>,
+  $routes: MessageType<Route<T>[]>,
+  $default: TransportType<void, MessageType<T>>,
+): MessageType<T> & DestroyableType {
+  return Message<T>((transport) => {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    All($routes, $url).event(
+    All($routes, $url).to(
       Transport(([routes, url]) => {
         destructor();
         const $matches = All(
@@ -42,20 +42,20 @@ export function Router<T = "string">(
             ),
           ),
         );
-        $matches.event(
+        $matches.to(
           Transport((matches) => {
             const index = matches.findIndex((v) => v === true);
 
             if (index === -1) {
               const instance = $default.use();
               dc.add(instance);
-              instance.event(transport);
+              instance.to(transport);
             }
 
             if (index > -1) {
-              const instance = routes[index].event.use();
+              const instance = routes[index].message.use();
               dc.add(instance);
-              instance.event(transport);
+              instance.to(transport);
             }
           }),
         );

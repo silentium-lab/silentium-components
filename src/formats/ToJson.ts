@@ -1,14 +1,11 @@
-import { Event, EventType, Transport, TransportType } from "silentium";
+import { Message, MessageType, Transport, TransportType } from "silentium";
 
 /**
  * Represents json from object
  */
-export function ToJson(
-  $data: EventType,
-  error?: TransportType,
-): EventType<string> {
-  return Event((transport) => {
-    $data.event(
+export function ToJson($data: MessageType, error?: TransportType) {
+  return Message<string>((transport) => {
+    $data.to(
       Transport((data: unknown) => {
         try {
           transport.use(JSON.stringify(data));

@@ -13,23 +13,23 @@ test("Branch.dontRespondAfterRespond.test", () => {
     true,
   );
   const g = vi.fn();
-  branchI.event(Transport(g));
+  branchI.to(Transport(g));
 
   l.use(2);
   expect(g).toHaveBeenLastCalledWith("then");
 
   const g2 = vi.fn();
-  branchI.event(Transport(g2));
+  branchI.to(Transport(g2));
   l.use(1);
   expect(g2).not.toHaveBeenCalled();
 
   const g3 = vi.fn();
-  branchI.event(Transport(g3));
+  branchI.to(Transport(g3));
   l.use(2);
   expect(g3).toHaveBeenLastCalledWith("then");
 
   const g4 = vi.fn();
-  branchI.event(Transport(g4));
+  branchI.to(Transport(g4));
   l.use(3);
   expect(g4).not.toHaveBeenCalled();
 });

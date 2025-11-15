@@ -1,22 +1,28 @@
-import { Event, LateShared, Of, Transport, TransportEvent } from "silentium";
+import {
+  LateShared,
+  Message,
+  Of,
+  Transport,
+  TransportMessage,
+} from "silentium";
 import { describe, expect, test } from "vitest";
 import { Detached } from "../behaviors/Detached";
 import { Router } from "../navigation/Router";
 
 describe("Router._nested.test", () => {
-  test("Вложенные роуты", () => {
+  test("Nested routes", () => {
     const $url = LateShared("/");
     const $router = Router(
       $url,
       Of([
         {
           pattern: "^/$",
-          event: TransportEvent(() => Of<string>("home")),
+          message: TransportMessage(() => Of<string>("home")),
         },
         {
           pattern: "/admin.*",
-          event: TransportEvent(() => {
-            return Event((transport) => {
+          message: TransportMessage(() => {
+            return Message((transport) => {
               // need to replace with detached component
               const localUrlSrc = Detached($url);
 
@@ -25,20 +31,20 @@ describe("Router._nested.test", () => {
                 Of([
                   {
                     pattern: "^/admin/articles$",
-                    event: TransportEvent(() => Of("articles list")),
+                    message: TransportMessage(() => Of("articles list")),
                   },
                   {
                     pattern: "^/admin/articles/create$",
-                    event: TransportEvent(() => Of("articles create")),
+                    message: TransportMessage(() => Of("articles create")),
                   },
                   {
                     pattern: "^/admin/articles/update$",
-                    event: TransportEvent(() => Of("articles update")),
+                    message: TransportMessage(() => Of("articles update")),
                   },
                   {
                     pattern: "^/admin/nested/.*$",
-                    event: TransportEvent(() => {
-                      return Event((transport) => {
+                    message: TransportMessage(() => {
+                      return Message((transport) => {
                         const localUrlSrc = Detached($url);
 
                         const r = Router(
@@ -46,17 +52,17 @@ describe("Router._nested.test", () => {
                           Of([
                             {
                               pattern: "^/admin/nested/list$",
-                              event: TransportEvent(() =>
+                              message: TransportMessage(() =>
                                 Of("admin nested list"),
                               ),
                             },
                           ]),
-                          TransportEvent(() =>
+                          TransportMessage(() =>
                             Of<string>("admin nested not found"),
                           ),
                         );
 
-                        r.event(transport);
+                        r.to(transport);
 
                         return function AdminDestroy() {
                           r.destroy();
@@ -65,10 +71,10 @@ describe("Router._nested.test", () => {
                     }),
                   },
                 ]),
-                TransportEvent(() => Of<string>("admin not found")),
+                TransportMessage(() => Of<string>("admin not found")),
               );
 
-              r.event(transport);
+              r.to(transport);
 
               return function AdminDestroy() {
                 r.destroy();
@@ -77,10 +83,10 @@ describe("Router._nested.test", () => {
           }),
         },
       ]),
-      TransportEvent(() => Of("not found")),
+      TransportMessage(() => Of("not found")),
     );
     const d: string[] = [];
-    $router.event(
+    $router.to(
       Transport((v) => {
         d.push(v);
       }),

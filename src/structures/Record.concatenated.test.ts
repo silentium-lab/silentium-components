@@ -1,13 +1,13 @@
 import { Late, Of, Shared, Transport } from "silentium";
 import { Concatenated } from "../strings";
-import { RecordOf } from "../structures/RecordOf";
+import { Record } from "./Record";
 import { expect, test, vi } from "vitest";
 
 test("Record.concatenated.test", () => {
   const $three = Of<string>("three");
   const $part = Late<string>("part");
   const r = Shared(
-    RecordOf({
+    Record({
       one: Of("one"),
       two: Of("two"),
       three: $three,
@@ -15,9 +15,9 @@ test("Record.concatenated.test", () => {
     }),
   );
   const g = vi.fn();
-  r.event(Transport(g));
+  r.to(Transport(g));
   let counter = 0;
-  r.event(
+  r.to(
     Transport(() => {
       counter += 1;
     }),

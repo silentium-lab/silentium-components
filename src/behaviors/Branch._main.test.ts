@@ -13,7 +13,7 @@ test("Branch._main.test", () => {
   );
 
   const g = vi.fn();
-  res.event(Transport(g));
+  res.to(Transport(g));
   expect(g).toBeCalledWith("Then ветка");
 
   l.use(1);

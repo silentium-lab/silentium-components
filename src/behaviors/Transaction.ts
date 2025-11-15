@@ -1,38 +1,38 @@
 import {
   ConstructorType,
   DestroyableType,
-  Event,
-  EventType,
   LateShared,
+  Message,
+  MessageType,
   Of,
   Transport,
 } from "silentium";
 import { Detached } from "../behaviors/Detached";
 
 /**
- * Do something on event value.
- * Each event value will create new eventBuilder instance
+ * Do something on message value.
+ * Each message value will create new builder instance
  */
 export function Transaction<T, R = unknown>(
-  $base: EventType<T>,
-  eventBuilder: ConstructorType<
-    [EventType<T>, ...EventType<any>[]],
-    EventType<R>
+  $base: MessageType<T>,
+  builder: ConstructorType<
+    [MessageType<T>, ...MessageType<any>[]],
+    MessageType<R>
   >,
-  ...args: EventType[]
-): EventType<R> {
-  return Event((transport) => {
+  ...args: MessageType[]
+) {
+  return Message<R>((transport) => {
     const $res = LateShared<R>();
     const destructors: DestroyableType[] = [];
 
-    $base.event(
+    $base.to(
       Transport((v) => {
-        const $event = eventBuilder(Of(v), ...args.map((a) => Detached(a)));
-        destructors.push($event as unknown as DestroyableType);
-        $event.event($res);
+        const $msg = builder(Of(v), ...args.map((a) => Detached(a)));
+        destructors.push($msg as unknown as DestroyableType);
+        $msg.to($res);
       }),
     );
-    $res.event(transport);
+    $res.to(transport);
 
     return () => {
       destructors.forEach((d) => d?.destroy());

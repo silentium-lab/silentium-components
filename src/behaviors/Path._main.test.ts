@@ -9,6 +9,6 @@ test("Path._main.test", () => {
   };
   const name = Path<string>(Of(record), Of("name"));
   const g = vi.fn();
-  name.event(Transport(g));
+  name.to(Transport(g));
   expect(g).toHaveBeenLastCalledWith("Peter");
 });

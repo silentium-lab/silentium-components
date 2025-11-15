@@ -1,21 +1,26 @@
 import {
-  Event,
-  EventType,
-  TransportType,
   Filtered,
+  Message,
+  MessageType,
   Shared,
   Transport,
+  TransportType,
 } from "silentium";
 
+/**
+ * Will return an error via error transport if
+ * time runs out from $timeout; if $base manages to
+ * respond before $timeout then the value from base will be returned
+ */
 export function Deadline<T>(
   error: TransportType<Error>,
-  $base: EventType<T>,
-  $timeout: EventType<number>,
-): EventType<T> {
-  return Event((transport) => {
+  $base: MessageType<T>,
+  $timeout: MessageType<number>,
+) {
+  return Message<T>((transport) => {
     let timer: ReturnType<typeof setTimeout> | number = 0;
     const base = Shared($base, true);
-    $timeout.event(
+    $timeout.to(
       Transport((timeout) => {
         if (timer) {
           clearTimeout(timer);
@@ -31,9 +36,9 @@ export function Deadline<T>(
         }, timeout);
 
         const f = Filtered(base, () => !timeoutReached);
-        f.event(transport);
+        f.to(transport);
 
-        base.event(
+        base.to(
           Transport(() => {
             timeoutReached = true;
           }),

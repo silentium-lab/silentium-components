@@ -4,10 +4,10 @@ import {
   Of,
   Shared,
   Transport,
-  TransportEvent,
+  TransportMessage,
 } from "silentium";
-import { Router } from "../navigation/Router";
 import { expect, test, vi } from "vitest";
+import { Router } from "../navigation/Router";
 
 const drop = (dropPart: string) => (value: string) => {
   return value.replace(dropPart, "");
@@ -17,24 +17,24 @@ test("Router._main.test", () => {
   const $url = Late<string>("http://domain.com/");
   const $urlPath = Shared(Applied($url, drop("http://domain.com")));
   const g = vi.fn();
-  $urlPath.event(Transport(g));
+  $urlPath.to(Transport(g));
 
   const $router = Router(
     $urlPath,
     Of([
       {
         pattern: "^/$",
-        event: TransportEvent(() => Of("page/home.html")),
+        message: TransportMessage(() => Of("page/home.html")),
       },
       {
         pattern: "/some/contacts",
-        event: TransportEvent(() => Of("page/contacts.html")),
+        message: TransportMessage(() => Of("page/contacts.html")),
       },
     ]),
-    TransportEvent(() => Of<string>("page/404.html")),
+    TransportMessage(() => Of<string>("page/404.html")),
   );
   const g2 = vi.fn();
-  $router.event(Transport(g2));
+  $router.to(Transport(g2));
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 

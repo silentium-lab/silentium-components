@@ -12,6 +12,6 @@ test("Path.nested.test", () => {
   };
   const typeName = Path(Of(record), Of("type.name"));
   const g = vi.fn();
-  typeName.event(Transport(g));
+  typeName.to(Transport(g));
   expect(g).toHaveBeenLastCalledWith("spider-man");
 });
