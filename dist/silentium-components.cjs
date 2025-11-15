@@ -3,13 +3,13 @@
 var silentium = require('silentium');
 
 function Branch($condition, $left, $right) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     const left = silentium.Primitive($left);
     let right;
     if ($right !== void 0) {
       right = silentium.Primitive($right);
     }
-    $condition.event(
+    $condition.to(
       silentium.Transport((v) => {
         let result = null;
         if (v) {
@@ -26,12 +26,12 @@ function Branch($condition, $left, $right) {
 }
 
 function BranchLazy($condition, $left, $right) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     const dc = silentium.DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    $condition.event(
+    $condition.to(
       silentium.Transport((v) => {
         destructor();
         let instance;
@@ -41,7 +41,7 @@ function BranchLazy($condition, $left, $right) {
           instance = $right.use();
         }
         if (instance !== void 0) {
-          instance.event(transport);
+          instance.to(transport);
           dc.add(instance);
         }
       })
@@ -51,8 +51,8 @@ function BranchLazy($condition, $left, $right) {
 }
 
 function Constant(permanent, $trigger) {
-  return silentium.Event((transport) => {
-    $trigger.event(
+  return silentium.Message((transport) => {
+    $trigger.to(
       silentium.Transport(() => {
         transport.use(permanent);
       })
@@ -61,10 +61,10 @@ function Constant(permanent, $trigger) {
 }
 
 function Deadline(error, $base, $timeout) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     let timer = 0;
     const base = silentium.Shared($base, true);
-    $timeout.event(
+    $timeout.to(
       silentium.Transport((timeout) => {
         if (timer) {
           clearTimeout(timer);
@@ -78,8 +78,8 @@ function Deadline(error, $base, $timeout) {
           error.use(new Error("Timeout reached in Deadline"));
         }, timeout);
         const f = silentium.Filtered(base, () => !timeoutReached);
-        f.event(transport);
-        base.event(
+        f.to(transport);
+        base.to(
           silentium.Transport(() => {
             timeoutReached = true;
           })
@@ -90,9 +90,9 @@ function Deadline(error, $base, $timeout) {
 }
 
 function Deferred($base, $trigger) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     const base = silentium.Primitive($base);
-    $trigger.event(
+    $trigger.to(
       silentium.Transport(() => {
         const value = base.primitive();
         if (silentium.isFilled(value)) {
@@ -104,7 +104,7 @@ function Deferred($base, $trigger) {
 }
 
 function Detached($base) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     const v = silentium.Primitive($base).primitive();
     if (silentium.isFilled(v)) {
       transport.use(v);
@@ -131,9 +131,9 @@ class DirtySource {
       this.cloner = cloner;
     }
   }
-  event(transport) {
+  to(transport) {
     const $comparing = silentium.Applied(this.$comparing, this.cloner);
-    silentium.All($comparing, this.$base).event(
+    silentium.All($comparing, this.$base).to(
       silentium.Transport(([comparing, base]) => {
         if (!comparing) {
           return;
@@ -162,29 +162,29 @@ class DirtySource {
 }
 
 function Loading($loadingStart, $loadingFinish) {
-  return silentium.Event((transport) => {
-    $loadingStart.event(silentium.Transport(() => transport.use(true)));
-    $loadingFinish.event(silentium.Transport(() => transport.use(false)));
+  return silentium.Message((transport) => {
+    $loadingStart.to(silentium.Transport(() => transport.use(true)));
+    $loadingFinish.to(silentium.Transport(() => transport.use(false)));
   });
 }
 
 function Lock($base, $lock) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     let locked = false;
-    $lock.event(
+    $lock.to(
       silentium.Transport((newLock) => {
         locked = newLock;
       })
     );
     const i = silentium.Filtered($base, () => !locked);
-    i.event(transport);
+    i.to(transport);
   });
 }
 
 function Memo($base) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     let last = null;
-    $base.event(
+    $base.to(
       silentium.Transport((v) => {
         if (v !== last && silentium.isFilled(v)) {
           transport.use(v);
@@ -196,9 +196,9 @@ function Memo($base) {
 }
 
 function OnlyChanged($base) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     let first = false;
-    $base.event(
+    $base.to(
       silentium.Transport((v) => {
         if (first === false) {
           first = true;
@@ -214,17 +214,17 @@ var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Part($base, $key) {
-  return new PartEvent($base, $key);
+  return new PartImpl($base, $key);
 }
-class PartEvent {
+class PartImpl {
   constructor($base, $key) {
     __publicField$1(this, "$base");
     __publicField$1(this, "$keyed");
     this.$base = silentium.SharedSource($base);
     this.$keyed = silentium.Shared($key);
   }
-  event(transport) {
-    silentium.All(this.$base, this.$keyed).event(
+  to(transport) {
+    silentium.All(this.$base, this.$keyed).to(
       silentium.Transport(([base, keyed]) => {
         const keys = keyed.split(".");
         let value = base;
@@ -252,8 +252,8 @@ class PartEvent {
 }
 
 function Path($base, $keyed) {
-  return silentium.Event((transport) => {
-    silentium.All($base, $keyed).event(
+  return silentium.Message((transport) => {
+    silentium.All($base, $keyed).to(
       silentium.Transport(([base, keyed]) => {
         const keys = keyed.split(".");
         let value = base;
@@ -269,20 +269,20 @@ function Path($base, $keyed) {
 }
 
 function Polling($base, $trigger) {
-  return silentium.Event((transport) => {
-    $trigger.event(
+  return silentium.Message((transport) => {
+    $trigger.to(
       silentium.Transport(() => {
-        $base.event(transport);
+        $base.to(transport);
       })
     );
   });
 }
 
 function Shot($target, $trigger) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     const targetSync = silentium.Primitive($target);
     targetSync.primitive();
-    $trigger.event(
+    $trigger.to(
       silentium.Transport(() => {
         const value = targetSync.primitive();
         if (silentium.isFilled(value)) {
@@ -294,7 +294,7 @@ function Shot($target, $trigger) {
 }
 
 function Task(baseSrc, delay = 0) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     let prevTimer = null;
     silentium.ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
@@ -305,12 +305,12 @@ function Task(baseSrc, delay = 0) {
           fn(v);
         }, delay);
       };
-    }).event(transport);
+    }).to(transport);
   });
 }
 
 function Tick($base) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     let microtaskScheduled = false;
     let lastValue = null;
     const scheduleMicrotask = () => {
@@ -323,7 +323,7 @@ function Tick($base) {
         }
       });
     };
-    $base.event(
+    $base.to(
       silentium.Transport((v) => {
         lastValue = v;
         if (!microtaskScheduled) {
@@ -334,18 +334,18 @@ function Tick($base) {
   });
 }
 
-function Transaction($base, eventBuilder, ...args) {
-  return silentium.Event((transport) => {
+function Transaction($base, builder, ...args) {
+  return silentium.Message((transport) => {
     const $res = silentium.LateShared();
     const destructors = [];
-    $base.event(
+    $base.to(
       silentium.Transport((v) => {
-        const $event = eventBuilder(silentium.Of(v), ...args.map((a) => Detached(a)));
-        destructors.push($event);
-        $event.event($res);
+        const $msg = builder(silentium.Of(v), ...args.map((a) => Detached(a)));
+        destructors.push($msg);
+        $msg.to($res);
       })
     );
-    $res.event(transport);
+    $res.to(transport);
     return () => {
       destructors.forEach((d) => d?.destroy());
       destructors.length = 0;
@@ -354,9 +354,9 @@ function Transaction($base, eventBuilder, ...args) {
 }
 
 function HashTable($base) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     const record = {};
-    $base.event(
+    $base.to(
       silentium.Transport(([key, value]) => {
         record[key] = value;
         transport.use(record);
@@ -365,10 +365,15 @@ function HashTable($base) {
   });
 }
 
-function RecordOf(record) {
-  return silentium.Event((transport) => {
+function Record(record) {
+  return silentium.Message((transport) => {
     const keys = Object.keys(record);
-    silentium.All(...Object.values(record)).event(
+    keys.forEach((key) => {
+      if (!silentium.isMessage(record[key])) {
+        record[key] = silentium.Of(record[key]);
+      }
+    });
+    silentium.All(...Object.values(record)).to(
       silentium.Transport((entries) => {
         const record2 = {};
         entries.forEach((entry, index) => {
@@ -381,8 +386,8 @@ function RecordOf(record) {
 }
 
 function Concatenated(sources, joinPartSrc = silentium.Of("")) {
-  return silentium.Event((transport) => {
-    silentium.All(joinPartSrc, ...sources).event(
+  return silentium.Message((transport) => {
+    silentium.All(joinPartSrc, ...sources).to(
       silentium.Transport(([joinPart, ...strings]) => {
         transport.use(strings.join(joinPart));
       })
@@ -394,9 +399,9 @@ var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Template($src = silentium.Of(""), $places = silentium.Of({})) {
-  return new TemplateEvent($src, $places);
+  return new TemplateImpl($src, $places);
 }
-class TemplateEvent {
+class TemplateImpl {
   constructor($src = silentium.Of(""), $places = silentium.Of({})) {
     this.$src = $src;
     this.$places = $places;
@@ -405,8 +410,8 @@ class TemplateEvent {
       $TPL: silentium.Of("$TPL")
     });
   }
-  event(transport) {
-    const $vars = RecordOf(this.vars);
+  to(transport) {
+    const $vars = Record(this.vars);
     silentium.Applied(silentium.All(this.$src, this.$places, $vars), ([base, rules, vars]) => {
       Object.entries(rules).forEach(([ph, val]) => {
         base = base.replaceAll(ph, String(val));
@@ -415,7 +420,7 @@ class TemplateEvent {
         base = base.replaceAll(ph, String(val));
       });
       return base;
-    }).event(transport);
+    }).to(transport);
     return this;
   }
   template(value) {
@@ -441,8 +446,8 @@ class TemplateEvent {
 }
 
 function RegexpMatched(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
-  return silentium.Event((transport) => {
-    silentium.All(patternSrc, valueSrc, flagsSrc).event(
+  return silentium.Message((transport) => {
+    silentium.All(patternSrc, valueSrc, flagsSrc).to(
       silentium.Transport(([pattern, value, flags]) => {
         transport.use(new RegExp(pattern, flags).test(value));
       })
@@ -451,8 +456,8 @@ function RegexpMatched(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
 }
 
 function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = silentium.Of("")) {
-  return silentium.Event((transport) => {
-    silentium.All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).event(
+  return silentium.Message((transport) => {
+    silentium.All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).to(
       silentium.Transport(([pattern, value, replaceValue, flags]) => {
         transport.use(
           String(value).replace(new RegExp(pattern, flags), replaceValue)
@@ -463,8 +468,8 @@ function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = silent
 }
 
 function RegexpMatch(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
-  return silentium.Event((transport) => {
-    silentium.All(patternSrc, valueSrc, flagsSrc).event(
+  return silentium.Message((transport) => {
+    silentium.All(patternSrc, valueSrc, flagsSrc).to(
       silentium.Transport(([pattern, value, flags]) => {
         const result = new RegExp(pattern, flags).exec(value);
         transport.use(result ?? []);
@@ -474,8 +479,8 @@ function RegexpMatch(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
 }
 
 function Set(baseSrc, keySrc, valueSrc) {
-  return silentium.Event((transport) => {
-    silentium.All(baseSrc, keySrc, valueSrc).event(
+  return silentium.Message((transport) => {
+    silentium.All(baseSrc, keySrc, valueSrc).to(
       silentium.Transport(([base, key, value]) => {
         base[key] = value;
         transport.use(base);
@@ -485,12 +490,12 @@ function Set(baseSrc, keySrc, valueSrc) {
 }
 
 function Router($url, $routes, $default) {
-  return silentium.Event((transport) => {
+  return silentium.Message((transport) => {
     const dc = silentium.DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    silentium.All($routes, $url).event(
+    silentium.All($routes, $url).to(
       silentium.Transport(([routes, url]) => {
         destructor();
         const $matches = silentium.All(
@@ -502,18 +507,18 @@ function Router($url, $routes, $default) {
             )
           )
         );
-        $matches.event(
+        $matches.to(
           silentium.Transport((matches) => {
             const index = matches.findIndex((v) => v === true);
             if (index === -1) {
               const instance = $default.use();
               dc.add(instance);
-              instance.event(transport);
+              instance.to(transport);
             }
             if (index > -1) {
-              const instance = routes[index].event.use();
+              const instance = routes[index].message.use();
               dc.add(instance);
-              instance.event(transport);
+              instance.to(transport);
             }
           })
         );
@@ -524,8 +529,8 @@ function Router($url, $routes, $default) {
 }
 
 function And($one, $two) {
-  return silentium.Event((transport) => {
-    silentium.All($one, $two).event(
+  return silentium.Message((transport) => {
+    silentium.All($one, $two).to(
       silentium.Transport(([one, two]) => {
         transport.use(one && two);
       })
@@ -534,8 +539,8 @@ function And($one, $two) {
 }
 
 function Or($one, $two) {
-  return silentium.Event((transport) => {
-    silentium.All($one, $two).event(
+  return silentium.Message((transport) => {
+    silentium.All($one, $two).to(
       silentium.Transport(([one, two]) => {
         transport.use(one || two);
       })
@@ -544,8 +549,8 @@ function Or($one, $two) {
 }
 
 function Not($base) {
-  return silentium.Event((transport) => {
-    $base.event(
+  return silentium.Message((transport) => {
+    $base.to(
       silentium.Transport((v) => {
         transport.use(!v);
       })
@@ -554,14 +559,14 @@ function Not($base) {
 }
 
 function Bool($base) {
-  return silentium.Event((transport) => {
-    silentium.Applied($base, Boolean).event(transport);
+  return silentium.Message((transport) => {
+    silentium.Applied($base, Boolean).to(transport);
   });
 }
 
 function FromJson($json, error) {
-  return silentium.Event((transport) => {
-    $json.event(
+  return silentium.Message((transport) => {
+    $json.to(
       silentium.Transport((json) => {
         try {
           transport.use(JSON.parse(json));
@@ -574,8 +579,8 @@ function FromJson($json, error) {
 }
 
 function ToJson($data, error) {
-  return silentium.Event((transport) => {
-    $data.event(
+  return silentium.Message((transport) => {
+    $data.to(
       silentium.Transport((data) => {
         try {
           transport.use(JSON.stringify(data));
@@ -588,8 +593,8 @@ function ToJson($data, error) {
 }
 
 function First($base) {
-  return silentium.Event((transport) => {
-    silentium.Applied($base, (a) => a[0]).event(transport);
+  return silentium.Message((transport) => {
+    silentium.Applied($base, (a) => a[0]).to(transport);
   });
 }
 
@@ -615,7 +620,7 @@ exports.Or = Or;
 exports.Part = Part;
 exports.Path = Path;
 exports.Polling = Polling;
-exports.RecordOf = RecordOf;
+exports.Record = Record;
 exports.RegexpMatch = RegexpMatch;
 exports.RegexpMatched = RegexpMatched;
 exports.RegexpReplaced = RegexpReplaced;

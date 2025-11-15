@@ -1,13 +1,13 @@
-import { Event, Primitive, Transport, DestroyContainer, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, isDestroyable } from 'silentium';
+import { Message, Primitive, Transport, DestroyContainer, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, isMessage, isDestroyable } from 'silentium';
 
 function Branch($condition, $left, $right) {
-  return Event((transport) => {
+  return Message((transport) => {
     const left = Primitive($left);
     let right;
     if ($right !== void 0) {
       right = Primitive($right);
     }
-    $condition.event(
+    $condition.to(
       Transport((v) => {
         let result = null;
         if (v) {
@@ -24,12 +24,12 @@ function Branch($condition, $left, $right) {
 }
 
 function BranchLazy($condition, $left, $right) {
-  return Event((transport) => {
+  return Message((transport) => {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    $condition.event(
+    $condition.to(
       Transport((v) => {
         destructor();
         let instance;
@@ -39,7 +39,7 @@ function BranchLazy($condition, $left, $right) {
           instance = $right.use();
         }
         if (instance !== void 0) {
-          instance.event(transport);
+          instance.to(transport);
           dc.add(instance);
         }
       })
@@ -49,8 +49,8 @@ function BranchLazy($condition, $left, $right) {
 }
 
 function Constant(permanent, $trigger) {
-  return Event((transport) => {
-    $trigger.event(
+  return Message((transport) => {
+    $trigger.to(
       Transport(() => {
         transport.use(permanent);
       })
@@ -59,10 +59,10 @@ function Constant(permanent, $trigger) {
 }
 
 function Deadline(error, $base, $timeout) {
-  return Event((transport) => {
+  return Message((transport) => {
     let timer = 0;
     const base = Shared($base, true);
-    $timeout.event(
+    $timeout.to(
       Transport((timeout) => {
         if (timer) {
           clearTimeout(timer);
@@ -76,8 +76,8 @@ function Deadline(error, $base, $timeout) {
           error.use(new Error("Timeout reached in Deadline"));
         }, timeout);
         const f = Filtered(base, () => !timeoutReached);
-        f.event(transport);
-        base.event(
+        f.to(transport);
+        base.to(
           Transport(() => {
             timeoutReached = true;
           })
@@ -88,9 +88,9 @@ function Deadline(error, $base, $timeout) {
 }
 
 function Deferred($base, $trigger) {
-  return Event((transport) => {
+  return Message((transport) => {
     const base = Primitive($base);
-    $trigger.event(
+    $trigger.to(
       Transport(() => {
         const value = base.primitive();
         if (isFilled(value)) {
@@ -102,7 +102,7 @@ function Deferred($base, $trigger) {
 }
 
 function Detached($base) {
-  return Event((transport) => {
+  return Message((transport) => {
     const v = Primitive($base).primitive();
     if (isFilled(v)) {
       transport.use(v);
@@ -129,9 +129,9 @@ class DirtySource {
       this.cloner = cloner;
     }
   }
-  event(transport) {
+  to(transport) {
     const $comparing = Applied(this.$comparing, this.cloner);
-    All($comparing, this.$base).event(
+    All($comparing, this.$base).to(
       Transport(([comparing, base]) => {
         if (!comparing) {
           return;
@@ -160,29 +160,29 @@ class DirtySource {
 }
 
 function Loading($loadingStart, $loadingFinish) {
-  return Event((transport) => {
-    $loadingStart.event(Transport(() => transport.use(true)));
-    $loadingFinish.event(Transport(() => transport.use(false)));
+  return Message((transport) => {
+    $loadingStart.to(Transport(() => transport.use(true)));
+    $loadingFinish.to(Transport(() => transport.use(false)));
   });
 }
 
 function Lock($base, $lock) {
-  return Event((transport) => {
+  return Message((transport) => {
     let locked = false;
-    $lock.event(
+    $lock.to(
       Transport((newLock) => {
         locked = newLock;
       })
     );
     const i = Filtered($base, () => !locked);
-    i.event(transport);
+    i.to(transport);
   });
 }
 
 function Memo($base) {
-  return Event((transport) => {
+  return Message((transport) => {
     let last = null;
-    $base.event(
+    $base.to(
       Transport((v) => {
         if (v !== last && isFilled(v)) {
           transport.use(v);
@@ -194,9 +194,9 @@ function Memo($base) {
 }
 
 function OnlyChanged($base) {
-  return Event((transport) => {
+  return Message((transport) => {
     let first = false;
-    $base.event(
+    $base.to(
       Transport((v) => {
         if (first === false) {
           first = true;
@@ -212,17 +212,17 @@ var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Part($base, $key) {
-  return new PartEvent($base, $key);
+  return new PartImpl($base, $key);
 }
-class PartEvent {
+class PartImpl {
   constructor($base, $key) {
     __publicField$1(this, "$base");
     __publicField$1(this, "$keyed");
     this.$base = SharedSource($base);
     this.$keyed = Shared($key);
   }
-  event(transport) {
-    All(this.$base, this.$keyed).event(
+  to(transport) {
+    All(this.$base, this.$keyed).to(
       Transport(([base, keyed]) => {
         const keys = keyed.split(".");
         let value = base;
@@ -250,8 +250,8 @@ class PartEvent {
 }
 
 function Path($base, $keyed) {
-  return Event((transport) => {
-    All($base, $keyed).event(
+  return Message((transport) => {
+    All($base, $keyed).to(
       Transport(([base, keyed]) => {
         const keys = keyed.split(".");
         let value = base;
@@ -267,20 +267,20 @@ function Path($base, $keyed) {
 }
 
 function Polling($base, $trigger) {
-  return Event((transport) => {
-    $trigger.event(
+  return Message((transport) => {
+    $trigger.to(
       Transport(() => {
-        $base.event(transport);
+        $base.to(transport);
       })
     );
   });
 }
 
 function Shot($target, $trigger) {
-  return Event((transport) => {
+  return Message((transport) => {
     const targetSync = Primitive($target);
     targetSync.primitive();
-    $trigger.event(
+    $trigger.to(
       Transport(() => {
         const value = targetSync.primitive();
         if (isFilled(value)) {
@@ -292,7 +292,7 @@ function Shot($target, $trigger) {
 }
 
 function Task(baseSrc, delay = 0) {
-  return Event((transport) => {
+  return Message((transport) => {
     let prevTimer = null;
     ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
@@ -303,12 +303,12 @@ function Task(baseSrc, delay = 0) {
           fn(v);
         }, delay);
       };
-    }).event(transport);
+    }).to(transport);
   });
 }
 
 function Tick($base) {
-  return Event((transport) => {
+  return Message((transport) => {
     let microtaskScheduled = false;
     let lastValue = null;
     const scheduleMicrotask = () => {
@@ -321,7 +321,7 @@ function Tick($base) {
         }
       });
     };
-    $base.event(
+    $base.to(
       Transport((v) => {
         lastValue = v;
         if (!microtaskScheduled) {
@@ -332,18 +332,18 @@ function Tick($base) {
   });
 }
 
-function Transaction($base, eventBuilder, ...args) {
-  return Event((transport) => {
+function Transaction($base, builder, ...args) {
+  return Message((transport) => {
     const $res = LateShared();
     const destructors = [];
-    $base.event(
+    $base.to(
       Transport((v) => {
-        const $event = eventBuilder(Of(v), ...args.map((a) => Detached(a)));
-        destructors.push($event);
-        $event.event($res);
+        const $msg = builder(Of(v), ...args.map((a) => Detached(a)));
+        destructors.push($msg);
+        $msg.to($res);
       })
     );
-    $res.event(transport);
+    $res.to(transport);
     return () => {
       destructors.forEach((d) => d?.destroy());
       destructors.length = 0;
@@ -352,9 +352,9 @@ function Transaction($base, eventBuilder, ...args) {
 }
 
 function HashTable($base) {
-  return Event((transport) => {
+  return Message((transport) => {
     const record = {};
-    $base.event(
+    $base.to(
       Transport(([key, value]) => {
         record[key] = value;
         transport.use(record);
@@ -363,10 +363,15 @@ function HashTable($base) {
   });
 }
 
-function RecordOf(record) {
-  return Event((transport) => {
+function Record(record) {
+  return Message((transport) => {
     const keys = Object.keys(record);
-    All(...Object.values(record)).event(
+    keys.forEach((key) => {
+      if (!isMessage(record[key])) {
+        record[key] = Of(record[key]);
+      }
+    });
+    All(...Object.values(record)).to(
       Transport((entries) => {
         const record2 = {};
         entries.forEach((entry, index) => {
@@ -379,8 +384,8 @@ function RecordOf(record) {
 }
 
 function Concatenated(sources, joinPartSrc = Of("")) {
-  return Event((transport) => {
-    All(joinPartSrc, ...sources).event(
+  return Message((transport) => {
+    All(joinPartSrc, ...sources).to(
       Transport(([joinPart, ...strings]) => {
         transport.use(strings.join(joinPart));
       })
@@ -392,9 +397,9 @@ var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Template($src = Of(""), $places = Of({})) {
-  return new TemplateEvent($src, $places);
+  return new TemplateImpl($src, $places);
 }
-class TemplateEvent {
+class TemplateImpl {
   constructor($src = Of(""), $places = Of({})) {
     this.$src = $src;
     this.$places = $places;
@@ -403,8 +408,8 @@ class TemplateEvent {
       $TPL: Of("$TPL")
     });
   }
-  event(transport) {
-    const $vars = RecordOf(this.vars);
+  to(transport) {
+    const $vars = Record(this.vars);
     Applied(All(this.$src, this.$places, $vars), ([base, rules, vars]) => {
       Object.entries(rules).forEach(([ph, val]) => {
         base = base.replaceAll(ph, String(val));
@@ -413,7 +418,7 @@ class TemplateEvent {
         base = base.replaceAll(ph, String(val));
       });
       return base;
-    }).event(transport);
+    }).to(transport);
     return this;
   }
   template(value) {
@@ -439,8 +444,8 @@ class TemplateEvent {
 }
 
 function RegexpMatched(patternSrc, valueSrc, flagsSrc = Of("")) {
-  return Event((transport) => {
-    All(patternSrc, valueSrc, flagsSrc).event(
+  return Message((transport) => {
+    All(patternSrc, valueSrc, flagsSrc).to(
       Transport(([pattern, value, flags]) => {
         transport.use(new RegExp(pattern, flags).test(value));
       })
@@ -449,8 +454,8 @@ function RegexpMatched(patternSrc, valueSrc, flagsSrc = Of("")) {
 }
 
 function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = Of("")) {
-  return Event((transport) => {
-    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).event(
+  return Message((transport) => {
+    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).to(
       Transport(([pattern, value, replaceValue, flags]) => {
         transport.use(
           String(value).replace(new RegExp(pattern, flags), replaceValue)
@@ -461,8 +466,8 @@ function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = Of("")
 }
 
 function RegexpMatch(patternSrc, valueSrc, flagsSrc = Of("")) {
-  return Event((transport) => {
-    All(patternSrc, valueSrc, flagsSrc).event(
+  return Message((transport) => {
+    All(patternSrc, valueSrc, flagsSrc).to(
       Transport(([pattern, value, flags]) => {
         const result = new RegExp(pattern, flags).exec(value);
         transport.use(result ?? []);
@@ -472,8 +477,8 @@ function RegexpMatch(patternSrc, valueSrc, flagsSrc = Of("")) {
 }
 
 function Set(baseSrc, keySrc, valueSrc) {
-  return Event((transport) => {
-    All(baseSrc, keySrc, valueSrc).event(
+  return Message((transport) => {
+    All(baseSrc, keySrc, valueSrc).to(
       Transport(([base, key, value]) => {
         base[key] = value;
         transport.use(base);
@@ -483,12 +488,12 @@ function Set(baseSrc, keySrc, valueSrc) {
 }
 
 function Router($url, $routes, $default) {
-  return Event((transport) => {
+  return Message((transport) => {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    All($routes, $url).event(
+    All($routes, $url).to(
       Transport(([routes, url]) => {
         destructor();
         const $matches = All(
@@ -500,18 +505,18 @@ function Router($url, $routes, $default) {
             )
           )
         );
-        $matches.event(
+        $matches.to(
           Transport((matches) => {
             const index = matches.findIndex((v) => v === true);
             if (index === -1) {
               const instance = $default.use();
               dc.add(instance);
-              instance.event(transport);
+              instance.to(transport);
             }
             if (index > -1) {
-              const instance = routes[index].event.use();
+              const instance = routes[index].message.use();
               dc.add(instance);
-              instance.event(transport);
+              instance.to(transport);
             }
           })
         );
@@ -522,8 +527,8 @@ function Router($url, $routes, $default) {
 }
 
 function And($one, $two) {
-  return Event((transport) => {
-    All($one, $two).event(
+  return Message((transport) => {
+    All($one, $two).to(
       Transport(([one, two]) => {
         transport.use(one && two);
       })
@@ -532,8 +537,8 @@ function And($one, $two) {
 }
 
 function Or($one, $two) {
-  return Event((transport) => {
-    All($one, $two).event(
+  return Message((transport) => {
+    All($one, $two).to(
       Transport(([one, two]) => {
         transport.use(one || two);
       })
@@ -542,8 +547,8 @@ function Or($one, $two) {
 }
 
 function Not($base) {
-  return Event((transport) => {
-    $base.event(
+  return Message((transport) => {
+    $base.to(
       Transport((v) => {
         transport.use(!v);
       })
@@ -552,14 +557,14 @@ function Not($base) {
 }
 
 function Bool($base) {
-  return Event((transport) => {
-    Applied($base, Boolean).event(transport);
+  return Message((transport) => {
+    Applied($base, Boolean).to(transport);
   });
 }
 
 function FromJson($json, error) {
-  return Event((transport) => {
-    $json.event(
+  return Message((transport) => {
+    $json.to(
       Transport((json) => {
         try {
           transport.use(JSON.parse(json));
@@ -572,8 +577,8 @@ function FromJson($json, error) {
 }
 
 function ToJson($data, error) {
-  return Event((transport) => {
-    $data.event(
+  return Message((transport) => {
+    $data.to(
       Transport((data) => {
         try {
           transport.use(JSON.stringify(data));
@@ -586,10 +591,10 @@ function ToJson($data, error) {
 }
 
 function First($base) {
-  return Event((transport) => {
-    Applied($base, (a) => a[0]).event(transport);
+  return Message((transport) => {
+    Applied($base, (a) => a[0]).to(transport);
   });
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, RecordOf, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transaction };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transaction };
 //# sourceMappingURL=silentium-components.mjs.map
