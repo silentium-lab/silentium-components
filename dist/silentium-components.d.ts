@@ -1,11 +1,11 @@
 import * as silentium from 'silentium';
-import { MessageType, TransportType, DestroyableType, SourceType, ConstructorType } from 'silentium';
+import { MaybeMessage, MessageType, TransportType, DestroyableType, SourceType, ConstructorType } from 'silentium';
 
 /**
  * Allows switching between left and right messages depending on condition
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
-declare function Branch<Then, Else>($condition: MessageType<boolean>, $left: MessageType<Then>, $right?: MessageType<Else>): silentium.MessageImpl<Then | Else>;
+declare function Branch<Then, Else>(_condition: MaybeMessage<boolean>, _left: MaybeMessage<Then>, _right?: MaybeMessage<Else>): silentium.MessageImpl<Then | Else>;
 
 /**
  * Depending on the $condition message,
@@ -27,7 +27,7 @@ declare function Constant<T>(permanent: T, $trigger: MessageType): MessageType<T
  * time runs out from $timeout; if $base manages to
  * respond before $timeout then the value from base will be returned
  */
-declare function Deadline<T>(error: TransportType<Error>, $base: MessageType<T>, $timeout: MessageType<number>): silentium.MessageImpl<T>;
+declare function Deadline<T>(error: TransportType<Error>, $base: MessageType<T>, _timeout: MaybeMessage<number>): silentium.MessageImpl<T>;
 
 /**
  * Defer one source after another, gives values Of baseSrc only when triggerSrc responds
@@ -80,13 +80,13 @@ declare function OnlyChanged<T>($base: MessageType<T>): silentium.MessageImpl<T>
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Part<R, T extends object | Array<any> = any, K extends string = any>($base: SourceType<T>, $key: MessageType<K>): SourceType<R>;
+declare function Part<R, T extends object | Array<any> = any, K extends string = any>($base: SourceType<T>, $key: MaybeMessage<K>): SourceType<R>;
 
 /**
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Path<R, T extends object | Array<any> = any, K extends string = any>($base: MessageType<T>, $keyed: MessageType<K>): silentium.MessageImpl<R>;
+declare function Path<R, T extends object | Array<any> = any, K extends string = any>($base: MessageType<T>, _keyed: MaybeMessage<K>): silentium.MessageImpl<R>;
 
 /**
  * Active polling of $base message

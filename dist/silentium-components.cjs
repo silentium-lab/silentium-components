@@ -2,7 +2,10 @@
 
 var silentium = require('silentium');
 
-function Branch($condition, $left, $right) {
+function Branch(_condition, _left, _right) {
+  const $condition = silentium.ActualMessage(_condition);
+  const $left = silentium.ActualMessage(_left);
+  const $right = _right && silentium.ActualMessage(_right);
   return silentium.Message((transport) => {
     const left = silentium.Primitive($left);
     let right;
@@ -60,7 +63,8 @@ function Constant(permanent, $trigger) {
   });
 }
 
-function Deadline(error, $base, $timeout) {
+function Deadline(error, $base, _timeout) {
+  const $timeout = silentium.ActualMessage(_timeout);
   return silentium.Message((transport) => {
     let timer = 0;
     const base = silentium.Shared($base, true);
@@ -214,7 +218,7 @@ var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Part($base, $key) {
-  return new PartImpl($base, $key);
+  return new PartImpl($base, silentium.ActualMessage($key));
 }
 class PartImpl {
   constructor($base, $key) {
@@ -251,7 +255,8 @@ class PartImpl {
   }
 }
 
-function Path($base, $keyed) {
+function Path($base, _keyed) {
+  const $keyed = silentium.ActualMessage(_keyed);
   return silentium.Message((transport) => {
     silentium.All($base, $keyed).to(
       silentium.Transport(([base, keyed]) => {

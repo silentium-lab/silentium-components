@@ -1,6 +1,8 @@
 import {
+  ActualMessage,
   All,
   isFilled,
+  MaybeMessage,
   MessageType,
   Primitive,
   Shared,
@@ -18,8 +20,8 @@ export function Part<
   R,
   T extends object | Array<any> = any,
   K extends string = any,
->($base: SourceType<T>, $key: MessageType<K>): SourceType<R> {
-  return new PartImpl($base, $key);
+>($base: SourceType<T>, $key: MaybeMessage<K>): SourceType<R> {
+  return new PartImpl($base, ActualMessage($key));
 }
 
 class PartImpl<R, T extends object | Array<any>, K extends string = any>

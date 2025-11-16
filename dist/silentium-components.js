@@ -1,6 +1,9 @@
-import { Message, Primitive, Transport, DestroyContainer, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, isMessage, isDestroyable } from 'silentium';
+import { ActualMessage, Message, Primitive, Transport, DestroyContainer, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, isMessage, isDestroyable } from 'silentium';
 
-function Branch($condition, $left, $right) {
+function Branch(_condition, _left, _right) {
+  const $condition = ActualMessage(_condition);
+  const $left = ActualMessage(_left);
+  const $right = _right && ActualMessage(_right);
   return Message((transport) => {
     const left = Primitive($left);
     let right;
@@ -58,7 +61,8 @@ function Constant(permanent, $trigger) {
   });
 }
 
-function Deadline(error, $base, $timeout) {
+function Deadline(error, $base, _timeout) {
+  const $timeout = ActualMessage(_timeout);
   return Message((transport) => {
     let timer = 0;
     const base = Shared($base, true);
@@ -212,7 +216,7 @@ var __defProp$1 = Object.defineProperty;
 var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Part($base, $key) {
-  return new PartImpl($base, $key);
+  return new PartImpl($base, ActualMessage($key));
 }
 class PartImpl {
   constructor($base, $key) {
@@ -249,7 +253,8 @@ class PartImpl {
   }
 }
 
-function Path($base, $keyed) {
+function Path($base, _keyed) {
+  const $keyed = ActualMessage(_keyed);
   return Message((transport) => {
     All($base, $keyed).to(
       Transport(([base, keyed]) => {

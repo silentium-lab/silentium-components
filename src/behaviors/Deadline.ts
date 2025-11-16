@@ -1,5 +1,7 @@
 import {
+  ActualMessage,
   Filtered,
+  MaybeMessage,
   Message,
   MessageType,
   Shared,
@@ -15,8 +17,9 @@ import {
 export function Deadline<T>(
   error: TransportType<Error>,
   $base: MessageType<T>,
-  $timeout: MessageType<number>,
+  _timeout: MaybeMessage<number>,
 ) {
+  const $timeout = ActualMessage(_timeout);
   return Message<T>((transport) => {
     let timer: ReturnType<typeof setTimeout> | number = 0;
     const base = Shared($base, true);

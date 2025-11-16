@@ -1,14 +1,23 @@
-import { Message, MessageType, Primitive, Transport } from "silentium";
+import {
+  ActualMessage,
+  MaybeMessage,
+  Message,
+  Primitive,
+  Transport,
+} from "silentium";
 
 /**
  * Allows switching between left and right messages depending on condition
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
 export function Branch<Then, Else>(
-  $condition: MessageType<boolean>,
-  $left: MessageType<Then>,
-  $right?: MessageType<Else>,
+  _condition: MaybeMessage<boolean>,
+  _left: MaybeMessage<Then>,
+  _right?: MaybeMessage<Else>,
 ) {
+  const $condition = ActualMessage(_condition);
+  const $left = ActualMessage(_left);
+  const $right = _right && ActualMessage(_right);
   return Message<Then | Else>((transport) => {
     const left = Primitive($left);
     let right: ReturnType<typeof Primitive<Else>>;

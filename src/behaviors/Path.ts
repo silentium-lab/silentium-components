@@ -1,4 +1,11 @@
-import { All, Message, MessageType, Transport } from "silentium";
+import {
+  ActualMessage,
+  All,
+  MaybeMessage,
+  Message,
+  MessageType,
+  Transport,
+} from "silentium";
 
 /**
  * Return source Of record path
@@ -8,7 +15,8 @@ export function Path<
   R,
   T extends object | Array<any> = any,
   K extends string = any,
->($base: MessageType<T>, $keyed: MessageType<K>) {
+>($base: MessageType<T>, _keyed: MaybeMessage<K>) {
+  const $keyed = ActualMessage(_keyed);
   return Message<R>((transport) => {
     All($base, $keyed).to(
       Transport(([base, keyed]) => {
