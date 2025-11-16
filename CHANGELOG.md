@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.82](https://github.com/silentium-lab/silentium-components/compare/v0.0.81...v0.0.82) (2025-11-16)
+
+
+### Bug Fixes
+
+* **main:** maybeMessage usage ([c2aa7a7](https://github.com/silentium-lab/silentium-components/commit/c2aa7a72e5587caa349a1e55261e1283a6a4fa95))
+
 ### [0.0.81](https://github.com/silentium-lab/silentium-components/compare/v0.0.80...v0.0.81) (2025-11-15)
 
 
