@@ -1,4 +1,4 @@
-import { Late, Of, Transport } from "silentium";
+import { Late, Of, Tap } from "silentium";
 import { RegexpMatched } from "../system/RegexpMatched";
 import { expect, test, vi } from "vitest";
 
@@ -6,7 +6,7 @@ test("RegexpMatched.test", () => {
   const $url = Late<string>("http://domain.com/some/url/");
   const $matched = RegexpMatched(Of("/some/url"), $url);
   const g = vi.fn();
-  $matched.to(Transport(g));
+  $matched.pipe(Tap(g));
 
   expect(g).toHaveBeenLastCalledWith(true);
 

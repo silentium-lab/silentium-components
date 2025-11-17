@@ -1,4 +1,4 @@
-import { Late, Transport } from "silentium";
+import { Late, Tap } from "silentium";
 import { HashTable } from "../structures/HashTable";
 import { expect, test, vi } from "vitest";
 
@@ -6,7 +6,7 @@ test("HashTable.test", () => {
   const $entry = Late<[string, string]>();
   const $hash = HashTable($entry);
   const g = vi.fn();
-  $hash.to(Transport(g));
+  $hash.pipe(Tap(g));
   $entry.use(["key-one", "value-one"]);
   $entry.use(["key-two", "value-two"]);
 

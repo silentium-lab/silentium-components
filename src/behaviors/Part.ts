@@ -8,8 +8,8 @@ import {
   Shared,
   SharedSource,
   SourceType,
-  Transport,
-  TransportType,
+  Tap,
+  TapType,
 } from "silentium";
 
 /**
@@ -35,9 +35,9 @@ class PartImpl<R, T extends object | Array<any>, K extends string = any>
     this.$keyed = Shared($key);
   }
 
-  public to(transport: TransportType<R, null>): this {
-    All(this.$base, this.$keyed).to(
-      Transport(([base, keyed]) => {
+  public pipe(transport: TapType<R, null>): this {
+    All(this.$base, this.$keyed).pipe(
+      Tap(([base, keyed]) => {
         const keys = keyed.split(".");
         let value: unknown = base;
         keys.forEach((key) => {

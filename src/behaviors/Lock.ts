@@ -1,4 +1,4 @@
-import { Filtered, Message, MessageType, Transport } from "silentium";
+import { Filtered, Message, MessageType, Tap } from "silentium";
 
 /**
  * Allows locking messages
@@ -6,14 +6,14 @@ import { Filtered, Message, MessageType, Transport } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
  */
 export function Lock<T>($base: MessageType<T>, $lock: MessageType<boolean>) {
-  return Message<T>((transport) => {
+  return Message<T>(function () {
     let locked = false;
-    $lock.to(
-      Transport((newLock) => {
+    $lock.pipe(
+      Tap((newLock) => {
         locked = newLock;
       }),
     );
     const i = Filtered($base, () => !locked);
-    i.to(transport);
+    i.pipe(this);
   });
 }

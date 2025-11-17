@@ -1,4 +1,4 @@
-import { Late, Transport } from "silentium";
+import { Late, Tap } from "silentium";
 import { Loading } from "../behaviors/Loading";
 import { expect, test, vi } from "vitest";
 
@@ -7,7 +7,7 @@ test("Loading.test", () => {
   const $loadingFinish = Late();
   const $loading = Loading($loadingStart, $loadingFinish);
   const g = vi.fn();
-  $loading.to(Transport(g));
+  $loading.pipe(Tap(g));
   $loadingStart.use({});
   expect(g).toHaveBeenLastCalledWith(true);
   $loadingFinish.use({});

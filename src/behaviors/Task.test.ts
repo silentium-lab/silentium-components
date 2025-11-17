@@ -1,4 +1,4 @@
-import { Late, Transport } from "silentium";
+import { Late, Tap } from "silentium";
 import { Task } from "../behaviors/Task";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
@@ -15,8 +15,8 @@ test("Task delays emission", () => {
   const $trigger = Late<string>();
   const delayed = Task($trigger, 100);
   const data: string[] = [];
-  delayed.to(
-    Transport((v) => {
+  delayed.pipe(
+    Tap((v) => {
       data.push(v);
     }),
   );
@@ -36,8 +36,8 @@ test("Task emits only last value when multiple before delay", () => {
   const $trigger = Late<string>();
   const delayed = Task($trigger, 100);
   const data: string[] = [];
-  delayed.to(
-    Transport((v) => {
+  delayed.pipe(
+    Tap((v) => {
       data.push(v);
     }),
   );

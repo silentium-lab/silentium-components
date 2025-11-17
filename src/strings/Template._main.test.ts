@@ -1,4 +1,4 @@
-import { Of, Transport } from "silentium";
+import { Of, Tap } from "silentium";
 import { Template } from "../strings/Template";
 import { Record } from "../structures";
 import { expect, test, vi } from "vitest";
@@ -11,7 +11,7 @@ test("Template._main.test", () => {
     }),
   );
   const g = vi.fn();
-  tpl.to(Transport(g));
+  tpl.pipe(Tap(g));
 
   expect(g).toHaveBeenLastCalledWith("<h1>one value</h1>");
 
@@ -22,7 +22,7 @@ test("Template._main.test", () => {
     }),
   );
   const g2 = vi.fn();
-  tpl2.to(Transport(g2));
+  tpl2.pipe(Tap(g2));
 
   expect(g2).toHaveBeenLastCalledWith("<h2>second value</h2>");
 });

@@ -5,7 +5,7 @@ import {
   Message,
   MessageType,
   Of,
-  Transport,
+  Tap,
 } from "silentium";
 import { Detached } from "../behaviors/Detached";
 
@@ -21,18 +21,18 @@ export function Transaction<T, R = unknown>(
   >,
   ...args: MessageType[]
 ) {
-  return Message<R>((transport) => {
+  return Message<R>(function () {
     const $res = LateShared<R>();
     const destructors: DestroyableType[] = [];
 
-    $base.to(
-      Transport((v) => {
+    $base.pipe(
+      Tap((v) => {
         const $msg = builder(Of(v), ...args.map((a) => Detached(a)));
         destructors.push($msg as unknown as DestroyableType);
-        $msg.to($res);
+        $msg.pipe($res);
       }),
     );
-    $res.to(transport);
+    $res.pipe(this);
 
     return () => {
       destructors.forEach((d) => d?.destroy());

@@ -1,4 +1,4 @@
-import { Message, MessageType, Transport } from "silentium";
+import { Message, MessageType, Tap } from "silentium";
 
 /**
  * Representation Of loading process
@@ -7,11 +7,11 @@ import { Message, MessageType, Transport } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
 export function Loading(
-  $loadingStart: MessageType<unknown>,
-  $loadingFinish: MessageType<unknown>,
+  $start: MessageType<unknown>,
+  $finish: MessageType<unknown>,
 ) {
-  return Message<boolean>((transport) => {
-    $loadingStart.to(Transport(() => transport.use(true)));
-    $loadingFinish.to(Transport(() => transport.use(false)));
+  return Message<boolean>(function () {
+    $start.pipe(Tap(() => this.use(true)));
+    $finish.pipe(Tap(() => this.use(false)));
   });
 }

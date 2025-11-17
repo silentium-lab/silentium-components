@@ -5,8 +5,8 @@ import {
   Message,
   MessageType,
   Shared,
-  Transport,
-  TransportType,
+  Tap,
+  TapType,
 } from "silentium";
 
 /**
@@ -15,16 +15,16 @@ import {
  * respond before $timeout then the value from base will be returned
  */
 export function Deadline<T>(
-  error: TransportType<Error>,
+  error: TapType<Error>,
   $base: MessageType<T>,
   _timeout: MaybeMessage<number>,
 ) {
   const $timeout = ActualMessage(_timeout);
-  return Message<T>((transport) => {
+  return Message<T>(function () {
     let timer: ReturnType<typeof setTimeout> | number = 0;
     const base = Shared($base, true);
-    $timeout.to(
-      Transport((timeout) => {
+    $timeout.pipe(
+      Tap((timeout) => {
         if (timer) {
           clearTimeout(timer);
         }
@@ -39,10 +39,10 @@ export function Deadline<T>(
         }, timeout);
 
         const f = Filtered(base, () => !timeoutReached);
-        f.to(transport);
+        f.pipe(this);
 
-        base.to(
-          Transport(() => {
+        base.pipe(
+          Tap(() => {
             timeoutReached = true;
           }),
         );

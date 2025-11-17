@@ -3,8 +3,8 @@ import {
   DestroyContainer,
   Message,
   MessageType,
-  Transport,
-  TransportType,
+  Tap,
+  TapType,
 } from "silentium";
 
 /**
@@ -15,16 +15,16 @@ import {
  */
 export function BranchLazy<Then, Else>(
   $condition: MessageType<boolean>,
-  $left: TransportType<void, MessageType<Then>>,
-  $right?: TransportType<void, MessageType<Else>>,
+  $left: TapType<void, MessageType<Then>>,
+  $right?: TapType<void, MessageType<Else>>,
 ): MessageType<Then | Else> & DestroyableType {
-  return Message((transport) => {
+  return Message(function () {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    $condition.to(
-      Transport((v) => {
+    $condition.pipe(
+      Tap((v) => {
         destructor();
         let instance: MessageType<Then | Else> | undefined;
         if (v) {
@@ -33,7 +33,7 @@ export function BranchLazy<Then, Else>(
           instance = $right.use();
         }
         if (instance !== undefined) {
-          instance.to(transport);
+          instance.pipe(this);
           dc.add(instance);
         }
       }),

@@ -1,18 +1,18 @@
-import { Message, MessageType, Transport } from "silentium";
+import { Message, MessageType, Tap } from "silentium";
 
 /**
  * Represents source what was changed at least once
  * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
  */
 export function OnlyChanged<T>($base: MessageType<T>) {
-  return Message<T>((transport) => {
+  return Message<T>(function () {
     let first = false;
-    $base.to(
-      Transport((v) => {
+    $base.pipe(
+      Tap((v) => {
         if (first === false) {
           first = true;
         } else {
-          transport.use(v);
+          this.use(v);
         }
       }),
     );

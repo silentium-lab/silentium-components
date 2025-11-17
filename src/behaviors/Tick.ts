@@ -1,11 +1,11 @@
-import { Message, MessageType, Transport } from "silentium";
+import { Message, MessageType, Tap } from "silentium";
 
 /**
  * Accumulates the last value Of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
 export function Tick<T>($base: MessageType<T>) {
-  return Message((transport) => {
+  return Message(function () {
     let microtaskScheduled = false;
     let lastValue: T | null = null;
 
@@ -14,14 +14,14 @@ export function Tick<T>($base: MessageType<T>) {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          transport.use(lastValue);
+          this.use(lastValue);
           lastValue = null;
         }
       });
     };
 
-    $base.to(
-      Transport((v) => {
+    $base.pipe(
+      Tap((v) => {
         lastValue = v;
         if (!microtaskScheduled) {
           scheduleMicrotask();

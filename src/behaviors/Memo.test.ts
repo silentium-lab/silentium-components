@@ -1,4 +1,4 @@
-import { Late, Shared, Transport } from "silentium";
+import { Late, Shared, Tap } from "silentium";
 import { Memo } from "../behaviors/Memo";
 import { expect, test, vi } from "vitest";
 
@@ -6,11 +6,11 @@ test("Memo.test", () => {
   const l = Late<number>(1);
   const mem = Shared(Memo(l));
   const g = vi.fn();
-  mem.to(Transport(g));
+  mem.pipe(Tap(g));
   let counter = 0;
 
-  mem.to(
-    Transport(() => {
+  mem.pipe(
+    Tap(() => {
       counter += 1;
     }),
   );

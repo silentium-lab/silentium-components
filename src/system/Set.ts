@@ -1,4 +1,4 @@
-import { All, Message, MessageType, Transport } from "silentium";
+import { All, Message, MessageType, Tap } from "silentium";
 
 /**
  * Ability to mutate some object, helpful when integrate to procedure systems
@@ -9,11 +9,11 @@ export function Set<T extends Record<string, unknown>>(
   keySrc: MessageType<string>,
   valueSrc: MessageType<unknown>,
 ) {
-  return Message<T>((transport) => {
-    All(baseSrc, keySrc, valueSrc).to(
-      Transport(([base, key, value]) => {
+  return Message<T>(function () {
+    All(baseSrc, keySrc, valueSrc).pipe(
+      Tap(([base, key, value]) => {
         (base as Record<string, unknown>)[key] = value;
-        transport.use(base);
+        this.use(base);
       }),
     );
   });

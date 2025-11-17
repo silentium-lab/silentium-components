@@ -1,4 +1,4 @@
-import { All, Message, MessageType, Of, Transport } from "silentium";
+import { All, Message, MessageType, Of, Tap } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
@@ -9,10 +9,10 @@ export function RegexpMatched(
   valueSrc: MessageType<string>,
   flagsSrc: MessageType<string> = Of(""),
 ) {
-  return Message<boolean>((transport) => {
-    All(patternSrc, valueSrc, flagsSrc).to(
-      Transport(([pattern, value, flags]) => {
-        transport.use(new RegExp(pattern, flags).test(value));
+  return Message<boolean>(function () {
+    All(patternSrc, valueSrc, flagsSrc).pipe(
+      Tap(([pattern, value, flags]) => {
+        this.use(new RegExp(pattern, flags).test(value));
       }),
     );
   });

@@ -1,4 +1,4 @@
-import { Late, Of, Shared, Transport } from "silentium";
+import { Late, Of, Shared, Tap } from "silentium";
 import { Concatenated } from "../strings";
 import { Record } from "./Record";
 import { expect, test, vi } from "vitest";
@@ -15,10 +15,10 @@ test("Record.concatenated.test", () => {
     }),
   );
   const g = vi.fn();
-  r.to(Transport(g));
+  r.pipe(Tap(g));
   let counter = 0;
-  r.to(
-    Transport(() => {
+  r.pipe(
+    Tap(() => {
       counter += 1;
     }),
   );

@@ -1,4 +1,4 @@
-import { Late, Shared, Transport } from "silentium";
+import { Late, Shared, Tap } from "silentium";
 import { OnlyChanged } from "../behaviors/OnlyChanged";
 import { expect, test, vi } from "vitest";
 
@@ -7,12 +7,12 @@ test("OnlyChanged.test", () => {
   const changedSrc = Shared(OnlyChanged(src));
 
   const g = vi.fn();
-  changedSrc.to(Transport(g));
+  changedSrc.pipe(Tap(g));
   expect(g).not.toBeCalled();
 
   src.use(2);
 
   const g2 = vi.fn();
-  changedSrc.to(Transport(g2));
+  changedSrc.pipe(Tap(g2));
   expect(g2).toBeCalledWith(2);
 });

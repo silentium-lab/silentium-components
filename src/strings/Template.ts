@@ -6,7 +6,7 @@ import {
   isDestroyable,
   MessageType,
   Of,
-  TransportType,
+  TapType,
 } from "silentium";
 import { Record } from "../structures";
 
@@ -33,7 +33,7 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
     private $places: MessageType<Record<string, unknown>> = Of({}),
   ) {}
 
-  public to(transport: TransportType<string>): this {
+  public pipe(transport: TapType<string>): this {
     const $vars = Record(this.vars);
     Applied(All(this.$src, this.$places, $vars), ([base, rules, vars]) => {
       Object.entries(rules).forEach(([ph, val]) => {
@@ -44,7 +44,7 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
       });
 
       return base;
-    }).to(transport);
+    }).pipe(transport);
     return this;
   }
 

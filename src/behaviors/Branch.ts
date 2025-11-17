@@ -3,7 +3,7 @@ import {
   MaybeMessage,
   Message,
   Primitive,
-  Transport,
+  Tap,
 } from "silentium";
 
 /**
@@ -18,14 +18,14 @@ export function Branch<Then, Else>(
   const $condition = ActualMessage(_condition);
   const $left = ActualMessage(_left);
   const $right = _right && ActualMessage(_right);
-  return Message<Then | Else>((transport) => {
+  return Message<Then | Else>(function () {
     const left = Primitive($left);
     let right: ReturnType<typeof Primitive<Else>>;
     if ($right !== undefined) {
       right = Primitive($right);
     }
-    $condition.to(
-      Transport((v) => {
+    $condition.pipe(
+      Tap((v) => {
         let result: Then | Else | null = null;
         if (v) {
           result = left.primitive();
@@ -33,7 +33,7 @@ export function Branch<Then, Else>(
           result = right.primitive();
         }
         if (result !== null) {
-          transport.use(result);
+          this.use(result);
         }
       }),
     );

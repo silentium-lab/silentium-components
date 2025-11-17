@@ -1,10 +1,4 @@
-import {
-  isFilled,
-  Message,
-  MessageType,
-  Primitive,
-  Transport,
-} from "silentium";
+import { isFilled, Message, MessageType, Primitive, Tap } from "silentium";
 
 /**
  * Defer one source after another, gives values Of baseSrc only when triggerSrc responds
@@ -14,13 +8,13 @@ export function Deferred<T>(
   $base: MessageType<T>,
   $trigger: MessageType<unknown>,
 ) {
-  return Message((transport) => {
+  return Message(function () {
     const base = Primitive($base);
-    $trigger.to(
-      Transport(() => {
+    $trigger.pipe(
+      Tap(() => {
         const value = base.primitive();
         if (isFilled(value)) {
-          transport.use(value);
+          this.use(value);
         }
       }),
     );

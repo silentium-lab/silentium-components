@@ -1,4 +1,4 @@
-import { Late, Transport } from "silentium";
+import { Late, Tap } from "silentium";
 import { Constant } from "../behaviors/Const";
 import { expect, test } from "vitest";
 
@@ -6,8 +6,8 @@ test("Const.test", () => {
   const $trigger = Late(1);
   const src = Constant("val", $trigger);
   const data: string[] = [];
-  src.to(
-    Transport((v) => {
+  src.pipe(
+    Tap((v) => {
       data.push(v);
     }),
   );

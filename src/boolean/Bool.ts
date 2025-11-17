@@ -5,7 +5,7 @@ import { Applied, Message, MessageType } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/boolean/bool
  */
 export function Bool($base: MessageType) {
-  return Message<boolean>((transport) => {
-    Applied($base, Boolean).to(transport);
+  return Message<boolean>(function () {
+    Applied($base, Boolean).pipe(this);
   });
 }

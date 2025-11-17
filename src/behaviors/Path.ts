@@ -4,7 +4,7 @@ import {
   MaybeMessage,
   Message,
   MessageType,
-  Transport,
+  Tap,
 } from "silentium";
 
 /**
@@ -17,16 +17,16 @@ export function Path<
   K extends string = any,
 >($base: MessageType<T>, _keyed: MaybeMessage<K>) {
   const $keyed = ActualMessage(_keyed);
-  return Message<R>((transport) => {
-    All($base, $keyed).to(
-      Transport(([base, keyed]) => {
+  return Message<R>(function () {
+    All($base, $keyed).pipe(
+      Tap(([base, keyed]) => {
         const keys = keyed.split(".");
         let value: unknown = base;
         keys.forEach((key) => {
           value = (value as Record<string, unknown>)[key];
         });
         if (value !== undefined && value !== base) {
-          transport.use(value as R);
+          this.use(value as R);
         }
       }),
     );

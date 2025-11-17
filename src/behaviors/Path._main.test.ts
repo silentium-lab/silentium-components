@@ -1,4 +1,4 @@
-import { Of, Transport } from "silentium";
+import { Of, Tap } from "silentium";
 import { expect, test, vi } from "vitest";
 import { Path } from "./Path";
 
@@ -9,6 +9,6 @@ test("Path._main.test", () => {
   };
   const name = Path<string>(Of(record), Of("name"));
   const g = vi.fn();
-  name.to(Transport(g));
+  name.pipe(Tap(g));
   expect(g).toHaveBeenLastCalledWith("Peter");
 });

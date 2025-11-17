@@ -3,8 +3,8 @@ import {
   Late,
   Of,
   Shared,
-  Transport,
-  TransportMessage,
+  Tap,
+  TapMessage,
 } from "silentium";
 import { expect, test, vi } from "vitest";
 import { Router } from "../navigation/Router";
@@ -17,24 +17,24 @@ test("Router._main.test", () => {
   const $url = Late<string>("http://domain.com/");
   const $urlPath = Shared(Applied($url, drop("http://domain.com")));
   const g = vi.fn();
-  $urlPath.to(Transport(g));
+  $urlPath.pipe(Tap(g));
 
   const $router = Router(
     $urlPath,
     Of([
       {
         pattern: "^/$",
-        message: TransportMessage(() => Of("page/home.html")),
+        message: TapMessage(() => Of("page/home.html")),
       },
       {
         pattern: "/some/contacts",
-        message: TransportMessage(() => Of("page/contacts.html")),
+        message: TapMessage(() => Of("page/contacts.html")),
       },
     ]),
-    TransportMessage(() => Of<string>("page/404.html")),
+    TapMessage(() => Of<string>("page/404.html")),
   );
   const g2 = vi.fn();
-  $router.to(Transport(g2));
+  $router.pipe(Tap(g2));
 
   expect(g2).toHaveBeenLastCalledWith("page/home.html");
 

@@ -1,4 +1,4 @@
-import { Any, Late, Shared, Transport } from "silentium";
+import { Any, Late, Shared, Tap } from "silentium";
 import { Tick } from "../behaviors/Tick";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
@@ -17,7 +17,7 @@ test("Tick.test", async () => {
   const $tick = Shared(Tick(Any($s1, $s2)), true);
 
   const g = vi.fn();
-  $tick.to(Transport(g));
+  $tick.pipe(Tap(g));
 
   $s1.use(3);
   $s2.use(4);

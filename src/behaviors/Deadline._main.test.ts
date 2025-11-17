@@ -1,4 +1,4 @@
-import { Late, Of, Transport } from "silentium";
+import { Late, Of, Tap } from "silentium";
 import { Deadline } from "../behaviors/Deadline";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
@@ -15,7 +15,7 @@ test("Deadline._main.test", () => {
   const l = Late();
   const error = vi.fn();
   const g = vi.fn();
-  Deadline(Transport(error), l, Of(20)).to(Transport(g));
+  Deadline(Tap(error), l, Of(20)).pipe(Tap(g));
 
   vi.runAllTimers();
 

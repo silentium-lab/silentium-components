@@ -1,4 +1,4 @@
-import { Late, Transport } from "silentium";
+import { Late, Tap } from "silentium";
 import { expect, test, vi } from "vitest";
 import { And } from "../boolean/And";
 
@@ -7,7 +7,7 @@ test("And.test", () => {
   const $two = Late<boolean>(false);
   const result = And($one, $two);
   const g = vi.fn();
-  result.to(Transport(g));
+  result.pipe(Tap(g));
   expect(g).toHaveBeenLastCalledWith(false);
 
   $one.use(true);

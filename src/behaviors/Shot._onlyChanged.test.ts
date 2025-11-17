@@ -1,4 +1,4 @@
-import { Late, Shared, Transport } from "silentium";
+import { Late, Shared, Tap } from "silentium";
 import { OnlyChanged } from "../behaviors/OnlyChanged";
 import { Shot } from "../behaviors/Shot";
 import { expect, test } from "vitest";
@@ -10,8 +10,8 @@ test("Shot._onlyChanged.test", () => {
 
   const vals: number[] = [];
 
-  $result.to(
-    Transport((v) => {
+  $result.pipe(
+    Tap((v) => {
       vals.push(v);
     }),
   );

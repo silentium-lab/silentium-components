@@ -1,4 +1,4 @@
-import { Of, Transport } from "silentium";
+import { Of, Tap } from "silentium";
 import { Concatenated } from "../strings/Concatenated";
 import { expect, test, vi } from "vitest";
 
@@ -8,7 +8,7 @@ test("Concatenated.test", () => {
     Of("-"),
   );
   const g = vi.fn();
-  $concatenated.to(Transport(g));
+  $concatenated.pipe(Tap(g));
 
   expect(g).toHaveBeenLastCalledWith("one-two-three");
 });

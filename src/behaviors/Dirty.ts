@@ -4,8 +4,8 @@ import {
   Late,
   MessageType,
   SourceType,
-  Transport,
-  TransportType,
+  Tap,
+  TapType,
 } from "silentium";
 
 /**
@@ -39,10 +39,10 @@ class DirtySource<T> implements SourceType<T> {
     }
   }
 
-  public to(transport: TransportType<T>) {
+  public pipe(transport: TapType<T>) {
     const $comparing = Applied(this.$comparing, this.cloner);
-    All($comparing, this.$base).to(
-      Transport(([comparing, base]) => {
+    All($comparing, this.$base).pipe(
+      Tap(([comparing, base]) => {
         if (!comparing) {
           return;
         }

@@ -1,4 +1,4 @@
-import { All, Message, MessageType, Of, Transport } from "silentium";
+import { All, Message, MessageType, Of, Tap } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
@@ -10,10 +10,10 @@ export function RegexpReplaced(
   replaceValueSrc: MessageType<string>,
   flagsSrc: MessageType<string> = Of(""),
 ) {
-  return Message<string>((transport) => {
-    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).to(
-      Transport(([pattern, value, replaceValue, flags]) => {
-        transport.use(
+  return Message<string>(function () {
+    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).pipe(
+      Tap(([pattern, value, replaceValue, flags]) => {
+        this.use(
           String(value).replace(new RegExp(pattern, flags), replaceValue),
         );
       }),

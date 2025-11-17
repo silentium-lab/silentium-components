@@ -6,10 +6,10 @@ import { isFilled, Message, MessageType, Primitive } from "silentium";
  * but not react to new values of the base message
  */
 export function Detached<T>($base: MessageType<T>): MessageType<T> {
-  return Message((transport) => {
+  return Message(function () {
     const v = Primitive($base).primitive();
     if (isFilled(v)) {
-      transport.use(v);
+      this.use(v);
     }
   });
 }

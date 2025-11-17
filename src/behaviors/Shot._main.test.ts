@@ -1,4 +1,4 @@
-import { Late, Shared, Transport } from "silentium";
+import { Late, Shared, Tap } from "silentium";
 import { Shot } from "../behaviors/Shot";
 import { expect, test, vi } from "vitest";
 
@@ -8,7 +8,7 @@ test("Shot._main.test", () => {
 
   const $shotted = Shared(Shot($base, $trigger));
   const g = vi.fn();
-  $shotted.to(Transport(g));
+  $shotted.pipe(Tap(g));
 
   $base.use(1);
   $trigger.use(1);
@@ -24,6 +24,6 @@ test("Shot._main.test", () => {
   expect(g).toHaveBeenLastCalledWith(2);
 
   const g2 = vi.fn();
-  $shotted.to(Transport(g2));
+  $shotted.pipe(Tap(g2));
   expect(g2).toHaveBeenLastCalledWith(2);
 });

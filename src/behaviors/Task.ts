@@ -6,7 +6,7 @@ import { ExecutorApplied, Message, MessageType } from "silentium";
  * a certain timer firing interval
  */
 export function Task<T>(baseSrc: MessageType<T>, delay: number = 0) {
-  return Message<T>((transport) => {
+  return Message<T>(function () {
     let prevTimer: unknown | null = null;
     ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
@@ -17,6 +17,6 @@ export function Task<T>(baseSrc: MessageType<T>, delay: number = 0) {
           fn(v);
         }, delay);
       };
-    }).to(transport);
+    }).pipe(this);
   });
 }

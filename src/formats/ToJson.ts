@@ -1,14 +1,14 @@
-import { Message, MessageType, Transport, TransportType } from "silentium";
+import { Message, MessageType, Tap, TapType } from "silentium";
 
 /**
  * Represents json from object
  */
-export function ToJson($data: MessageType, error?: TransportType) {
-  return Message<string>((transport) => {
-    $data.to(
-      Transport((data: unknown) => {
+export function ToJson($data: MessageType, error?: TapType) {
+  return Message<string>(function () {
+    $data.pipe(
+      Tap((data: unknown) => {
         try {
-          transport.use(JSON.stringify(data));
+          this.use(JSON.stringify(data));
         } catch {
           error?.use(new Error("Failed to convert to JSON"));
         }

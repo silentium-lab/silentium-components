@@ -1,4 +1,4 @@
-import { All, Message, MessageType, Of, Transport } from "silentium";
+import { All, Message, MessageType, Of, Tap } from "silentium";
 
 /**
  * First match Of regexp
@@ -9,11 +9,11 @@ export function RegexpMatch(
   valueSrc: MessageType<string>,
   flagsSrc: MessageType<string> = Of(""),
 ) {
-  return Message<string[]>((transport) => {
-    All(patternSrc, valueSrc, flagsSrc).to(
-      Transport(([pattern, value, flags]) => {
+  return Message<string[]>(function () {
+    All(patternSrc, valueSrc, flagsSrc).pipe(
+      Tap(([pattern, value, flags]) => {
         const result = new RegExp(pattern, flags).exec(value);
-        transport.use(result ?? []);
+        this.use(result ?? []);
       }),
     );
   });

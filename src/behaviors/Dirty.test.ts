@@ -1,4 +1,4 @@
-import { Late, Transport } from "silentium";
+import { Late, Tap } from "silentium";
 import { Dirty } from "../behaviors/Dirty";
 import { expect, test, vi } from "vitest";
 
@@ -9,7 +9,7 @@ test("Dirty.test", () => {
   });
   const d = Dirty(form);
   const g = vi.fn();
-  d.to(Transport(g));
+  d.pipe(Tap(g));
 
   d.use({
     name: "new",

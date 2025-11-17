@@ -5,15 +5,15 @@ import {
   Message,
   MessageType,
   Of,
-  Transport,
-  TransportType,
+  Tap,
+  TapType,
 } from "silentium";
 import { RegexpMatched } from "../system";
 
 export interface Route<T> {
   pattern: string;
   patternFlags?: string;
-  message: TransportType<void, MessageType<T>>;
+  message: TapType<void, MessageType<T>>;
 }
 
 /**
@@ -23,15 +23,15 @@ export interface Route<T> {
 export function Router<T = "string">(
   $url: MessageType<string>,
   $routes: MessageType<Route<T>[]>,
-  $default: TransportType<void, MessageType<T>>,
+  $default: TapType<void, MessageType<T>>,
 ): MessageType<T> & DestroyableType {
-  return Message<T>((transport) => {
+  return Message<T>(function () {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    All($routes, $url).to(
-      Transport(([routes, url]) => {
+    All($routes, $url).pipe(
+      Tap(([routes, url]) => {
         destructor();
         const $matches = All(
           ...routes.map((r) =>
@@ -42,20 +42,20 @@ export function Router<T = "string">(
             ),
           ),
         );
-        $matches.to(
-          Transport((matches) => {
+        $matches.pipe(
+          Tap((matches) => {
             const index = matches.findIndex((v) => v === true);
 
             if (index === -1) {
               const instance = $default.use();
               dc.add(instance);
-              instance.to(transport);
+              instance.pipe(this);
             }
 
             if (index > -1) {
               const instance = routes[index].message.use();
               dc.add(instance);
-              instance.to(transport);
+              instance.pipe(this);
             }
           }),
         );
