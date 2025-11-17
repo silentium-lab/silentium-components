@@ -1,5 +1,5 @@
 import * as silentium from 'silentium';
-import { MaybeMessage, MessageType, TransportType, DestroyableType, SourceType, ConstructorType } from 'silentium';
+import { MaybeMessage, MessageType, TapType, DestroyableType, SourceType, ConstructorType } from 'silentium';
 
 /**
  * Allows switching between left and right messages depending on condition
@@ -13,7 +13,7 @@ declare function Branch<Then, Else>(_condition: MaybeMessage<boolean>, _left: Ma
  * When condition changes, old messages are destroyed
  * and new ones are created.
  */
-declare function BranchLazy<Then, Else>($condition: MessageType<boolean>, $left: TransportType<void, MessageType<Then>>, $right?: TransportType<void, MessageType<Else>>): MessageType<Then | Else> & DestroyableType;
+declare function BranchLazy<Then, Else>($condition: MessageType<boolean>, $left: TapType<void, MessageType<Then>>, $right?: TapType<void, MessageType<Else>>): MessageType<Then | Else> & DestroyableType;
 
 /**
  * Constant value that will be
@@ -27,7 +27,7 @@ declare function Constant<T>(permanent: T, $trigger: MessageType): MessageType<T
  * time runs out from $timeout; if $base manages to
  * respond before $timeout then the value from base will be returned
  */
-declare function Deadline<T>(error: TransportType<Error>, $base: MessageType<T>, _timeout: MaybeMessage<number>): silentium.MessageImpl<T>;
+declare function Deadline<T>(error: TapType<Error>, $base: MessageType<T>, _timeout: MaybeMessage<number>): silentium.MessageImpl<T>;
 
 /**
  * Defer one source after another, gives values Of baseSrc only when triggerSrc responds
@@ -55,7 +55,7 @@ declare function Dirty<T>($base: MessageType<T>, keep?: string[], exclude?: stri
  * second message stops loading
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
-declare function Loading($loadingStart: MessageType<unknown>, $loadingFinish: MessageType<unknown>): silentium.MessageImpl<boolean>;
+declare function Loading($start: MessageType<unknown>, $finish: MessageType<unknown>): silentium.MessageImpl<boolean>;
 
 /**
  * Allows locking messages
@@ -154,7 +154,7 @@ declare class TemplateImpl implements MessageType<string>, DestroyableType {
     private dc;
     private vars;
     constructor($src?: MessageType<string>, $places?: MessageType<Record<string, unknown>>);
-    to(transport: TransportType<string>): this;
+    pipe(transport: TapType<string>): this;
     template(value: string): void;
     /**
      * Ability to register variable
@@ -167,13 +167,13 @@ declare class TemplateImpl implements MessageType<string>, DestroyableType {
 interface Route<T> {
     pattern: string;
     patternFlags?: string;
-    message: TransportType<void, MessageType<T>>;
+    message: TapType<void, MessageType<T>>;
 }
 /**
  * Router component what will return template if url matches pattern
  * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
-declare function Router<T = "string">($url: MessageType<string>, $routes: MessageType<Route<T>[]>, $default: TransportType<void, MessageType<T>>): MessageType<T> & DestroyableType;
+declare function Router<T = "string">($url: MessageType<string>, $routes: MessageType<Route<T>[]>, $default: TapType<void, MessageType<T>>): MessageType<T> & DestroyableType;
 
 /**
  * Boolean source what checks what string matches pattern
@@ -226,12 +226,12 @@ declare function Bool($base: MessageType): silentium.MessageImpl<boolean>;
 /**
  * Represents object from json
  */
-declare function FromJson<T = Record<string, unknown>>($json: MessageType<string>, error?: TransportType): silentium.MessageImpl<T>;
+declare function FromJson<T = Record<string, unknown>>($json: MessageType<string>, error?: TapType): silentium.MessageImpl<T>;
 
 /**
  * Represents json from object
  */
-declare function ToJson($data: MessageType, error?: TransportType): silentium.MessageImpl<string>;
+declare function ToJson($data: MessageType, error?: TapType): silentium.MessageImpl<string>;
 
 /**
  * Represents the first element Of an array.

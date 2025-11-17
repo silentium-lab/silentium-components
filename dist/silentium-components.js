@@ -1,17 +1,17 @@
-import { ActualMessage, Message, Primitive, Transport, DestroyContainer, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, isMessage, isDestroyable } from 'silentium';
+import { ActualMessage, Message, Primitive, Tap, DestroyContainer, Shared, Filtered, isFilled, Late, Applied, All, SharedSource, ExecutorApplied, LateShared, Of, isMessage, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = ActualMessage(_condition);
   const $left = ActualMessage(_left);
   const $right = _right && ActualMessage(_right);
-  return Message((transport) => {
+  return Message(function() {
     const left = Primitive($left);
     let right;
     if ($right !== void 0) {
       right = Primitive($right);
     }
-    $condition.to(
-      Transport((v) => {
+    $condition.pipe(
+      Tap((v) => {
         let result = null;
         if (v) {
           result = left.primitive();
@@ -19,7 +19,7 @@ function Branch(_condition, _left, _right) {
           result = right.primitive();
         }
         if (result !== null) {
-          transport.use(result);
+          this.use(result);
         }
       })
     );
@@ -27,13 +27,13 @@ function Branch(_condition, _left, _right) {
 }
 
 function BranchLazy($condition, $left, $right) {
-  return Message((transport) => {
+  return Message(function() {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    $condition.to(
-      Transport((v) => {
+    $condition.pipe(
+      Tap((v) => {
         destructor();
         let instance;
         if (v) {
@@ -42,7 +42,7 @@ function BranchLazy($condition, $left, $right) {
           instance = $right.use();
         }
         if (instance !== void 0) {
-          instance.to(transport);
+          instance.pipe(this);
           dc.add(instance);
         }
       })
@@ -52,10 +52,10 @@ function BranchLazy($condition, $left, $right) {
 }
 
 function Constant(permanent, $trigger) {
-  return Message((transport) => {
-    $trigger.to(
-      Transport(() => {
-        transport.use(permanent);
+  return Message(function() {
+    $trigger.pipe(
+      Tap(() => {
+        this.use(permanent);
       })
     );
   });
@@ -63,11 +63,11 @@ function Constant(permanent, $trigger) {
 
 function Deadline(error, $base, _timeout) {
   const $timeout = ActualMessage(_timeout);
-  return Message((transport) => {
+  return Message(function() {
     let timer = 0;
     const base = Shared($base, true);
-    $timeout.to(
-      Transport((timeout) => {
+    $timeout.pipe(
+      Tap((timeout) => {
         if (timer) {
           clearTimeout(timer);
         }
@@ -80,9 +80,9 @@ function Deadline(error, $base, _timeout) {
           error.use(new Error("Timeout reached in Deadline"));
         }, timeout);
         const f = Filtered(base, () => !timeoutReached);
-        f.to(transport);
-        base.to(
-          Transport(() => {
+        f.pipe(this);
+        base.pipe(
+          Tap(() => {
             timeoutReached = true;
           })
         );
@@ -92,13 +92,13 @@ function Deadline(error, $base, _timeout) {
 }
 
 function Deferred($base, $trigger) {
-  return Message((transport) => {
+  return Message(function() {
     const base = Primitive($base);
-    $trigger.to(
-      Transport(() => {
+    $trigger.pipe(
+      Tap(() => {
         const value = base.primitive();
         if (isFilled(value)) {
-          transport.use(value);
+          this.use(value);
         }
       })
     );
@@ -106,10 +106,10 @@ function Deferred($base, $trigger) {
 }
 
 function Detached($base) {
-  return Message((transport) => {
+  return Message(function() {
     const v = Primitive($base).primitive();
     if (isFilled(v)) {
-      transport.use(v);
+      this.use(v);
     }
   });
 }
@@ -133,10 +133,10 @@ class DirtySource {
       this.cloner = cloner;
     }
   }
-  to(transport) {
+  pipe(transport) {
     const $comparing = Applied(this.$comparing, this.cloner);
-    All($comparing, this.$base).to(
-      Transport(([comparing, base]) => {
+    All($comparing, this.$base).pipe(
+      Tap(([comparing, base]) => {
         if (!comparing) {
           return;
         }
@@ -163,33 +163,33 @@ class DirtySource {
   }
 }
 
-function Loading($loadingStart, $loadingFinish) {
-  return Message((transport) => {
-    $loadingStart.to(Transport(() => transport.use(true)));
-    $loadingFinish.to(Transport(() => transport.use(false)));
+function Loading($start, $finish) {
+  return Message(function() {
+    $start.pipe(Tap(() => this.use(true)));
+    $finish.pipe(Tap(() => this.use(false)));
   });
 }
 
 function Lock($base, $lock) {
-  return Message((transport) => {
+  return Message(function() {
     let locked = false;
-    $lock.to(
-      Transport((newLock) => {
+    $lock.pipe(
+      Tap((newLock) => {
         locked = newLock;
       })
     );
     const i = Filtered($base, () => !locked);
-    i.to(transport);
+    i.pipe(this);
   });
 }
 
 function Memo($base) {
-  return Message((transport) => {
+  return Message(function() {
     let last = null;
-    $base.to(
-      Transport((v) => {
+    $base.pipe(
+      Tap((v) => {
         if (v !== last && isFilled(v)) {
-          transport.use(v);
+          this.use(v);
           last = v;
         }
       })
@@ -198,14 +198,14 @@ function Memo($base) {
 }
 
 function OnlyChanged($base) {
-  return Message((transport) => {
+  return Message(function() {
     let first = false;
-    $base.to(
-      Transport((v) => {
+    $base.pipe(
+      Tap((v) => {
         if (first === false) {
           first = true;
         } else {
-          transport.use(v);
+          this.use(v);
         }
       })
     );
@@ -225,9 +225,9 @@ class PartImpl {
     this.$base = SharedSource($base);
     this.$keyed = Shared($key);
   }
-  to(transport) {
-    All(this.$base, this.$keyed).to(
-      Transport(([base, keyed]) => {
+  pipe(transport) {
+    All(this.$base, this.$keyed).pipe(
+      Tap(([base, keyed]) => {
         const keys = keyed.split(".");
         let value = base;
         keys.forEach((key) => {
@@ -255,16 +255,16 @@ class PartImpl {
 
 function Path($base, _keyed) {
   const $keyed = ActualMessage(_keyed);
-  return Message((transport) => {
-    All($base, $keyed).to(
-      Transport(([base, keyed]) => {
+  return Message(function() {
+    All($base, $keyed).pipe(
+      Tap(([base, keyed]) => {
         const keys = keyed.split(".");
         let value = base;
         keys.forEach((key) => {
           value = value[key];
         });
         if (value !== void 0 && value !== base) {
-          transport.use(value);
+          this.use(value);
         }
       })
     );
@@ -272,24 +272,24 @@ function Path($base, _keyed) {
 }
 
 function Polling($base, $trigger) {
-  return Message((transport) => {
-    $trigger.to(
-      Transport(() => {
-        $base.to(transport);
+  return Message(function() {
+    $trigger.pipe(
+      Tap(() => {
+        $base.pipe(this);
       })
     );
   });
 }
 
 function Shot($target, $trigger) {
-  return Message((transport) => {
+  return Message(function() {
     const targetSync = Primitive($target);
     targetSync.primitive();
-    $trigger.to(
-      Transport(() => {
+    $trigger.pipe(
+      Tap(() => {
         const value = targetSync.primitive();
         if (isFilled(value)) {
-          transport.use(value);
+          this.use(value);
         }
       })
     );
@@ -297,7 +297,7 @@ function Shot($target, $trigger) {
 }
 
 function Task(baseSrc, delay = 0) {
-  return Message((transport) => {
+  return Message(function() {
     let prevTimer = null;
     ExecutorApplied(baseSrc, (fn) => {
       return (v) => {
@@ -308,12 +308,12 @@ function Task(baseSrc, delay = 0) {
           fn(v);
         }, delay);
       };
-    }).to(transport);
+    }).pipe(this);
   });
 }
 
 function Tick($base) {
-  return Message((transport) => {
+  return Message(function() {
     let microtaskScheduled = false;
     let lastValue = null;
     const scheduleMicrotask = () => {
@@ -321,13 +321,13 @@ function Tick($base) {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          transport.use(lastValue);
+          this.use(lastValue);
           lastValue = null;
         }
       });
     };
-    $base.to(
-      Transport((v) => {
+    $base.pipe(
+      Tap((v) => {
         lastValue = v;
         if (!microtaskScheduled) {
           scheduleMicrotask();
@@ -338,17 +338,17 @@ function Tick($base) {
 }
 
 function Transaction($base, builder, ...args) {
-  return Message((transport) => {
+  return Message(function() {
     const $res = LateShared();
     const destructors = [];
-    $base.to(
-      Transport((v) => {
+    $base.pipe(
+      Tap((v) => {
         const $msg = builder(Of(v), ...args.map((a) => Detached(a)));
         destructors.push($msg);
-        $msg.to($res);
+        $msg.pipe($res);
       })
     );
-    $res.to(transport);
+    $res.pipe(this);
     return () => {
       destructors.forEach((d) => d?.destroy());
       destructors.length = 0;
@@ -357,42 +357,42 @@ function Transaction($base, builder, ...args) {
 }
 
 function HashTable($base) {
-  return Message((transport) => {
+  return Message(function() {
     const record = {};
-    $base.to(
-      Transport(([key, value]) => {
+    $base.pipe(
+      Tap(([key, value]) => {
         record[key] = value;
-        transport.use(record);
+        this.use(record);
       })
     );
   });
 }
 
 function Record(record) {
-  return Message((transport) => {
+  return Message(function() {
     const keys = Object.keys(record);
     keys.forEach((key) => {
       if (!isMessage(record[key])) {
         record[key] = Of(record[key]);
       }
     });
-    All(...Object.values(record)).to(
-      Transport((entries) => {
+    All(...Object.values(record)).pipe(
+      Tap((entries) => {
         const record2 = {};
         entries.forEach((entry, index) => {
           record2[keys[index]] = entry;
         });
-        transport.use(record2);
+        this.use(record2);
       })
     );
   });
 }
 
 function Concatenated(sources, joinPartSrc = Of("")) {
-  return Message((transport) => {
-    All(joinPartSrc, ...sources).to(
-      Transport(([joinPart, ...strings]) => {
-        transport.use(strings.join(joinPart));
+  return Message(function() {
+    All(joinPartSrc, ...sources).pipe(
+      Tap(([joinPart, ...strings]) => {
+        this.use(strings.join(joinPart));
       })
     );
   });
@@ -413,7 +413,7 @@ class TemplateImpl {
       $TPL: Of("$TPL")
     });
   }
-  to(transport) {
+  pipe(transport) {
     const $vars = Record(this.vars);
     Applied(All(this.$src, this.$places, $vars), ([base, rules, vars]) => {
       Object.entries(rules).forEach(([ph, val]) => {
@@ -423,7 +423,7 @@ class TemplateImpl {
         base = base.replaceAll(ph, String(val));
       });
       return base;
-    }).to(transport);
+    }).pipe(transport);
     return this;
   }
   template(value) {
@@ -449,20 +449,20 @@ class TemplateImpl {
 }
 
 function RegexpMatched(patternSrc, valueSrc, flagsSrc = Of("")) {
-  return Message((transport) => {
-    All(patternSrc, valueSrc, flagsSrc).to(
-      Transport(([pattern, value, flags]) => {
-        transport.use(new RegExp(pattern, flags).test(value));
+  return Message(function() {
+    All(patternSrc, valueSrc, flagsSrc).pipe(
+      Tap(([pattern, value, flags]) => {
+        this.use(new RegExp(pattern, flags).test(value));
       })
     );
   });
 }
 
 function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = Of("")) {
-  return Message((transport) => {
-    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).to(
-      Transport(([pattern, value, replaceValue, flags]) => {
-        transport.use(
+  return Message(function() {
+    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).pipe(
+      Tap(([pattern, value, replaceValue, flags]) => {
+        this.use(
           String(value).replace(new RegExp(pattern, flags), replaceValue)
         );
       })
@@ -471,35 +471,35 @@ function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = Of("")
 }
 
 function RegexpMatch(patternSrc, valueSrc, flagsSrc = Of("")) {
-  return Message((transport) => {
-    All(patternSrc, valueSrc, flagsSrc).to(
-      Transport(([pattern, value, flags]) => {
+  return Message(function() {
+    All(patternSrc, valueSrc, flagsSrc).pipe(
+      Tap(([pattern, value, flags]) => {
         const result = new RegExp(pattern, flags).exec(value);
-        transport.use(result ?? []);
+        this.use(result ?? []);
       })
     );
   });
 }
 
 function Set(baseSrc, keySrc, valueSrc) {
-  return Message((transport) => {
-    All(baseSrc, keySrc, valueSrc).to(
-      Transport(([base, key, value]) => {
+  return Message(function() {
+    All(baseSrc, keySrc, valueSrc).pipe(
+      Tap(([base, key, value]) => {
         base[key] = value;
-        transport.use(base);
+        this.use(base);
       })
     );
   });
 }
 
 function Router($url, $routes, $default) {
-  return Message((transport) => {
+  return Message(function() {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    All($routes, $url).to(
-      Transport(([routes, url]) => {
+    All($routes, $url).pipe(
+      Tap(([routes, url]) => {
         destructor();
         const $matches = All(
           ...routes.map(
@@ -510,18 +510,18 @@ function Router($url, $routes, $default) {
             )
           )
         );
-        $matches.to(
-          Transport((matches) => {
+        $matches.pipe(
+          Tap((matches) => {
             const index = matches.findIndex((v) => v === true);
             if (index === -1) {
               const instance = $default.use();
               dc.add(instance);
-              instance.to(transport);
+              instance.pipe(this);
             }
             if (index > -1) {
               const instance = routes[index].message.use();
               dc.add(instance);
-              instance.to(transport);
+              instance.pipe(this);
             }
           })
         );
@@ -532,47 +532,47 @@ function Router($url, $routes, $default) {
 }
 
 function And($one, $two) {
-  return Message((transport) => {
-    All($one, $two).to(
-      Transport(([one, two]) => {
-        transport.use(one && two);
+  return Message(function() {
+    All($one, $two).pipe(
+      Tap(([one, two]) => {
+        this.use(!!(one && two));
       })
     );
   });
 }
 
 function Or($one, $two) {
-  return Message((transport) => {
-    All($one, $two).to(
-      Transport(([one, two]) => {
-        transport.use(one || two);
+  return Message(function() {
+    All($one, $two).pipe(
+      Tap(([one, two]) => {
+        this.use(!!(one || two));
       })
     );
   });
 }
 
 function Not($base) {
-  return Message((transport) => {
-    $base.to(
-      Transport((v) => {
-        transport.use(!v);
+  return Message(function() {
+    $base.pipe(
+      Tap((v) => {
+        this.use(!v);
       })
     );
   });
 }
 
 function Bool($base) {
-  return Message((transport) => {
-    Applied($base, Boolean).to(transport);
+  return Message(function() {
+    Applied($base, Boolean).pipe(this);
   });
 }
 
 function FromJson($json, error) {
-  return Message((transport) => {
-    $json.to(
-      Transport((json) => {
+  return Message(function() {
+    $json.pipe(
+      Tap((json) => {
         try {
-          transport.use(JSON.parse(json));
+          this.use(JSON.parse(json));
         } catch (e) {
           error?.use(new Error(`Failed to parse JSON: ${e}`));
         }
@@ -582,11 +582,11 @@ function FromJson($json, error) {
 }
 
 function ToJson($data, error) {
-  return Message((transport) => {
-    $data.to(
-      Transport((data) => {
+  return Message(function() {
+    $data.pipe(
+      Tap((data) => {
         try {
-          transport.use(JSON.stringify(data));
+          this.use(JSON.stringify(data));
         } catch {
           error?.use(new Error("Failed to convert to JSON"));
         }
@@ -596,8 +596,8 @@ function ToJson($data, error) {
 }
 
 function First($base) {
-  return Message((transport) => {
-    Applied($base, (a) => a[0]).to(transport);
+  return Message(function() {
+    Applied($base, (a) => a[0]).pipe(this);
   });
 }
 
