@@ -1,4 +1,4 @@
-import { All, Message, MessageType, Of, Tap } from "silentium";
+import { All, Message, MessageType, Of } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
@@ -10,13 +10,11 @@ export function RegexpReplaced(
   replaceValueSrc: MessageType<string>,
   flagsSrc: MessageType<string> = Of(""),
 ) {
-  return Message<string>(function () {
-    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).pipe(
-      Tap(([pattern, value, replaceValue, flags]) => {
-        this.use(
-          String(value).replace(new RegExp(pattern, flags), replaceValue),
-        );
-      }),
+  return Message<string>(function RegexpReplacedImpl(r) {
+    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).then(
+      ([pattern, value, replaceValue, flags]) => {
+        r(String(value).replace(new RegExp(pattern, flags), replaceValue));
+      },
     );
   });
 }

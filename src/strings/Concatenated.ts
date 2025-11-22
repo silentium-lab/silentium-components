@@ -1,4 +1,4 @@
-import { All, Message, MessageType, Of, Tap } from "silentium";
+import { All, Message, MessageType, Of } from "silentium";
 
 /**
  * Join sources Of strings to one source
@@ -8,11 +8,9 @@ export function Concatenated(
   sources: MessageType<string>[],
   joinPartSrc: MessageType<string> = Of(""),
 ) {
-  return Message<string>(function () {
-    All(joinPartSrc, ...sources).pipe(
-      Tap(([joinPart, ...strings]) => {
-        this.use(strings.join(joinPart));
-      }),
-    );
+  return Message<string>(function ConcatenatedImpl(r) {
+    All(joinPartSrc, ...sources).then(([joinPart, ...strings]) => {
+      r(strings.join(joinPart));
+    });
   });
 }

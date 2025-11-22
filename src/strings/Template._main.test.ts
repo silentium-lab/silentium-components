@@ -1,7 +1,8 @@
-import { Of, Tap } from "silentium";
+import { Of } from "silentium";
+import { expect, test, vi } from "vitest";
+
 import { Template } from "../strings/Template";
 import { Record } from "../structures";
-import { expect, test, vi } from "vitest";
 
 test("Template._main.test", () => {
   const tpl = Template(
@@ -11,7 +12,7 @@ test("Template._main.test", () => {
     }),
   );
   const g = vi.fn();
-  tpl.pipe(Tap(g));
+  tpl.then(g);
 
   expect(g).toHaveBeenLastCalledWith("<h1>one value</h1>");
 
@@ -22,7 +23,7 @@ test("Template._main.test", () => {
     }),
   );
   const g2 = vi.fn();
-  tpl2.pipe(Tap(g2));
+  tpl2.then(g2);
 
   expect(g2).toHaveBeenLastCalledWith("<h2>second value</h2>");
 });

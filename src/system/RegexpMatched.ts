@@ -1,19 +1,20 @@
-import { All, Message, MessageType, Of, Tap } from "silentium";
+import { ActualMessage, All, MaybeMessage, Message, Of } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
  */
 export function RegexpMatched(
-  patternSrc: MessageType<string>,
-  valueSrc: MessageType<string>,
-  flagsSrc: MessageType<string> = Of(""),
+  patternSrc: MaybeMessage<string>,
+  valueSrc: MaybeMessage<string>,
+  flagsSrc: MaybeMessage<string> = Of(""),
 ) {
-  return Message<boolean>(function () {
-    All(patternSrc, valueSrc, flagsSrc).pipe(
-      Tap(([pattern, value, flags]) => {
-        this.use(new RegExp(pattern, flags).test(value));
-      }),
-    );
+  const $pattern = ActualMessage(patternSrc);
+  const $value = ActualMessage(valueSrc);
+  const $flags = ActualMessage(flagsSrc);
+  return Message<boolean>(function RegexpMatchedImpl(r) {
+    All($pattern, $value, $flags).then(([pattern, value, flags]) => {
+      r(new RegExp(pattern, flags).test(value));
+    });
   });
 }

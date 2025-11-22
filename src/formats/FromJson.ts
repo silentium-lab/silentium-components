@@ -1,21 +1,18 @@
-import { Message, MessageType, Tap, TapType } from "silentium";
+import { Message, MessageType } from "silentium";
 
 /**
  * Represents object from json
  */
 export function FromJson<T = Record<string, unknown>>(
   $json: MessageType<string>,
-  error?: TapType,
 ) {
-  return Message<T>(function () {
-    $json.pipe(
-      Tap((json) => {
-        try {
-          this.use(JSON.parse(json));
-        } catch (e) {
-          error?.use(new Error(`Failed to parse JSON: ${e}`));
-        }
-      }),
-    );
+  return Message<T>(function FromJsonImpl(resolve, reject) {
+    $json.then((json) => {
+      try {
+        resolve(JSON.parse(json));
+      } catch (e) {
+        reject(new Error(`Failed to parse JSON: ${e}`));
+      }
+    });
   });
 }

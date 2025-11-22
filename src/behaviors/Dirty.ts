@@ -1,12 +1,4 @@
-import {
-  All,
-  Applied,
-  Late,
-  MessageType,
-  SourceType,
-  Tap,
-  TapType,
-} from "silentium";
+import { All, Applied, Late, MessageSource, MessageType } from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -18,54 +10,35 @@ export function Dirty<T>(
   keep: string[] = [],
   exclude: string[] = [],
   cloner?: (v: T) => T,
-): SourceType<T> {
-  return new DirtySource($base, keep, exclude, cloner);
-}
-
-class DirtySource<T> implements SourceType<T> {
-  private $comparing = Late<T>();
-  private cloner: (v: T) => T;
-
-  public constructor(
-    private $base: MessageType<T>,
-    private keep: string[] = [],
-    private exclude: string[] = [],
-    cloner?: (v: T) => T,
-  ) {
-    if (cloner === undefined) {
-      this.cloner = (value) => JSON.parse(JSON.stringify(value));
-    } else {
-      this.cloner = cloner;
-    }
+) {
+  const $comparing = Late<T>();
+  if (cloner === undefined) {
+    cloner = (value) => JSON.parse(JSON.stringify(value));
   }
-
-  public pipe(transport: TapType<T>) {
-    const $comparing = Applied(this.$comparing, this.cloner);
-    All($comparing, this.$base).pipe(
-      Tap(([comparing, base]) => {
+  return MessageSource<T>(
+    function DirtyImpl(r) {
+      const $comparingClone = Applied($comparing, cloner);
+      All($comparingClone, $base).then(([comparing, base]) => {
         if (!comparing) {
           return;
         }
-        transport.use(
+        r(
           Object.fromEntries(
             Object.entries(comparing).filter(([key, value]) => {
-              if (this.keep.includes(key)) {
+              if (keep.includes(key)) {
                 return true;
               }
-              if (this.exclude.includes(key)) {
+              if (exclude.includes(key)) {
                 return false;
               }
               return value !== (base as Record<string, unknown>)[key];
             }),
           ) as T,
         );
-      }),
-    );
-    return this;
-  }
-
-  public use(v: T) {
-    this.$comparing.use(v);
-    return this;
-  }
+      });
+    },
+    (v) => {
+      $comparing.use(v);
+    },
+  );
 }

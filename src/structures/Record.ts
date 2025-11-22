@@ -1,4 +1,4 @@
-import { All, isMessage, Message, MessageType, Of, Tap } from "silentium";
+import { ActualMessage, All, Message, MessageType } from "silentium";
 
 type UnWrap<T> = T extends MessageType<infer U> ? U : T;
 
@@ -7,21 +7,17 @@ type UnWrap<T> = T extends MessageType<infer U> ? U : T;
  * https://silentium-lab.github.io/silentium-components/#/structures/record
  */
 export function Record<T>(record: Record<string, T>) {
-  return Message<Record<string, UnWrap<T>>>(function () {
+  return Message<Record<string, UnWrap<T>>>(function RecordImpl(r) {
     const keys = Object.keys(record);
     keys.forEach((key) => {
-      if (!isMessage(record[key])) {
-        record[key] = Of(record[key]) as any;
-      }
+      record[key] = ActualMessage(record[key]) as any;
     });
-    All(...(Object.values(record) as any)).pipe(
-      Tap((entries) => {
-        const record: Record<string, any> = {};
-        entries.forEach((entry, index) => {
-          record[keys[index]] = entry;
-        });
-        this.use(record);
-      }),
-    );
+    All(...(Object.values(record) as any)).then((entries) => {
+      const record: Record<string, any> = {};
+      entries.forEach((entry, index) => {
+        record[keys[index]] = entry;
+      });
+      r(record);
+    });
   });
 }

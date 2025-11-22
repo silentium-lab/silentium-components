@@ -1,6 +1,7 @@
-import { Late, Tap } from "silentium";
-import { Task } from "../behaviors/Task";
+import { Late } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+
+import { Task } from "../behaviors/Task";
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -15,11 +16,9 @@ test("Task delays emission", () => {
   const $trigger = Late<string>();
   const delayed = Task($trigger, 100);
   const data: string[] = [];
-  delayed.pipe(
-    Tap((v) => {
-      data.push(v);
-    }),
-  );
+  delayed.then((v) => {
+    data.push(v);
+  });
 
   $trigger.use("first");
 
@@ -36,11 +35,9 @@ test("Task emits only last value when multiple before delay", () => {
   const $trigger = Late<string>();
   const delayed = Task($trigger, 100);
   const data: string[] = [];
-  delayed.pipe(
-    Tap((v) => {
-      data.push(v);
-    }),
-  );
+  delayed.then((v) => {
+    data.push(v);
+  });
 
   $trigger.use("first");
   $trigger.use("second");

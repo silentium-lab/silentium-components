@@ -1,13 +1,15 @@
 import {
   All,
   Applied,
+  ConstructorType,
   DestroyableType,
   DestroyContainer,
   isDestroyable,
   MessageType,
   Of,
-  TapType,
+  Rejections,
 } from "silentium";
+
 import { Record } from "../structures";
 
 /**
@@ -24,6 +26,7 @@ export function Template(
 
 class TemplateImpl implements MessageType<string>, DestroyableType {
   private dc = DestroyContainer();
+  private rejections = new Rejections();
   private vars: Record<string, MessageType> = {
     $TPL: Of("$TPL"),
   };
@@ -33,18 +36,22 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
     private $places: MessageType<Record<string, unknown>> = Of({}),
   ) {}
 
-  public pipe(transport: TapType<string>): this {
+  public then(transport: ConstructorType<[string]>): this {
     const $vars = Record(this.vars);
     Applied(All(this.$src, this.$places, $vars), ([base, rules, vars]) => {
-      Object.entries(rules).forEach(([ph, val]) => {
-        base = base.replaceAll(ph, String(val));
-      });
-      Object.entries(vars).forEach(([ph, val]) => {
-        base = base.replaceAll(ph, String(val));
-      });
+      try {
+        Object.entries(rules).forEach(([ph, val]) => {
+          base = base.replaceAll(ph, String(val));
+        });
+        Object.entries(vars).forEach(([ph, val]) => {
+          base = base.replaceAll(ph, String(val));
+        });
+      } catch (e) {
+        this.rejections.reject(e);
+      }
 
       return base;
-    }).pipe(transport);
+    }).then(transport);
     return this;
   }
 
@@ -64,6 +71,11 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
     }
     this.vars[varName] = src;
     return varName;
+  }
+
+  public catch(rejected: ConstructorType<[unknown]>): this {
+    this.rejections.catch(rejected);
+    return this;
   }
 
   public destroy(): this {

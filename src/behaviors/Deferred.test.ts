@@ -1,6 +1,7 @@
-import { Late, Primitive, Shared, Tap } from "silentium";
-import { Deferred } from "../behaviors/Deferred";
+import { Late, Primitive, Shared } from "silentium";
 import { expect, test, vi } from "vitest";
+
+import { Deferred } from "../behaviors/Deferred";
 
 test("Deferred.test", () => {
   const $url = Late<string>("http://hello.com");
@@ -9,13 +10,13 @@ test("Deferred.test", () => {
   const urlWithLayoutSrc = Shared(Deferred($url, $layout));
 
   const g1 = vi.fn();
-  urlWithLayoutSrc.pipe(Tap(g1));
+  urlWithLayoutSrc.then(g1);
   expect(g1).not.toHaveBeenCalled();
 
   $layout.use("layout here");
 
   const g2 = vi.fn();
-  urlWithLayoutSrc.pipe(Tap(g2));
+  urlWithLayoutSrc.then(g2);
   $url.use("http://new.com");
   expect(g2).toHaveBeenCalledWith("http://hello.com");
 

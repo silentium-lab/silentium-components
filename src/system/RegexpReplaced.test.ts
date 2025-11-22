@@ -1,12 +1,13 @@
-import { Late, Of, Tap } from "silentium";
-import { RegexpReplaced } from "../system/RegexpReplaced";
+import { Late, Of } from "silentium";
 import { expect, test, vi } from "vitest";
+
+import { RegexpReplaced } from "../system/RegexpReplaced";
 
 test("RegexpReplaced.test", () => {
   const $url = Late<string>("http://domain.com/some/url/");
   const $matched = RegexpReplaced($url, Of("some/url/"), Of(""));
   const g = vi.fn();
-  $matched.pipe(Tap(g));
+  $matched.then(g);
 
   expect(g).toHaveBeenLastCalledWith("http://domain.com/");
 

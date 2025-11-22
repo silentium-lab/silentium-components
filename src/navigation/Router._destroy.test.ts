@@ -1,14 +1,7 @@
-import {
-  Applied,
-  Late,
-  Message,
-  Of,
-  Shared,
-  Tap,
-  TapMessage,
-} from "silentium";
-import { Router } from "../navigation/Router";
+import { Applied, Late, Message, Of, Shared } from "silentium";
 import { expect, test, vi } from "vitest";
+
+import { Router } from "../navigation/Router";
 
 const drop = (dropPart: string) => (value: string) => {
   return value.replace(dropPart, "");
@@ -18,33 +11,30 @@ test("Router destroys previous route messages when switching routes", () => {
   const $url = Late<string>("http://domain.com/");
   const $urlPath = Shared(Applied($url, drop("http://domain.com")));
   const g = vi.fn();
-  $urlPath.pipe(Tap(g));
+  $urlPath.then(g);
 
   // Create mock destroyable messages for routes
   const firstRouteDestroy = vi.fn();
   const secondRouteDestroy = vi.fn();
   const defaultDestroy = vi.fn();
 
-  const $firstRoute = TapMessage(() =>
+  const $firstRoute = () =>
     Message<string>((transport) => {
-      transport.use("first-route-response");
+      transport("first-route-response");
       return firstRouteDestroy;
-    }),
-  );
+    });
 
-  const $secondRoute = TapMessage(() =>
+  const $secondRoute = () =>
     Message<string>((transport) => {
-      transport.use("second-route-response");
+      transport("second-route-response");
       return secondRouteDestroy;
-    }),
-  );
+    });
 
-  const $default = TapMessage(() =>
+  const $default = () =>
     Message<string>((transport) => {
-      transport.use("default-response");
+      transport("default-response");
       return defaultDestroy;
-    }),
-  );
+    });
 
   const $router = Router(
     $urlPath,
@@ -62,7 +52,7 @@ test("Router destroys previous route messages when switching routes", () => {
   );
 
   const g2 = vi.fn();
-  $router.pipe(Tap(g2));
+  $router.then(g2);
 
   // Initially no route matches, should use default
   expect(g2).toHaveBeenLastCalledWith("default-response");

@@ -1,13 +1,14 @@
-import { Late, Tap } from "silentium";
-import { Or } from "../boolean/Or";
+import { Late } from "silentium";
 import { expect, test, vi } from "vitest";
+
+import { Or } from "../boolean/Or";
 
 test("Or.test", () => {
   const one = Late<boolean>(false);
   const two = Late<boolean>(false);
   const result = Or(one, two);
   const g = vi.fn();
-  result.pipe(Tap(g));
+  result.then(g);
   expect(g).toHaveBeenLastCalledWith(false);
 
   one.use(true);

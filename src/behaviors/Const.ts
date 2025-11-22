@@ -1,4 +1,4 @@
-import { Message, MessageType, Tap } from "silentium";
+import { Message, MessageType } from "silentium";
 
 /**
  * Constant value that will be
@@ -9,11 +9,9 @@ export function Constant<T>(
   permanent: T,
   $trigger: MessageType,
 ): MessageType<T> {
-  return Message(function () {
-    $trigger.pipe(
-      Tap(() => {
-        this.use(permanent);
-      }),
-    );
+  return Message(function ConstantImpl(r) {
+    $trigger.then(() => {
+      r(permanent);
+    });
   });
 }

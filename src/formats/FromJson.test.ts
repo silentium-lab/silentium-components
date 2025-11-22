@@ -1,6 +1,7 @@
 import { Of, Primitive } from "silentium";
-import { FromJson } from "../formats/FromJson";
 import { expect, test } from "vitest";
+
+import { FromJson } from "../formats/FromJson";
 
 test("FromJson.test", () => {
   const one = Of('{"hello": "world"}');

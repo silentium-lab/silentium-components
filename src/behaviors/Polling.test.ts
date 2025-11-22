@@ -1,13 +1,14 @@
 import { Late, Message, MessageType, Primitive } from "silentium";
 import { expect, test } from "vitest";
+
 import { Polling } from "../behaviors/Polling";
 
 test("Polling.test", () => {
   const $trigger = Late(1);
   let calls = 0;
-  const $calls: MessageType<number> = Message((o) => {
+  const $calls: MessageType<number> = Message((r) => {
     calls += 1;
-    o.use(calls);
+    r(calls);
   });
   const s = Primitive(Polling($calls, $trigger));
 

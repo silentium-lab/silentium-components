@@ -1,11 +1,6 @@
-import {
-  LateShared,
-  Message,
-  Of,
-  Tap,
-  TapMessage,
-} from "silentium";
+import { LateShared, Message, Of } from "silentium";
 import { describe, expect, test } from "vitest";
+
 import { Detached } from "../behaviors/Detached";
 import { Router } from "../navigation/Router";
 
@@ -17,11 +12,11 @@ describe("Router._nested.test", () => {
       Of([
         {
           pattern: "^/$",
-          message: TapMessage(() => Of<string>("home")),
+          message: () => Of<string>("home"),
         },
         {
           pattern: "/admin.*",
-          message: TapMessage(() => {
+          message: () => {
             return Message((transport) => {
               // need to replace with detached component
               const localUrlSrc = Detached($url);
@@ -31,19 +26,19 @@ describe("Router._nested.test", () => {
                 Of([
                   {
                     pattern: "^/admin/articles$",
-                    message: TapMessage(() => Of("articles list")),
+                    message: () => Of("articles list"),
                   },
                   {
                     pattern: "^/admin/articles/create$",
-                    message: TapMessage(() => Of("articles create")),
+                    message: () => Of("articles create"),
                   },
                   {
                     pattern: "^/admin/articles/update$",
-                    message: TapMessage(() => Of("articles update")),
+                    message: () => Of("articles update"),
                   },
                   {
                     pattern: "^/admin/nested/.*$",
-                    message: TapMessage(() => {
+                    message: () => {
                       return Message((transport) => {
                         const localUrlSrc = Detached($url);
 
@@ -52,45 +47,39 @@ describe("Router._nested.test", () => {
                           Of([
                             {
                               pattern: "^/admin/nested/list$",
-                              message: TapMessage(() =>
-                                Of("admin nested list"),
-                              ),
+                              message: () => Of("admin nested list"),
                             },
                           ]),
-                          TapMessage(() =>
-                            Of<string>("admin nested not found"),
-                          ),
+                          () => Of<string>("admin nested not found"),
                         );
 
-                        r.pipe(transport);
+                        r.then(transport);
 
                         return function AdminDestroy() {
                           r.destroy();
                         };
                       });
-                    }),
+                    },
                   },
                 ]),
-                TapMessage(() => Of<string>("admin not found")),
+                () => Of<string>("admin not found"),
               );
 
-              r.pipe(transport);
+              r.then(transport);
 
               return function AdminDestroy() {
                 r.destroy();
               };
             });
-          }),
+          },
         },
       ]),
-      TapMessage(() => Of("not found")),
+      () => Of("not found"),
     );
     const d: string[] = [];
-    $router.pipe(
-      Tap((v) => {
-        d.push(v);
-      }),
-    );
+    $router.then((v) => {
+      d.push(v);
+    });
     const pd = () => d.join("\n");
 
     $url.use("/admin/articles");

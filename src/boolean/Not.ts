@@ -1,15 +1,13 @@
-import { Message, MessageType, Tap } from "silentium";
+import { Message, MessageType } from "silentium";
 
 /**
  * Logical negation of message
  * https://silentium-lab.github.io/silentium-components/#/boolean/not
  */
 export function Not($base: MessageType<boolean>) {
-  return Message<boolean>(function () {
-    $base.pipe(
-      Tap((v) => {
-        this.use(!v);
-      }),
-    );
+  return Message<boolean>(function NotImpl(r) {
+    $base.then((v) => {
+      r(!v);
+    });
   });
 }

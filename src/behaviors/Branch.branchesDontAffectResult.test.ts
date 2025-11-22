@@ -1,6 +1,7 @@
-import { Applied, Late, Of, Tap } from "silentium";
-import { Branch } from "../behaviors/Branch";
+import { Applied, Late, Of } from "silentium";
 import { expect, test, vi } from "vitest";
+
+import { Branch } from "../behaviors/Branch";
 
 test("Branch.branchesDontAffectResult.test", () => {
   const l = Late<number>(2);
@@ -11,7 +12,7 @@ test("Branch.branchesDontAffectResult.test", () => {
     el,
   );
   const g = vi.fn();
-  boolSync.pipe(Tap(g));
+  boolSync.then(g);
 
   l.use(1);
   expect(g).toHaveBeenLastCalledWith("else");

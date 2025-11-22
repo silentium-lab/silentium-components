@@ -1,10 +1,4 @@
-import {
-  ActualMessage,
-  MaybeMessage,
-  Message,
-  Primitive,
-  Tap,
-} from "silentium";
+import { ActualMessage, MaybeMessage, Message, Primitive } from "silentium";
 
 /**
  * Allows switching between left and right messages depending on condition
@@ -18,24 +12,22 @@ export function Branch<Then, Else>(
   const $condition = ActualMessage(_condition);
   const $left = ActualMessage(_left);
   const $right = _right && ActualMessage(_right);
-  return Message<Then | Else>(function () {
+  return Message<Then | Else>(function BranchImpl(r) {
     const left = Primitive($left);
     let right: ReturnType<typeof Primitive<Else>>;
     if ($right !== undefined) {
       right = Primitive($right);
     }
-    $condition.pipe(
-      Tap((v) => {
-        let result: Then | Else | null = null;
-        if (v) {
-          result = left.primitive();
-        } else if (right) {
-          result = right.primitive();
-        }
-        if (result !== null) {
-          this.use(result);
-        }
-      }),
-    );
+    $condition.then((v) => {
+      let result: Then | Else | null = null;
+      if (v) {
+        result = left.primitive();
+      } else if (right) {
+        result = right.primitive();
+      }
+      if (result !== null) {
+        r(result);
+      }
+    });
   });
 }

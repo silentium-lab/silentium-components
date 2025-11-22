@@ -1,6 +1,7 @@
-import { Late, Shared, Tap } from "silentium";
-import { Lock } from "../behaviors/Lock";
+import { Late, Shared } from "silentium";
 import { expect, test, vi } from "vitest";
+
+import { Lock } from "../behaviors/Lock";
 
 test("Lock.test", () => {
   const source = Late<number>(1);
@@ -9,7 +10,7 @@ test("Lock.test", () => {
   const ls = Lock(source, lockSrc);
   const lockedSrc = Shared(ls);
   const g = vi.fn();
-  lockedSrc.pipe(Tap(g));
+  lockedSrc.then(g);
 
   expect(g).toHaveBeenLastCalledWith(1);
 

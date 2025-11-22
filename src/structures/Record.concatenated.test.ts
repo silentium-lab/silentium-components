@@ -1,7 +1,8 @@
-import { Late, Of, Shared, Tap } from "silentium";
+import { Late, Of, Shared } from "silentium";
+import { expect, test, vi } from "vitest";
+
 import { Concatenated } from "../strings";
 import { Record } from "./Record";
-import { expect, test, vi } from "vitest";
 
 test("Record.concatenated.test", () => {
   const $three = Of<string>("three");
@@ -15,13 +16,11 @@ test("Record.concatenated.test", () => {
     }),
   );
   const g = vi.fn();
-  r.pipe(Tap(g));
+  r.then(g);
   let counter = 0;
-  r.pipe(
-    Tap(() => {
-      counter += 1;
-    }),
-  );
+  r.then(() => {
+    counter += 1;
+  });
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

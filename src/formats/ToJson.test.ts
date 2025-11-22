@@ -1,5 +1,6 @@
 import { Of, Primitive } from "silentium";
 import { expect, test } from "vitest";
+
 import { ToJson } from "../formats/ToJson";
 
 test("ToJson.test", () => {

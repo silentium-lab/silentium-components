@@ -1,6 +1,7 @@
-import { Any, Late, Shared, Tap } from "silentium";
-import { Tick } from "../behaviors/Tick";
+import { Any, Late, Shared } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+
+import { Tick } from "../behaviors/Tick";
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -14,10 +15,10 @@ afterEach(() => {
 test("Tick.test", async () => {
   const $s1 = Late<number>(1);
   const $s2 = Late<number>(2);
-  const $tick = Shared(Tick(Any($s1, $s2)), true);
+  const $tick = Shared(Tick(Any($s1, $s2)));
 
   const g = vi.fn();
-  $tick.pipe(Tap(g));
+  $tick.then(g);
 
   $s1.use(3);
   $s2.use(4);

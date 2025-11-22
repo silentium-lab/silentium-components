@@ -5,8 +5,6 @@ import {
   Message,
   MessageType,
   Shared,
-  Tap,
-  TapType,
 } from "silentium";
 
 /**
@@ -15,38 +13,33 @@ import {
  * respond before $timeout then the value from base will be returned
  */
 export function Deadline<T>(
-  error: TapType<Error>,
   $base: MessageType<T>,
   _timeout: MaybeMessage<number>,
 ) {
   const $timeout = ActualMessage(_timeout);
-  return Message<T>(function () {
+  return Message<T>(function DeadlineImpl(resolve, reject) {
     let timer: ReturnType<typeof setTimeout> | number = 0;
-    const base = Shared($base, true);
-    $timeout.pipe(
-      Tap((timeout) => {
-        if (timer) {
-          clearTimeout(timer);
+    const base = Shared($base);
+    $timeout.then((timeout) => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      let timeoutReached = false;
+
+      timer = setTimeout(() => {
+        if (timeoutReached) {
+          return;
         }
-        let timeoutReached = false;
+        timeoutReached = true;
+        reject(new Error("Timeout reached in Deadline"));
+      }, timeout);
 
-        timer = setTimeout(() => {
-          if (timeoutReached) {
-            return;
-          }
-          timeoutReached = true;
-          error.use(new Error("Timeout reached in Deadline"));
-        }, timeout);
+      const f = Filtered(base, () => !timeoutReached);
+      f.then(resolve);
 
-        const f = Filtered(base, () => !timeoutReached);
-        f.pipe(this);
-
-        base.pipe(
-          Tap(() => {
-            timeoutReached = true;
-          }),
-        );
-      }),
-    );
+      base.then(() => {
+        timeoutReached = true;
+      });
+    });
   });
 }

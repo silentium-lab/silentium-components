@@ -1,10 +1,9 @@
 import {
+  ConstructorType,
   DestroyableType,
   DestroyContainer,
   Message,
   MessageType,
-  Tap,
-  TapType,
 } from "silentium";
 
 /**
@@ -15,29 +14,27 @@ import {
  */
 export function BranchLazy<Then, Else>(
   $condition: MessageType<boolean>,
-  $left: TapType<void, MessageType<Then>>,
-  $right?: TapType<void, MessageType<Else>>,
+  $left: ConstructorType<[], MessageType<Then>>,
+  $right?: ConstructorType<[], MessageType<Else>>,
 ): MessageType<Then | Else> & DestroyableType {
-  return Message(function () {
+  return Message(function BranchLazyImpl(r) {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    $condition.pipe(
-      Tap((v) => {
-        destructor();
-        let instance: MessageType<Then | Else> | undefined;
-        if (v) {
-          instance = $left.use();
-        } else if ($right) {
-          instance = $right.use();
-        }
-        if (instance !== undefined) {
-          instance.pipe(this);
-          dc.add(instance);
-        }
-      }),
-    );
+    $condition.then((v) => {
+      destructor();
+      let instance: MessageType<Then | Else> | undefined;
+      if (v) {
+        instance = $left();
+      } else if ($right) {
+        instance = $right();
+      }
+      if (instance !== undefined) {
+        instance.then(r);
+        dc.add(instance);
+      }
+    });
     return destructor;
   });
 }

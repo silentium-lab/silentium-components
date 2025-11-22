@@ -6,302 +6,251 @@ function Branch(_condition, _left, _right) {
   const $condition = silentium.ActualMessage(_condition);
   const $left = silentium.ActualMessage(_left);
   const $right = _right && silentium.ActualMessage(_right);
-  return silentium.Message(function() {
+  return silentium.Message(function BranchImpl(r) {
     const left = silentium.Primitive($left);
     let right;
     if ($right !== void 0) {
       right = silentium.Primitive($right);
     }
-    $condition.pipe(
-      silentium.Tap((v) => {
-        let result = null;
-        if (v) {
-          result = left.primitive();
-        } else if (right) {
-          result = right.primitive();
-        }
-        if (result !== null) {
-          this.use(result);
-        }
-      })
-    );
+    $condition.then((v) => {
+      let result = null;
+      if (v) {
+        result = left.primitive();
+      } else if (right) {
+        result = right.primitive();
+      }
+      if (result !== null) {
+        r(result);
+      }
+    });
   });
 }
 
 function BranchLazy($condition, $left, $right) {
-  return silentium.Message(function() {
+  return silentium.Message(function BranchLazyImpl(r) {
     const dc = silentium.DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    $condition.pipe(
-      silentium.Tap((v) => {
-        destructor();
-        let instance;
-        if (v) {
-          instance = $left.use();
-        } else if ($right) {
-          instance = $right.use();
-        }
-        if (instance !== void 0) {
-          instance.pipe(this);
-          dc.add(instance);
-        }
-      })
-    );
+    $condition.then((v) => {
+      destructor();
+      let instance;
+      if (v) {
+        instance = $left();
+      } else if ($right) {
+        instance = $right();
+      }
+      if (instance !== void 0) {
+        instance.then(r);
+        dc.add(instance);
+      }
+    });
     return destructor;
   });
 }
 
 function Constant(permanent, $trigger) {
-  return silentium.Message(function() {
-    $trigger.pipe(
-      silentium.Tap(() => {
-        this.use(permanent);
-      })
-    );
+  return silentium.Message(function ConstantImpl(r) {
+    $trigger.then(() => {
+      r(permanent);
+    });
   });
 }
 
-function Deadline(error, $base, _timeout) {
+function Deadline($base, _timeout) {
   const $timeout = silentium.ActualMessage(_timeout);
-  return silentium.Message(function() {
+  return silentium.Message(function DeadlineImpl(resolve, reject) {
     let timer = 0;
-    const base = silentium.Shared($base, true);
-    $timeout.pipe(
-      silentium.Tap((timeout) => {
-        if (timer) {
-          clearTimeout(timer);
+    const base = silentium.Shared($base);
+    $timeout.then((timeout) => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      let timeoutReached = false;
+      timer = setTimeout(() => {
+        if (timeoutReached) {
+          return;
         }
-        let timeoutReached = false;
-        timer = setTimeout(() => {
-          if (timeoutReached) {
-            return;
-          }
-          timeoutReached = true;
-          error.use(new Error("Timeout reached in Deadline"));
-        }, timeout);
-        const f = silentium.Filtered(base, () => !timeoutReached);
-        f.pipe(this);
-        base.pipe(
-          silentium.Tap(() => {
-            timeoutReached = true;
-          })
-        );
-      })
-    );
+        timeoutReached = true;
+        reject(new Error("Timeout reached in Deadline"));
+      }, timeout);
+      const f = silentium.Filtered(base, () => !timeoutReached);
+      f.then(resolve);
+      base.then(() => {
+        timeoutReached = true;
+      });
+    });
   });
 }
 
 function Deferred($base, $trigger) {
-  return silentium.Message(function() {
+  return silentium.Message(function DeferredImpl(r) {
     const base = silentium.Primitive($base);
-    $trigger.pipe(
-      silentium.Tap(() => {
-        const value = base.primitive();
-        if (silentium.isFilled(value)) {
-          this.use(value);
-        }
-      })
-    );
+    $trigger.then(() => {
+      const value = base.primitive();
+      if (silentium.isFilled(value)) {
+        r(value);
+      }
+    });
   });
 }
 
 function Detached($base) {
-  return silentium.Message(function() {
+  return silentium.Message(function DetachedImpl(r) {
     const v = silentium.Primitive($base).primitive();
     if (silentium.isFilled(v)) {
-      this.use(v);
+      r(v);
     }
   });
 }
 
-var __defProp$2 = Object.defineProperty;
-var __defNormalProp$2 = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$2 = (obj, key, value) => __defNormalProp$2(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Dirty($base, keep = [], exclude = [], cloner) {
-  return new DirtySource($base, keep, exclude, cloner);
-}
-class DirtySource {
-  constructor($base, keep = [], exclude = [], cloner) {
-    this.$base = $base;
-    this.keep = keep;
-    this.exclude = exclude;
-    __publicField$2(this, "$comparing", silentium.Late());
-    __publicField$2(this, "cloner");
-    if (cloner === void 0) {
-      this.cloner = (value) => JSON.parse(JSON.stringify(value));
-    } else {
-      this.cloner = cloner;
-    }
+  const $comparing = silentium.Late();
+  if (cloner === void 0) {
+    cloner = (value) => JSON.parse(JSON.stringify(value));
   }
-  pipe(transport) {
-    const $comparing = silentium.Applied(this.$comparing, this.cloner);
-    silentium.All($comparing, this.$base).pipe(
-      silentium.Tap(([comparing, base]) => {
+  return silentium.MessageSource(
+    function DirtyImpl(r) {
+      const $comparingClone = silentium.Applied($comparing, cloner);
+      silentium.All($comparingClone, $base).then(([comparing, base]) => {
         if (!comparing) {
           return;
         }
-        transport.use(
+        r(
           Object.fromEntries(
             Object.entries(comparing).filter(([key, value]) => {
-              if (this.keep.includes(key)) {
+              if (keep.includes(key)) {
                 return true;
               }
-              if (this.exclude.includes(key)) {
+              if (exclude.includes(key)) {
                 return false;
               }
               return value !== base[key];
             })
           )
         );
-      })
-    );
-    return this;
-  }
-  use(v) {
-    this.$comparing.use(v);
-    return this;
-  }
+      });
+    },
+    (v) => {
+      $comparing.use(v);
+    }
+  );
 }
 
 function Loading($start, $finish) {
-  return silentium.Message(function() {
-    $start.pipe(silentium.Tap(() => this.use(true)));
-    $finish.pipe(silentium.Tap(() => this.use(false)));
+  return silentium.Message(function LoadingImpl(r) {
+    $start.then(() => r(true));
+    $finish.then(() => r(false));
   });
 }
 
 function Lock($base, $lock) {
-  return silentium.Message(function() {
+  return silentium.Message(function LockImpl(r) {
     let locked = false;
-    $lock.pipe(
-      silentium.Tap((newLock) => {
-        locked = newLock;
-      })
-    );
+    $lock.then((newLock) => {
+      locked = newLock;
+    });
     const i = silentium.Filtered($base, () => !locked);
-    i.pipe(this);
+    i.then(r);
   });
 }
 
 function Memo($base) {
-  return silentium.Message(function() {
+  return silentium.Message(function MemoImpl(r) {
     let last = null;
-    $base.pipe(
-      silentium.Tap((v) => {
-        if (v !== last && silentium.isFilled(v)) {
-          this.use(v);
-          last = v;
-        }
-      })
-    );
+    $base.then((v) => {
+      if (v !== last && silentium.isFilled(v)) {
+        r(v);
+        last = v;
+      }
+    });
   });
 }
 
 function OnlyChanged($base) {
-  return silentium.Message(function() {
+  return silentium.Message(function OnlyChangedImpl(r) {
     let first = false;
-    $base.pipe(
-      silentium.Tap((v) => {
-        if (first === false) {
-          first = true;
-        } else {
-          this.use(v);
-        }
-      })
-    );
+    $base.then((v) => {
+      if (first === false) {
+        first = true;
+      } else {
+        r(v);
+      }
+    });
   });
 }
 
-var __defProp$1 = Object.defineProperty;
-var __defNormalProp$1 = (obj, key, value) => key in obj ? __defProp$1(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField$1 = (obj, key, value) => __defNormalProp$1(obj, typeof key !== "symbol" ? key + "" : key, value);
-function Part($base, $key) {
-  return new PartImpl($base, silentium.ActualMessage($key));
-}
-class PartImpl {
-  constructor($base, $key) {
-    __publicField$1(this, "$base");
-    __publicField$1(this, "$keyed");
-    this.$base = silentium.SharedSource($base);
-    this.$keyed = silentium.Shared($key);
-  }
-  pipe(transport) {
-    silentium.All(this.$base, this.$keyed).pipe(
-      silentium.Tap(([base, keyed]) => {
+function Part($base, key) {
+  const $baseShared = silentium.Shared($base);
+  const $keyedShared = silentium.Shared(silentium.ActualMessage(key));
+  return silentium.MessageSource(
+    function PartImpl(r) {
+      silentium.All($baseShared, $keyedShared).then(([base, keyed]) => {
         const keys = keyed.split(".");
         let value = base;
-        keys.forEach((key) => {
-          value = value[key];
+        keys.forEach((key2) => {
+          value = value[key2];
         });
         if (value !== void 0 && value !== base) {
-          transport.use(value);
+          r(value);
         }
-      })
-    );
-    return this;
-  }
-  use(value) {
-    const key = silentium.Primitive(this.$keyed);
-    if (silentium.isFilled(key)) {
-      const base = silentium.Primitive(this.$base);
-      this.$base.use({
-        ...base.primitiveWithException(),
-        [key.primitiveWithException()]: value
       });
+    },
+    (value) => {
+      const key2 = silentium.Primitive($keyedShared);
+      if (silentium.isFilled(key2)) {
+        const base = silentium.Primitive($base);
+        $base.use({
+          ...base.primitiveWithException(),
+          [key2.primitiveWithException()]: value
+        });
+      }
     }
-    return this;
-  }
+  );
 }
 
 function Path($base, _keyed) {
   const $keyed = silentium.ActualMessage(_keyed);
-  return silentium.Message(function() {
-    silentium.All($base, $keyed).pipe(
-      silentium.Tap(([base, keyed]) => {
-        const keys = keyed.split(".");
-        let value = base;
-        keys.forEach((key) => {
-          value = value[key];
-        });
-        if (value !== void 0 && value !== base) {
-          this.use(value);
-        }
-      })
-    );
+  return silentium.Message(function PathImpl(r) {
+    silentium.All($base, $keyed).then(([base, keyed]) => {
+      const keys = keyed.split(".");
+      let value = base;
+      keys.forEach((key) => {
+        value = value[key];
+      });
+      if (value !== void 0 && value !== base) {
+        r(value);
+      }
+    });
   });
 }
 
 function Polling($base, $trigger) {
-  return silentium.Message(function() {
-    $trigger.pipe(
-      silentium.Tap(() => {
-        $base.pipe(this);
-      })
-    );
+  return silentium.Message(function PollingImpl(r) {
+    $trigger.then(() => {
+      $base.then(r);
+    });
   });
 }
 
 function Shot($target, $trigger) {
-  return silentium.Message(function() {
+  return silentium.Message(function ShotImpl(r) {
     const targetSync = silentium.Primitive($target);
     targetSync.primitive();
-    $trigger.pipe(
-      silentium.Tap(() => {
-        const value = targetSync.primitive();
-        if (silentium.isFilled(value)) {
-          this.use(value);
-        }
-      })
-    );
+    $trigger.then(() => {
+      const value = targetSync.primitive();
+      if (silentium.isFilled(value)) {
+        r(value);
+      }
+    });
   });
 }
 
 function Task(baseSrc, delay = 0) {
-  return silentium.Message(function() {
+  const $base = silentium.ActualMessage(baseSrc);
+  return silentium.Message(function TaskImpl(r) {
     let prevTimer = null;
-    silentium.ExecutorApplied(baseSrc, (fn) => {
+    silentium.ExecutorApplied($base, (fn) => {
       return (v) => {
         if (prevTimer) {
           clearTimeout(prevTimer);
@@ -310,12 +259,12 @@ function Task(baseSrc, delay = 0) {
           fn(v);
         }, delay);
       };
-    }).pipe(this);
+    }).then(r);
   });
 }
 
 function Tick($base) {
-  return silentium.Message(function() {
+  return silentium.Message(function TickImpl(r) {
     let microtaskScheduled = false;
     let lastValue = null;
     const scheduleMicrotask = () => {
@@ -323,80 +272,191 @@ function Tick($base) {
       queueMicrotask(() => {
         microtaskScheduled = false;
         if (lastValue !== null) {
-          this.use(lastValue);
+          r(lastValue);
           lastValue = null;
         }
       });
     };
-    $base.pipe(
-      silentium.Tap((v) => {
-        lastValue = v;
-        if (!microtaskScheduled) {
-          scheduleMicrotask();
-        }
-      })
-    );
-  });
-}
-
-function Transaction($base, builder, ...args) {
-  return silentium.Message(function() {
-    const $res = silentium.LateShared();
-    const destructors = [];
-    $base.pipe(
-      silentium.Tap((v) => {
-        const $msg = builder(silentium.Of(v), ...args.map((a) => Detached(a)));
-        destructors.push($msg);
-        $msg.pipe($res);
-      })
-    );
-    $res.pipe(this);
-    return () => {
-      destructors.forEach((d) => d?.destroy());
-      destructors.length = 0;
-    };
-  });
-}
-
-function HashTable($base) {
-  return silentium.Message(function() {
-    const record = {};
-    $base.pipe(
-      silentium.Tap(([key, value]) => {
-        record[key] = value;
-        this.use(record);
-      })
-    );
-  });
-}
-
-function Record(record) {
-  return silentium.Message(function() {
-    const keys = Object.keys(record);
-    keys.forEach((key) => {
-      if (!silentium.isMessage(record[key])) {
-        record[key] = silentium.Of(record[key]);
+    $base.then((v) => {
+      lastValue = v;
+      if (!microtaskScheduled) {
+        scheduleMicrotask();
       }
     });
-    silentium.All(...Object.values(record)).pipe(
-      silentium.Tap((entries) => {
-        const record2 = {};
-        entries.forEach((entry, index) => {
-          record2[keys[index]] = entry;
-        });
-        this.use(record2);
-      })
+  });
+}
+
+function And($one, $two) {
+  return silentium.Message(function AndImpl(r) {
+    silentium.All($one, $two).then(([one, two]) => {
+      r(!!(one && two));
+    });
+  });
+}
+
+function Bool($base) {
+  return silentium.Message(function BoolImpl(r) {
+    silentium.Applied($base, Boolean).then(r);
+  });
+}
+
+function Not($base) {
+  return silentium.Message(function NotImpl(r) {
+    $base.then((v) => {
+      r(!v);
+    });
+  });
+}
+
+function Or($one, $two) {
+  return silentium.Message(function OrImpl(r) {
+    silentium.All($one, $two).then(([one, two]) => {
+      r(!!(one || two));
+    });
+  });
+}
+
+function FromJson($json) {
+  return silentium.Message(function FromJsonImpl(resolve, reject) {
+    $json.then((json) => {
+      try {
+        resolve(JSON.parse(json));
+      } catch (e) {
+        reject(new Error(`Failed to parse JSON: ${e}`));
+      }
+    });
+  });
+}
+
+function ToJson($data) {
+  return silentium.Message(function ToJsonImpl(resolve, reject) {
+    $data.then((data) => {
+      try {
+        resolve(JSON.stringify(data));
+      } catch {
+        reject(new Error("Failed to convert to JSON"));
+      }
+    });
+  });
+}
+
+function First($base) {
+  return silentium.Message(function FirstImpl(r) {
+    silentium.Applied($base, (a) => a[0]).then(r);
+  });
+}
+
+function RegexpMatch(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
+  const $pattern = silentium.ActualMessage(patternSrc);
+  const $value = silentium.ActualMessage(valueSrc);
+  const $flags = silentium.ActualMessage(flagsSrc);
+  return silentium.Message(function RegexpMatchImpl(r) {
+    silentium.All($pattern, $value, $flags).then(([pattern, value, flags]) => {
+      const result = new RegExp(pattern, flags).exec(value);
+      r(result ?? []);
+    });
+  });
+}
+
+function RegexpMatched(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
+  const $pattern = silentium.ActualMessage(patternSrc);
+  const $value = silentium.ActualMessage(valueSrc);
+  const $flags = silentium.ActualMessage(flagsSrc);
+  return silentium.Message(function RegexpMatchedImpl(r) {
+    silentium.All($pattern, $value, $flags).then(([pattern, value, flags]) => {
+      r(new RegExp(pattern, flags).test(value));
+    });
+  });
+}
+
+function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = silentium.Of("")) {
+  return silentium.Message(function RegexpReplacedImpl(r) {
+    silentium.All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).then(
+      ([pattern, value, replaceValue, flags]) => {
+        r(String(value).replace(new RegExp(pattern, flags), replaceValue));
+      }
     );
+  });
+}
+
+function Set(baseSrc, keySrc, valueSrc) {
+  const $base = silentium.ActualMessage(baseSrc);
+  const $key = silentium.ActualMessage(keySrc);
+  const $value = silentium.ActualMessage(valueSrc);
+  return silentium.Message(function SetImpl(r) {
+    silentium.All($base, $key, $value).then(([base, key, value]) => {
+      base[key] = value;
+      r(base);
+    });
+  });
+}
+
+function Router($url, $routes, $default) {
+  return silentium.Message(function RouterImpl(r) {
+    const dc = silentium.DestroyContainer();
+    const destructor = () => {
+      dc.destroy();
+    };
+    silentium.All($routes, $url).then(([routes, url]) => {
+      destructor();
+      const $matches = silentium.All(
+        ...routes.map(
+          (r2) => RegexpMatched(
+            silentium.Of(r2.pattern),
+            silentium.Of(url),
+            r2.patternFlags ? silentium.Of(r2.patternFlags) : void 0
+          )
+        )
+      );
+      $matches.then((matches) => {
+        const index = matches.findIndex((v) => v === true);
+        if (index === -1) {
+          const instance = $default();
+          dc.add(instance);
+          instance.then(r);
+        }
+        if (index > -1) {
+          const instance = routes[index].message();
+          dc.add(instance);
+          instance.then(r);
+        }
+      });
+    });
+    return destructor;
   });
 }
 
 function Concatenated(sources, joinPartSrc = silentium.Of("")) {
-  return silentium.Message(function() {
-    silentium.All(joinPartSrc, ...sources).pipe(
-      silentium.Tap(([joinPart, ...strings]) => {
-        this.use(strings.join(joinPart));
-      })
-    );
+  return silentium.Message(function ConcatenatedImpl(r) {
+    silentium.All(joinPartSrc, ...sources).then(([joinPart, ...strings]) => {
+      r(strings.join(joinPart));
+    });
+  });
+}
+
+function HashTable($base) {
+  return silentium.Message(function HashTableImpl(r) {
+    const record = {};
+    $base.then(([key, value]) => {
+      record[key] = value;
+      r(record);
+    });
+  });
+}
+
+function Record(record) {
+  return silentium.Message(function RecordImpl(r) {
+    const keys = Object.keys(record);
+    keys.forEach((key) => {
+      record[key] = silentium.ActualMessage(record[key]);
+    });
+    silentium.All(...Object.values(record)).then((entries) => {
+      const record2 = {};
+      entries.forEach((entry, index) => {
+        record2[keys[index]] = entry;
+      });
+      r(record2);
+    });
   });
 }
 
@@ -411,21 +471,26 @@ class TemplateImpl {
     this.$src = $src;
     this.$places = $places;
     __publicField(this, "dc", silentium.DestroyContainer());
+    __publicField(this, "rejections", new silentium.Rejections());
     __publicField(this, "vars", {
       $TPL: silentium.Of("$TPL")
     });
   }
-  pipe(transport) {
+  then(transport) {
     const $vars = Record(this.vars);
     silentium.Applied(silentium.All(this.$src, this.$places, $vars), ([base, rules, vars]) => {
-      Object.entries(rules).forEach(([ph, val]) => {
-        base = base.replaceAll(ph, String(val));
-      });
-      Object.entries(vars).forEach(([ph, val]) => {
-        base = base.replaceAll(ph, String(val));
-      });
+      try {
+        Object.entries(rules).forEach(([ph, val]) => {
+          base = base.replaceAll(ph, String(val));
+        });
+        Object.entries(vars).forEach(([ph, val]) => {
+          base = base.replaceAll(ph, String(val));
+        });
+      } catch (e) {
+        this.rejections.reject(e);
+      }
       return base;
-    }).pipe(transport);
+    }).then(transport);
     return this;
   }
   template(value) {
@@ -444,163 +509,14 @@ class TemplateImpl {
     this.vars[varName] = src;
     return varName;
   }
+  catch(rejected) {
+    this.rejections.catch(rejected);
+    return this;
+  }
   destroy() {
     this.dc.destroy();
     return this;
   }
-}
-
-function RegexpMatched(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
-  return silentium.Message(function() {
-    silentium.All(patternSrc, valueSrc, flagsSrc).pipe(
-      silentium.Tap(([pattern, value, flags]) => {
-        this.use(new RegExp(pattern, flags).test(value));
-      })
-    );
-  });
-}
-
-function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = silentium.Of("")) {
-  return silentium.Message(function() {
-    silentium.All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).pipe(
-      silentium.Tap(([pattern, value, replaceValue, flags]) => {
-        this.use(
-          String(value).replace(new RegExp(pattern, flags), replaceValue)
-        );
-      })
-    );
-  });
-}
-
-function RegexpMatch(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
-  return silentium.Message(function() {
-    silentium.All(patternSrc, valueSrc, flagsSrc).pipe(
-      silentium.Tap(([pattern, value, flags]) => {
-        const result = new RegExp(pattern, flags).exec(value);
-        this.use(result ?? []);
-      })
-    );
-  });
-}
-
-function Set(baseSrc, keySrc, valueSrc) {
-  return silentium.Message(function() {
-    silentium.All(baseSrc, keySrc, valueSrc).pipe(
-      silentium.Tap(([base, key, value]) => {
-        base[key] = value;
-        this.use(base);
-      })
-    );
-  });
-}
-
-function Router($url, $routes, $default) {
-  return silentium.Message(function() {
-    const dc = silentium.DestroyContainer();
-    const destructor = () => {
-      dc.destroy();
-    };
-    silentium.All($routes, $url).pipe(
-      silentium.Tap(([routes, url]) => {
-        destructor();
-        const $matches = silentium.All(
-          ...routes.map(
-            (r) => RegexpMatched(
-              silentium.Of(r.pattern),
-              silentium.Of(url),
-              r.patternFlags ? silentium.Of(r.patternFlags) : void 0
-            )
-          )
-        );
-        $matches.pipe(
-          silentium.Tap((matches) => {
-            const index = matches.findIndex((v) => v === true);
-            if (index === -1) {
-              const instance = $default.use();
-              dc.add(instance);
-              instance.pipe(this);
-            }
-            if (index > -1) {
-              const instance = routes[index].message.use();
-              dc.add(instance);
-              instance.pipe(this);
-            }
-          })
-        );
-      })
-    );
-    return destructor;
-  });
-}
-
-function And($one, $two) {
-  return silentium.Message(function() {
-    silentium.All($one, $two).pipe(
-      silentium.Tap(([one, two]) => {
-        this.use(!!(one && two));
-      })
-    );
-  });
-}
-
-function Or($one, $two) {
-  return silentium.Message(function() {
-    silentium.All($one, $two).pipe(
-      silentium.Tap(([one, two]) => {
-        this.use(!!(one || two));
-      })
-    );
-  });
-}
-
-function Not($base) {
-  return silentium.Message(function() {
-    $base.pipe(
-      silentium.Tap((v) => {
-        this.use(!v);
-      })
-    );
-  });
-}
-
-function Bool($base) {
-  return silentium.Message(function() {
-    silentium.Applied($base, Boolean).pipe(this);
-  });
-}
-
-function FromJson($json, error) {
-  return silentium.Message(function() {
-    $json.pipe(
-      silentium.Tap((json) => {
-        try {
-          this.use(JSON.parse(json));
-        } catch (e) {
-          error?.use(new Error(`Failed to parse JSON: ${e}`));
-        }
-      })
-    );
-  });
-}
-
-function ToJson($data, error) {
-  return silentium.Message(function() {
-    $data.pipe(
-      silentium.Tap((data) => {
-        try {
-          this.use(JSON.stringify(data));
-        } catch {
-          error?.use(new Error("Failed to convert to JSON"));
-        }
-      })
-    );
-  });
-}
-
-function First($base) {
-  return silentium.Message(function() {
-    silentium.Applied($base, (a) => a[0]).pipe(this);
-  });
 }
 
 exports.And = And;
@@ -636,5 +552,4 @@ exports.Task = Task;
 exports.Template = Template;
 exports.Tick = Tick;
 exports.ToJson = ToJson;
-exports.Transaction = Transaction;
 //# sourceMappingURL=silentium-components.cjs.map

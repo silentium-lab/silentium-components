@@ -1,6 +1,6 @@
+import terser from "@rollup/plugin-terser";
 import dts from "rollup-plugin-dts";
 import esbuild from "rollup-plugin-esbuild";
-import terser from "@rollup/plugin-terser";
 
 const name = "dist/silentium-components";
 
@@ -38,6 +38,7 @@ export default [
       {
         file: `${name}.min.js`,
         format: "iife",
+        name: "silentium",
         plugins: [terser()],
       },
     ],

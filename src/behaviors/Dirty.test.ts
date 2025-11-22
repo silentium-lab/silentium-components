@@ -1,6 +1,7 @@
-import { Late, Tap } from "silentium";
-import { Dirty } from "../behaviors/Dirty";
+import { Late } from "silentium";
 import { expect, test, vi } from "vitest";
+
+import { Dirty } from "../behaviors/Dirty";
 
 test("Dirty.test", () => {
   const form = Late({
@@ -9,7 +10,7 @@ test("Dirty.test", () => {
   });
   const d = Dirty(form);
   const g = vi.fn();
-  d.pipe(Tap(g));
+  d.then(g);
 
   d.use({
     name: "new",

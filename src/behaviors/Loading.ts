@@ -1,4 +1,4 @@
-import { Message, MessageType, Tap } from "silentium";
+import { Message, MessageType } from "silentium";
 
 /**
  * Representation Of loading process
@@ -10,8 +10,8 @@ export function Loading(
   $start: MessageType<unknown>,
   $finish: MessageType<unknown>,
 ) {
-  return Message<boolean>(function () {
-    $start.pipe(Tap(() => this.use(true)));
-    $finish.pipe(Tap(() => this.use(false)));
+  return Message<boolean>(function LoadingImpl(r) {
+    $start.then(() => r(true));
+    $finish.then(() => r(false));
   });
 }

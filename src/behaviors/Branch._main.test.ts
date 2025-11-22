@@ -1,6 +1,7 @@
-import { Applied, Late, Of, Tap } from "silentium";
-import { Branch } from "../behaviors/Branch";
+import { Applied, Late, Of } from "silentium";
 import { expect, test, vi } from "vitest";
+
+import { Branch } from "../behaviors/Branch";
 
 test("Branch._main.test", () => {
   const l = Late<number>(2);
@@ -13,7 +14,7 @@ test("Branch._main.test", () => {
   );
 
   const g = vi.fn();
-  res.pipe(Tap(g));
+  res.then(g);
   expect(g).toBeCalledWith("Then ветка");
 
   l.use(1);

@@ -1,5 +1,6 @@
-import { Late, Tap } from "silentium";
+import { Late } from "silentium";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+
 import { Deadline } from "../behaviors/Deadline";
 
 beforeEach(() => {
@@ -19,9 +20,9 @@ test("Deadline._value.test", () => {
     l.use(11);
   }, 10);
 
-  const dl = Deadline(Tap(error), l, 200);
+  const dl = Deadline(l, 200);
   const g = vi.fn();
-  dl.pipe(Tap(g));
+  dl.then(g);
 
   vi.runAllTimers();
 

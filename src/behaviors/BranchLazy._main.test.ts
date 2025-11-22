@@ -1,5 +1,6 @@
-import { Applied, Late, Of, Tap, TapMessage } from "silentium";
+import { Applied, Late, Of } from "silentium";
 import { expect, test, vi } from "vitest";
+
 import { BranchLazy } from "../behaviors/BranchLazy";
 
 test("BranchLazy._main.test", () => {
@@ -8,12 +9,12 @@ test("BranchLazy._main.test", () => {
     Applied(l, (t) => {
       return t === 2;
     }),
-    TapMessage(() => Of("Then branch")),
-    TapMessage(() => Of("Else branch")),
+    () => Of("Then branch"),
+    () => Of("Else branch"),
   );
 
   const g = vi.fn();
-  res.pipe(Tap(g));
+  res.then(g);
   expect(g).toBeCalledWith("Then branch");
 
   l.use(1);

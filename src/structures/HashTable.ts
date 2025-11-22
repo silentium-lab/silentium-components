@@ -1,4 +1,4 @@
-import { Message, MessageType, Tap } from "silentium";
+import { Message, MessageType } from "silentium";
 
 /**
  * By receiving a message with a key and value, collects a table
@@ -6,14 +6,12 @@ import { Message, MessageType, Tap } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
 export function HashTable<T>($base: MessageType<[string, unknown]>) {
-  return Message<T>(function () {
+  return Message<T>(function HashTableImpl(r) {
     const record: Record<string, unknown> = {};
 
-    $base.pipe(
-      Tap(([key, value]) => {
-        record[key] = value;
-        this.use(record as T);
-      }),
-    );
+    $base.then(([key, value]) => {
+      record[key] = value;
+      r(record as T);
+    });
   });
 }

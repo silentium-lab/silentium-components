@@ -1,5 +1,6 @@
-import { Of, Tap } from "silentium";
+import { Of } from "silentium";
 import { expect, test, vi } from "vitest";
+
 import { Record } from "./Record";
 
 test("Record.nested.test", () => {
@@ -14,7 +15,7 @@ test("Record.nested.test", () => {
     }),
   });
   const g = vi.fn();
-  $record.pipe(Tap(g));
+  $record.then(g);
 
   expect(g).toHaveBeenLastCalledWith({
     one: "one",

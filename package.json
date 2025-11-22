@@ -40,6 +40,8 @@
     "eslint": "^9.12.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "husky": "^9.1.7",
     "jsdom": "^26.0.0",
     "prettier": "3.3.3",
@@ -60,6 +62,6 @@
     }
   },
   "dependencies": {
-    "silentium": "0.0.140"
+    "silentium": "0.0.143"
   }
 }

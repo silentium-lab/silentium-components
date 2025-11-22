@@ -1,5 +1,6 @@
-import { Of, Tap } from "silentium";
+import { Of } from "silentium";
 import { expect, test, vi } from "vitest";
+
 import { Path } from "./Path";
 
 test("Path.index.test", () => {
@@ -13,6 +14,6 @@ test("Path.index.test", () => {
   };
   const bestColor = Path(Of(record), Of("colors.0"));
   const g = vi.fn();
-  bestColor.pipe(Tap(g));
+  bestColor.then(g);
   expect(g).toHaveBeenLastCalledWith("blue");
 });

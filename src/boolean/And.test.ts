@@ -1,5 +1,6 @@
-import { Late, Tap } from "silentium";
+import { Late } from "silentium";
 import { expect, test, vi } from "vitest";
+
 import { And } from "../boolean/And";
 
 test("And.test", () => {
@@ -7,7 +8,7 @@ test("And.test", () => {
   const $two = Late<boolean>(false);
   const result = And($one, $two);
   const g = vi.fn();
-  result.pipe(Tap(g));
+  result.then(g);
   expect(g).toHaveBeenLastCalledWith(false);
 
   $one.use(true);
