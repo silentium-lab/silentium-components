@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.84](https://github.com/silentium-lab/silentium-components/compare/v0.0.83...v0.0.84) (2025-11-22)
+
+
+### Bug Fixes
+
+* **main:** thenable components ([c90ed86](https://github.com/silentium-lab/silentium-components/commit/c90ed86ea97bc7d935b2eca240ef77a07182740f))
+
 ### [0.0.83](https://github.com/silentium-lab/silentium-components/compare/v0.0.82...v0.0.83) (2025-11-17)
 
 
