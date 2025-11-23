@@ -9,7 +9,7 @@ export function Constant<T>(
   permanent: T,
   $trigger: MessageType,
 ): MessageType<T> {
-  return Message(function ConstantImpl(r) {
+  return Message<T>(function ConstantImpl(r) {
     $trigger.then(() => {
       r(permanent);
     });

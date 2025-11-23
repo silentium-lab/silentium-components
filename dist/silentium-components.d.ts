@@ -33,7 +33,7 @@ declare function Deadline<T>($base: MessageType<T>, _timeout: MaybeMessage<numbe
  * Defer one source after another, gives values Of baseSrc only when triggerSrc responds
  * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
  */
-declare function Deferred<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageRx<unknown>;
+declare function Deferred<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageRx<T>;
 
 /**
  * Message separate from the base
@@ -111,7 +111,7 @@ declare function Task<T>(baseSrc: MaybeMessage<T>, delay?: number): silentium.Me
  * Accumulates the last value Of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-declare function Tick<T>($base: MessageType<T>): silentium.MessageRx<unknown>;
+declare function Tick<T>($base: MessageType<T>): silentium.MessageRx<T>;
 
 /**
  * Logical AND over two messages

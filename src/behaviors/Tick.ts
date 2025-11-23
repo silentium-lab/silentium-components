@@ -5,7 +5,7 @@ import { Message, MessageType } from "silentium";
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
 export function Tick<T>($base: MessageType<T>) {
-  return Message(function TickImpl(r) {
+  return Message<T>(function TickImpl(r) {
     let microtaskScheduled = false;
     let lastValue: T | null = null;
 

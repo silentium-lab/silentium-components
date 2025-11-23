@@ -8,7 +8,7 @@ export function Deferred<T>(
   $base: MessageType<T>,
   $trigger: MessageType<unknown>,
 ) {
-  return Message(function DeferredImpl(r) {
+  return Message<T>(function DeferredImpl(r) {
     const base = Primitive($base);
     $trigger.then(() => {
       const value = base.primitive();
