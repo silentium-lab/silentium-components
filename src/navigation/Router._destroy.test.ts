@@ -85,4 +85,6 @@ test("Router destroys previous route messages when switching routes", () => {
   expect(g2).toHaveBeenLastCalledWith("first-route-response");
   expect(defaultDestroy).toHaveBeenCalledTimes(2); // Default destroyed again
   expect(firstRouteDestroy).toHaveBeenCalledTimes(1); // Still only once
+
+  $router.destroy();
 });

@@ -7,7 +7,6 @@ import {
   MessageSourceType,
   Primitive,
   Shared,
-  SourceType,
 } from "silentium";
 
 /**
@@ -18,7 +17,7 @@ export function Part<
   R,
   T extends object | Array<any> = any,
   K extends string = any,
->($base: MessageSourceType<T>, key: MaybeMessage<K>): SourceType<R> {
+>($base: MessageSourceType<T>, key: MaybeMessage<K>): MessageSourceType<R> {
   const $baseShared = Shared($base);
   const $keyedShared = Shared(ActualMessage(key));
   return MessageSource(

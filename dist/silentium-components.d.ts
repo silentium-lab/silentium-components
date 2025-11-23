@@ -1,5 +1,5 @@
 import * as silentium from 'silentium';
-import { MaybeMessage, MessageType, ConstructorType, DestroyableType, MessageSourceType, SourceType } from 'silentium';
+import { MaybeMessage, MessageType, ConstructorType, DestroyableType, MessageSourceType } from 'silentium';
 
 /**
  * Allows switching between left and right messages depending on condition
@@ -80,7 +80,7 @@ declare function OnlyChanged<T>($base: MessageType<T>): silentium.MessageRx<T>;
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Part<R, T extends object | Array<any> = any, K extends string = any>($base: MessageSourceType<T>, key: MaybeMessage<K>): SourceType<R>;
+declare function Part<R, T extends object | Array<any> = any, K extends string = any>($base: MessageSourceType<T>, key: MaybeMessage<K>): MessageSourceType<R>;
 
 /**
  * Return source Of record path

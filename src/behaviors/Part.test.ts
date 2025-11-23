@@ -30,5 +30,9 @@ describe("Part.test", () => {
 
     $name.use("Shmiter");
     expect(g).toHaveBeenLastCalledWith({ name: "Shmiter", surname: "Parker" });
+
+    const gn = vi.fn();
+    $name.then(gn);
+    expect(gn).toHaveBeenLastCalledWith("Shmiter");
   });
 });
