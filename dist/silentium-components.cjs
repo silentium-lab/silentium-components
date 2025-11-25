@@ -209,10 +209,11 @@ function Part($base, key) {
   );
 }
 
-function Path($base, _keyed) {
+function Path($base, _keyed, def) {
   const $keyed = silentium.ActualMessage(_keyed);
+  const $def = silentium.ActualMessage(def);
   return silentium.Message(function PathImpl(r) {
-    silentium.All($base, $keyed).then(([base, keyed]) => {
+    silentium.All($base, $keyed, $def).then(([base, keyed, d]) => {
       const keys = keyed.split(".");
       let value = base;
       keys.forEach((key) => {
@@ -220,9 +221,17 @@ function Path($base, _keyed) {
       });
       if (value !== void 0 && value !== base) {
         r(value);
+      } else if (d !== void 0) {
+        r(d);
       }
     });
   });
+}
+
+function PathExisted(_base, _keyed) {
+  const $base = silentium.ActualMessage(_base);
+  const $keyed = silentium.ActualMessage(_keyed);
+  return silentium.Empty(Path($base, $keyed, silentium.Nothing));
 }
 
 function Polling($base, $trigger) {
@@ -540,6 +549,7 @@ exports.OnlyChanged = OnlyChanged;
 exports.Or = Or;
 exports.Part = Part;
 exports.Path = Path;
+exports.PathExisted = PathExisted;
 exports.Polling = Polling;
 exports.Record = Record;
 exports.RegexpMatch = RegexpMatch;

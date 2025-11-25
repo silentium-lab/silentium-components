@@ -1,4 +1,4 @@
-import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, ExecutorApplied, Of, Rejections, isDestroyable } from 'silentium';
+import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, Empty, Nothing, ExecutorApplied, Of, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = ActualMessage(_condition);
@@ -207,10 +207,11 @@ function Part($base, key) {
   );
 }
 
-function Path($base, _keyed) {
+function Path($base, _keyed, def) {
   const $keyed = ActualMessage(_keyed);
+  const $def = ActualMessage(def);
   return Message(function PathImpl(r) {
-    All($base, $keyed).then(([base, keyed]) => {
+    All($base, $keyed, $def).then(([base, keyed, d]) => {
       const keys = keyed.split(".");
       let value = base;
       keys.forEach((key) => {
@@ -218,9 +219,17 @@ function Path($base, _keyed) {
       });
       if (value !== void 0 && value !== base) {
         r(value);
+      } else if (d !== void 0) {
+        r(d);
       }
     });
   });
+}
+
+function PathExisted(_base, _keyed) {
+  const $base = ActualMessage(_base);
+  const $keyed = ActualMessage(_keyed);
+  return Empty(Path($base, $keyed, Nothing));
 }
 
 function Polling($base, $trigger) {
@@ -517,5 +526,5 @@ class TemplateImpl {
   }
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
 //# sourceMappingURL=silentium-components.js.map

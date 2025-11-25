@@ -86,7 +86,12 @@ declare function Part<R, T extends object | Array<any> = any, K extends string =
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Path<R, T extends object | Array<any> = any, K extends string = any>($base: MessageType<T>, _keyed: MaybeMessage<K>): silentium.MessageRx<R>;
+declare function Path<R, T extends object | Array<any> = any, K extends string = any>($base: MessageType<T>, _keyed: MaybeMessage<K>, def?: MaybeMessage<T>): silentium.MessageRx<R>;
+
+/**
+ * Path with separate empty message
+ */
+declare function PathExisted<R, T extends object | Array<any> = any, K extends string = any>(_base: MaybeMessage<T>, _keyed: MaybeMessage<K>): silentium.EmptyImpl<R>;
 
 /**
  * Active polling of $base message
@@ -231,5 +236,5 @@ declare function RegexpReplaced(valueSrc: MessageType<string>, patternSrc: Messa
  */
 declare function Set<T extends Record<string, unknown>>(baseSrc: MessageType<T>, keySrc: MessageType<string>, valueSrc: MessageType<unknown>): silentium.MessageRx<T>;
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, Polling, Record$1 as Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record$1 as Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
 export type { Route };

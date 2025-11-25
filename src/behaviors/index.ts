@@ -11,6 +11,7 @@ export * from "./Memo";
 export * from "./OnlyChanged";
 export * from "./Part";
 export * from "./Path";
+export * from "./PathExisted";
 export * from "./Polling";
 export * from "./Shot";
 export * from "./Task";
