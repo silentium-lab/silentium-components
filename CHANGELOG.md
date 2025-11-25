@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.87](https://github.com/silentium-lab/silentium-components/compare/v0.0.86...v0.0.87) (2025-11-25)
+
+
+### Bug Fixes
+
+* **main:** path existed component ([0624e5f](https://github.com/silentium-lab/silentium-components/commit/0624e5fdbbc6bfea0ea1540fd344ad935744dd1e))
+
 ### [0.0.86](https://github.com/silentium-lab/silentium-components/compare/v0.0.85...v0.0.86) (2025-11-23)
 
 
