@@ -166,7 +166,7 @@ interface Route<T> {
  * Router component what will return template if url matches pattern
  * https://silentium-lab.github.io/silentium-components/#/navigation/router
  */
-declare function Router<T = string>($url: MessageType<string>, $routes: MessageType<Route<T>[]>, $default: ConstructorType<[], MessageType<T>>): MessageType<T> & DestroyableType;
+declare function Router<T = string>($url: MessageType<string>, routes: MaybeMessage<Route<T>[]>, $default: ConstructorType<[], MessageType<T>>): MessageType<T> & DestroyableType;
 
 /**
  * Join sources Of strings to one source

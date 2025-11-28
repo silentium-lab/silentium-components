@@ -398,16 +398,17 @@ function Set(baseSrc, keySrc, valueSrc) {
   });
 }
 
-function Router($url, $routes, $default) {
+function Router($url, routes, $default) {
+  const $routes = ActualMessage(routes);
   return Message(function RouterImpl(r) {
     const dc = DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    All($routes, $url).then(([routes, url]) => {
+    All($routes, $url).then(([routes2, url]) => {
       destructor();
       const $matches = All(
-        ...routes.map(
+        ...routes2.map(
           (r2) => RegexpMatched(
             Of(r2.pattern),
             Of(url),
@@ -423,7 +424,7 @@ function Router($url, $routes, $default) {
           instance.then(r);
         }
         if (index > -1) {
-          const instance = routes[index].message();
+          const instance = routes2[index].message();
           dc.add(instance);
           instance.then(r);
         }

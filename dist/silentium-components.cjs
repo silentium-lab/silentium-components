@@ -400,16 +400,17 @@ function Set(baseSrc, keySrc, valueSrc) {
   });
 }
 
-function Router($url, $routes, $default) {
+function Router($url, routes, $default) {
+  const $routes = silentium.ActualMessage(routes);
   return silentium.Message(function RouterImpl(r) {
     const dc = silentium.DestroyContainer();
     const destructor = () => {
       dc.destroy();
     };
-    silentium.All($routes, $url).then(([routes, url]) => {
+    silentium.All($routes, $url).then(([routes2, url]) => {
       destructor();
       const $matches = silentium.All(
-        ...routes.map(
+        ...routes2.map(
           (r2) => RegexpMatched(
             silentium.Of(r2.pattern),
             silentium.Of(url),
@@ -425,7 +426,7 @@ function Router($url, $routes, $default) {
           instance.then(r);
         }
         if (index > -1) {
-          const instance = routes[index].message();
+          const instance = routes2[index].message();
           dc.add(instance);
           instance.then(r);
         }
