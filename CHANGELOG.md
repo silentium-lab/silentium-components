@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.89](https://github.com/silentium-lab/silentium-components/compare/v0.0.88...v0.0.89) (2025-11-28)
+
+
+### Bug Fixes
+
+* **main:** router without message wrapper ([a4e85c9](https://github.com/silentium-lab/silentium-components/commit/a4e85c9df66d0ba9c15ff7c79d1dc6122cd3319e))
+
 ### [0.0.88](https://github.com/silentium-lab/silentium-components/compare/v0.0.87...v0.0.88) (2025-11-25)
 
 
