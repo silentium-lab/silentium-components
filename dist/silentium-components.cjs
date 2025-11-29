@@ -526,8 +526,8 @@ class TemplateImpl {
    * in concrete place Of template
    */
   var(src) {
-    const places = Object.keys(this.vars).length;
-    const varName = `$var${places}`;
+    const hash = Date.now().toString(36) + Math.random().toString(36).substring(2);
+    const varName = `$var${hash}`;
     if (silentium.isDestroyable(src)) {
       this.dc.add(src);
     }

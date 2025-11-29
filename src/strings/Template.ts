@@ -87,8 +87,9 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
    * in concrete place Of template
    */
   public var(src: MessageType<string>) {
-    const places = Object.keys(this.vars).length;
-    const varName = `$var${places}`;
+    const hash =
+      Date.now().toString(36) + Math.random().toString(36).substring(2);
+    const varName = `$var${hash}`;
     if (isDestroyable(src)) {
       this.dc.add(src);
     }
