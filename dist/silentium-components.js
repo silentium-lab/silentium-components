@@ -1,4 +1,4 @@
-import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, Empty, Nothing, ExecutorApplied, Of, Rejections, isDestroyable } from 'silentium';
+import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, Empty, Nothing, ExecutorApplied, Of, LateShared, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = ActualMessage(_condition);
@@ -471,8 +471,23 @@ function Record(record) {
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-function Template($src = Of(""), $places = Of({})) {
-  return new TemplateImpl($src, $places);
+function Template(src = "", $places = Of({})) {
+  const $src = LateShared();
+  if (typeof src === "string" || isMessage(src)) {
+    $src.chain(ActualMessage(src));
+  }
+  const t = new TemplateImpl(
+    $src,
+    $places ? ActualMessage($places) : void 0
+  );
+  if (typeof src === "function") {
+    $src.chain(
+      Message((r) => {
+        r(src(t));
+      })
+    );
+  }
+  return t;
 }
 class TemplateImpl {
   constructor($src = Of(""), $places = Of({})) {

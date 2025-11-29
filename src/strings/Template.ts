@@ -1,10 +1,15 @@
 import {
+  ActualMessage,
   All,
   Applied,
   ConstructorType,
   DestroyableType,
   DestroyContainer,
   isDestroyable,
+  isMessage,
+  LateShared,
+  MaybeMessage,
+  Message,
   MessageType,
   Of,
   Rejections,
@@ -18,10 +23,28 @@ import { Record } from "../structures";
  * the template value will change
  */
 export function Template(
-  $src: MessageType<string> = Of(""),
-  $places: MessageType<Record<string, unknown>> = Of({}),
+  src: MaybeMessage<string> | ((t: TemplateImpl) => string) = "",
+  $places: MaybeMessage<Record<string, unknown>> = Of({}),
 ) {
-  return new TemplateImpl($src, $places);
+  const $src = LateShared<string>();
+  if (typeof src === "string" || isMessage(src)) {
+    $src.chain(ActualMessage(src));
+  }
+
+  const t = new TemplateImpl(
+    $src,
+    $places ? ActualMessage($places) : undefined,
+  );
+
+  if (typeof src === "function") {
+    $src.chain(
+      Message((r) => {
+        r(src(t));
+      }),
+    );
+  }
+
+  return t;
 }
 
 class TemplateImpl implements MessageType<string>, DestroyableType {

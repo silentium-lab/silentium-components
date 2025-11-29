@@ -473,8 +473,23 @@ function Record(record) {
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-function Template($src = silentium.Of(""), $places = silentium.Of({})) {
-  return new TemplateImpl($src, $places);
+function Template(src = "", $places = silentium.Of({})) {
+  const $src = silentium.LateShared();
+  if (typeof src === "string" || silentium.isMessage(src)) {
+    $src.chain(silentium.ActualMessage(src));
+  }
+  const t = new TemplateImpl(
+    $src,
+    $places ? silentium.ActualMessage($places) : void 0
+  );
+  if (typeof src === "function") {
+    $src.chain(
+      silentium.Message((r) => {
+        r(src(t));
+      })
+    );
+  }
+  return t;
 }
 class TemplateImpl {
   constructor($src = silentium.Of(""), $places = silentium.Of({})) {

@@ -179,7 +179,7 @@ declare function Concatenated(sources: MessageType<string>[], joinPartSrc?: Mess
  * variables inserted into it; when variables change,
  * the template value will change
  */
-declare function Template($src?: MessageType<string>, $places?: MessageType<Record<string, unknown>>): TemplateImpl;
+declare function Template(src?: MaybeMessage<string> | ((t: TemplateImpl) => string), $places?: MaybeMessage<Record<string, unknown>>): TemplateImpl;
 declare class TemplateImpl implements MessageType<string>, DestroyableType {
     private $src;
     private $places;
