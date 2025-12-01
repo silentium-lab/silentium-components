@@ -8,6 +8,7 @@ export * from "./Dirty";
 export * from "./Loading";
 export * from "./Lock";
 export * from "./Memo";
+export * from "./MergeAccumulation";
 export * from "./OnlyChanged";
 export * from "./Part";
 export * from "./Path";

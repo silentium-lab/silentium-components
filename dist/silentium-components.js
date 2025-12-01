@@ -1,4 +1,4 @@
-import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, Empty, Nothing, ExecutorApplied, Of, LateShared, isMessage, Rejections, isDestroyable } from 'silentium';
+import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, LateShared, Empty, Nothing, ExecutorApplied, Of, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = ActualMessage(_condition);
@@ -163,6 +163,47 @@ function Memo($base) {
       }
     });
   });
+}
+
+function MergeAccumulation($base, $reset) {
+  const accumulation = LateShared();
+  const lastAccumulated = {};
+  $base.then((nextValue) => {
+    accumulation.use(
+      mergeWith(lastAccumulated, nextValue, (value1, value2) => {
+        if (Array.isArray(value1)) {
+          return value1.concat(value2);
+        }
+      })
+    );
+  });
+  if ($reset) {
+    $reset.then((resetValue) => {
+      accumulation.use(resetValue);
+    });
+  }
+  return accumulation;
+}
+function mergeWith(target, source, customizer) {
+  if (source == null) {
+    return target;
+  }
+  Object.keys(source).forEach((key) => {
+    const srcValue = source[key];
+    const objValue = target[key];
+    const result = customizer(objValue, srcValue, key, target, source);
+    if (result !== void 0) {
+      target[key] = result;
+    } else if (isObject(srcValue) && isObject(objValue)) {
+      mergeWith(objValue, srcValue, customizer);
+    } else {
+      target[key] = srcValue;
+    }
+  });
+  return target;
+}
+function isObject(value) {
+  return value != null && typeof value === "object";
 }
 
 function OnlyChanged($base) {
@@ -542,5 +583,5 @@ class TemplateImpl {
   }
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
 //# sourceMappingURL=silentium-components.js.map

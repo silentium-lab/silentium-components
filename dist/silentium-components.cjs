@@ -167,6 +167,47 @@ function Memo($base) {
   });
 }
 
+function MergeAccumulation($base, $reset) {
+  const accumulation = silentium.LateShared();
+  const lastAccumulated = {};
+  $base.then((nextValue) => {
+    accumulation.use(
+      mergeWith(lastAccumulated, nextValue, (value1, value2) => {
+        if (Array.isArray(value1)) {
+          return value1.concat(value2);
+        }
+      })
+    );
+  });
+  if ($reset) {
+    $reset.then((resetValue) => {
+      accumulation.use(resetValue);
+    });
+  }
+  return accumulation;
+}
+function mergeWith(target, source, customizer) {
+  if (source == null) {
+    return target;
+  }
+  Object.keys(source).forEach((key) => {
+    const srcValue = source[key];
+    const objValue = target[key];
+    const result = customizer(objValue, srcValue, key, target, source);
+    if (result !== void 0) {
+      target[key] = result;
+    } else if (isObject(srcValue) && isObject(objValue)) {
+      mergeWith(objValue, srcValue, customizer);
+    } else {
+      target[key] = srcValue;
+    }
+  });
+  return target;
+}
+function isObject(value) {
+  return value != null && typeof value === "object";
+}
+
 function OnlyChanged($base) {
   return silentium.Message(function OnlyChangedImpl(r) {
     let first = false;
@@ -560,6 +601,7 @@ exports.HashTable = HashTable;
 exports.Loading = Loading;
 exports.Lock = Lock;
 exports.Memo = Memo;
+exports.MergeAccumulation = MergeAccumulation;
 exports.Not = Not;
 exports.OnlyChanged = OnlyChanged;
 exports.Or = Or;

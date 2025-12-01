@@ -71,6 +71,12 @@ declare function Lock<T>($base: MessageType<T>, $lock: MessageType<boolean>): si
 declare function Memo<T>($base: MessageType<T>): silentium.MessageRx<T>;
 
 /**
+ * Есть объект и каждое новое его значение нужно мержить с прошлым
+ * чтобы накопить общие изменения
+ */
+declare function MergeAccumulation<T extends object>($base: MessageType<T>, $reset?: MessageType<T>): MessageType<T>;
+
+/**
  * Represents source what was changed at least once
  * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
  */
@@ -236,5 +242,5 @@ declare function RegexpReplaced(valueSrc: MessageType<string>, patternSrc: Messa
  */
 declare function Set<T extends Record<string, unknown>>(baseSrc: MessageType<T>, keySrc: MessageType<string>, valueSrc: MessageType<unknown>): silentium.MessageRx<T>;
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record$1 as Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record$1 as Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
 export type { Route };
