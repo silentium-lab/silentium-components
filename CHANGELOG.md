@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.92](https://github.com/silentium-lab/silentium-components/compare/v0.0.91...v0.0.92) (2025-12-01)
+
+
+### Bug Fixes
+
+* **main:** mergeAccumulation component ([db9cec3](https://github.com/silentium-lab/silentium-components/commit/db9cec3267d21922babea089381d1b29d33a45d3))
+
 ### [0.0.91](https://github.com/silentium-lab/silentium-components/compare/v0.0.90...v0.0.91) (2025-11-29)
 
 
