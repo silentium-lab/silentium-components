@@ -105,7 +105,7 @@ function Detached($base) {
 }
 
 function Dirty($base, keep = [], exclude = [], cloner) {
-  const $comparing = silentium.Late();
+  const $comparing = silentium.LateShared({});
   if (cloner === void 0) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }

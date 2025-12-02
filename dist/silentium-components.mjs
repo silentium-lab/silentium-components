@@ -1,4 +1,4 @@
-import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, LateShared, Empty, Nothing, ExecutorApplied, Of, isMessage, Rejections, isDestroyable } from 'silentium';
+import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, LateShared, MessageSource, Applied, All, Empty, Nothing, ExecutorApplied, Of, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = ActualMessage(_condition);
@@ -103,7 +103,7 @@ function Detached($base) {
 }
 
 function Dirty($base, keep = [], exclude = [], cloner) {
-  const $comparing = Late();
+  const $comparing = LateShared({});
   if (cloner === void 0) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }
