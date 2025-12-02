@@ -1,17 +1,23 @@
-import { All, Applied, Late, MessageSource, MessageType } from "silentium";
+import {
+  All,
+  Applied,
+  LateShared,
+  MessageSource,
+  MessageType,
+} from "silentium";
 
 /**
  * Takes source and remember it first value
  * returns new record, what will contain only fields what was changed
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
-export function Dirty<T>(
+export function Dirty<T extends Record<string, unknown>>(
   $base: MessageType<T>,
   keep: string[] = [],
   exclude: string[] = [],
   cloner?: (v: T) => T,
 ) {
-  const $comparing = Late<T>();
+  const $comparing = LateShared<T>({} as T);
   if (cloner === undefined) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }
