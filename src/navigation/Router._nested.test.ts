@@ -1,4 +1,4 @@
-import { LateShared, Message, Of } from "silentium";
+import { Late, Message, Of } from "silentium";
 import { describe, expect, test } from "vitest";
 
 import { Detached } from "../behaviors/Detached";
@@ -6,7 +6,7 @@ import { Router } from "../navigation/Router";
 
 describe("Router._nested.test", () => {
   test("Nested routes", () => {
-    const $url = LateShared("/");
+    const $url = Late("/");
     const $router = Router(
       $url,
       Of([

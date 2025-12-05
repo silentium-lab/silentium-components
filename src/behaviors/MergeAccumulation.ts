@@ -1,4 +1,4 @@
-import { LateShared, MessageType } from "silentium";
+import { Late, MessageType } from "silentium";
 
 /**
  * Есть объект и каждое новое его значение нужно мержить с прошлым
@@ -8,7 +8,7 @@ export function MergeAccumulation<T extends object>(
   $base: MessageType<T>,
   $reset?: MessageType<T>,
 ): MessageType<T> {
-  const accumulation = LateShared<T>();
+  const accumulation = Late<T>();
   const lastAccumulated = {};
   $base.then((nextValue) => {
     accumulation.use(

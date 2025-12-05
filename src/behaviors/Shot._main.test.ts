@@ -12,7 +12,7 @@ test("Shot._main.test", () => {
   $shotted.then(g);
 
   $base.use(1);
-  $trigger.use(1);
+  $trigger.use(NaN);
 
   expect(g).toHaveBeenLastCalledWith(1);
 
@@ -20,7 +20,7 @@ test("Shot._main.test", () => {
 
   expect(g).toHaveBeenLastCalledWith(1);
 
-  $trigger.use(1);
+  $trigger.use(NaN);
 
   expect(g).toHaveBeenLastCalledWith(2);
 

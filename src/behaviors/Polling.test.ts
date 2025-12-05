@@ -14,13 +14,13 @@ test("Polling.test", () => {
 
   expect(s.primitive()).toBe(1);
 
-  $trigger.use(1);
+  $trigger.use(NaN);
 
   expect(s.primitive()).toBe(2);
 
-  $trigger.use(1);
-  $trigger.use(1);
-  $trigger.use(1);
+  $trigger.use(NaN);
+  $trigger.use(NaN);
+  $trigger.use(NaN);
 
   expect(s.primitive()).toBe(5);
 });

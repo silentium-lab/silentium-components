@@ -1,10 +1,10 @@
-import { LateShared } from "silentium";
+import { Late } from "silentium";
 import { expect, test } from "vitest";
 
 import { MergeAccumulation } from "../behaviors/MergeAccumulation";
 
 test("MergeAccumulation.test", async () => {
-  const baseSrc = LateShared<any>({
+  const baseSrc = Late<any>({
     one: 1,
   });
   const accumulation = MergeAccumulation(baseSrc);

@@ -1,4 +1,4 @@
-import { ActualMessage, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, LateShared, MessageSource, Applied, All, Empty, Nothing, ExecutorApplied, Of, isMessage, Rejections, isDestroyable } from 'silentium';
+import { ActualMessage, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, Empty, Nothing, ExecutorApplied, Of, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = ActualMessage(_condition);
@@ -48,9 +48,10 @@ function BranchLazy($condition, $left, $right) {
 }
 
 function Constant(permanent, $trigger) {
-  return Message(function ConstantImpl(r) {
-    $trigger.then(() => {
-      r(permanent);
+  return Message(function ConstantImpl(resolve, reject) {
+    $trigger.catch(reject).then(() => {
+      resolve(permanent);
+      resolve(ResetSilenceCache);
     });
   });
 }
@@ -103,7 +104,7 @@ function Detached($base) {
 }
 
 function Dirty($base, keep = [], exclude = [], cloner) {
-  const $comparing = LateShared({});
+  const $comparing = Late({});
   if (cloner === void 0) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }
@@ -166,7 +167,7 @@ function Memo($base) {
 }
 
 function MergeAccumulation($base, $reset) {
-  const accumulation = LateShared();
+  const accumulation = Late();
   const lastAccumulated = {};
   $base.then((nextValue) => {
     accumulation.use(
@@ -248,22 +249,21 @@ function Part($base, key) {
   );
 }
 
+const NotSet = Symbol("not-set");
 function Path($base, _keyed, def) {
   const $keyed = ActualMessage(_keyed);
-  const $def = ActualMessage(def);
-  return Message(function PathImpl(r) {
-    All($base, $keyed, $def).then(([base, keyed, d]) => {
-      const keys = keyed.split(".");
-      let value = base;
-      keys.forEach((key) => {
-        value = value[key];
-      });
-      if (value !== void 0 && value !== base) {
-        r(value);
-      } else if (d !== void 0) {
-        r(d);
-      }
+  const $def = ActualMessage(def ?? NotSet);
+  return Applied(All($base, $keyed, $def), ([base, keyed, d]) => {
+    const keys = keyed.split(".");
+    let value = base;
+    keys.forEach((key) => {
+      value = value[key];
     });
+    if (value !== void 0 && value !== base) {
+      return value;
+    } else if (d !== NotSet) {
+      return d;
+    }
   });
 }
 
@@ -417,14 +417,17 @@ function RegexpMatched(patternSrc, valueSrc, flagsSrc = Of("")) {
   });
 }
 
-function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = Of("")) {
-  return Message(function RegexpReplacedImpl(r) {
-    All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).then(
-      ([pattern, value, replaceValue, flags]) => {
-        r(String(value).replace(new RegExp(pattern, flags), replaceValue));
-      }
-    );
-  });
+function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") {
+  const $value = ActualMessage(valueSrc);
+  const $pattern = ActualMessage(patternSrc);
+  const $replaceValue = ActualMessage(replaceValueSrc);
+  const $flags = ActualMessage(flagsSrc);
+  return Applied(
+    All($pattern, $value, $replaceValue, $flags),
+    ([pattern, value, replaceValue, flags]) => {
+      return String(value).replace(new RegExp(pattern, flags), replaceValue);
+    }
+  );
 }
 
 function Set(baseSrc, keySrc, valueSrc) {
@@ -513,7 +516,7 @@ var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Template(src = "", $places = Of({})) {
-  const $src = LateShared();
+  const $src = Late();
   if (typeof src === "string" || isMessage(src)) {
     $src.chain(ActualMessage(src));
   }

@@ -92,7 +92,7 @@ declare function Part<R, T extends object | Array<any> = any, K extends string =
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Path<R, T extends object | Array<any> = any, K extends string = any>($base: MessageType<T>, _keyed: MaybeMessage<K>, def?: MaybeMessage<T>): silentium.MessageRx<R>;
+declare function Path<R, T extends object | Array<any> = any, K extends string = any>($base: MessageType<T>, _keyed: MaybeMessage<K>, def?: MaybeMessage<T>): MessageType<R>;
 
 /**
  * Path with separate empty message
@@ -103,7 +103,7 @@ declare function PathExisted<R, T extends object | Array<any> = any, K extends s
  * Active polling of $base message
  * synchronized with $trigger message
  */
-declare function Polling<T>($base: MessageType<T>, $trigger: MessageType<T>): silentium.MessageRx<T>;
+declare function Polling<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageRx<T>;
 
 /**
  * Helps to represent only last fresh value Of some source, refreshing controls by shotSrc
@@ -234,7 +234,7 @@ declare function RegexpMatched(patternSrc: MaybeMessage<string>, valueSrc: Maybe
  * Returns string replaced by regular expression pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-replaced
  */
-declare function RegexpReplaced(valueSrc: MessageType<string>, patternSrc: MessageType<string>, replaceValueSrc: MessageType<string>, flagsSrc?: MessageType<string>): silentium.MessageRx<string>;
+declare function RegexpReplaced(valueSrc: MaybeMessage<string>, patternSrc: MaybeMessage<string>, replaceValueSrc: MaybeMessage<string>, flagsSrc?: MaybeMessage<string>): silentium.MessageRx<string>;
 
 /**
  * Ability to mutate some object, helpful when integrate to procedure systems

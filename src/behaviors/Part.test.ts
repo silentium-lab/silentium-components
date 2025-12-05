@@ -1,11 +1,11 @@
-import { LateShared, Of } from "silentium";
+import { Late, Of } from "silentium";
 import { describe, expect, test, vi } from "vitest";
 
 import { Part } from "../behaviors/Part";
 
 describe("Part.test", () => {
   test("regular", () => {
-    const $record = LateShared({
+    const $record = Late({
       name: "Peter",
       surname: "Parker",
     });
@@ -19,7 +19,7 @@ describe("Part.test", () => {
   });
 
   test("raw key", () => {
-    const $record = LateShared({
+    const $record = Late({
       name: "Peter",
       surname: "Parker",
     });

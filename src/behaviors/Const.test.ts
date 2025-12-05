@@ -13,8 +13,8 @@ test("Const.test", () => {
 
   expect(data).toStrictEqual(["val"]);
 
-  $trigger.use(1);
-  $trigger.use(1);
+  $trigger.use(NaN);
+  $trigger.use(NaN);
 
   expect(data).toStrictEqual(["val", "val", "val"]);
 });

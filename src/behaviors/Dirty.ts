@@ -1,10 +1,4 @@
-import {
-  All,
-  Applied,
-  LateShared,
-  MessageSource,
-  MessageType,
-} from "silentium";
+import { All, Applied, Late, MessageSource, MessageType } from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -17,7 +11,7 @@ export function Dirty<T extends Record<string, unknown>>(
   exclude: string[] = [],
   cloner?: (v: T) => T,
 ) {
-  const $comparing = LateShared<T>({} as T);
+  const $comparing = Late<T>({} as T);
   if (cloner === undefined) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }

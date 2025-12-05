@@ -7,7 +7,7 @@ import {
   DestroyContainer,
   isDestroyable,
   isMessage,
-  LateShared,
+  Late,
   MaybeMessage,
   Message,
   MessageType,
@@ -26,7 +26,7 @@ export function Template(
   src: MaybeMessage<string> | ((t: TemplateImpl) => string) = "",
   $places: MaybeMessage<Record<string, unknown>> = Of({}),
 ) {
-  const $src = LateShared<string>();
+  const $src = Late<string>();
   if (typeof src === "string" || isMessage(src)) {
     $src.chain(ActualMessage(src));
   }

@@ -1,10 +1,10 @@
-import { LateShared } from "silentium";
+import { Late } from "silentium";
 import { expect, test, vi } from "vitest";
 
 import { Detached } from "../behaviors/Detached";
 
 test("Detached.test.ts", function DetachedTest() {
-  const l = LateShared(1);
+  const l = Late(1);
   const l2 = Detached(l);
 
   const g1 = vi.fn();

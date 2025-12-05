@@ -7,7 +7,12 @@ test("RegexpReplaced.test", () => {
   const $url = Late<string>("http://domain.com/some/url/");
   const $matched = RegexpReplaced($url, Of("some/url/"), Of(""));
   const g = vi.fn();
-  $matched.then(g);
+  $matched.then((v) => {
+    g(v);
+  });
+  $matched.catch((v) => {
+    console.log(v);
+  });
 
   expect(g).toHaveBeenLastCalledWith("http://domain.com/");
 

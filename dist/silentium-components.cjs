@@ -50,9 +50,10 @@ function BranchLazy($condition, $left, $right) {
 }
 
 function Constant(permanent, $trigger) {
-  return silentium.Message(function ConstantImpl(r) {
-    $trigger.then(() => {
-      r(permanent);
+  return silentium.Message(function ConstantImpl(resolve, reject) {
+    $trigger.catch(reject).then(() => {
+      resolve(permanent);
+      resolve(silentium.ResetSilenceCache);
     });
   });
 }
@@ -105,7 +106,7 @@ function Detached($base) {
 }
 
 function Dirty($base, keep = [], exclude = [], cloner) {
-  const $comparing = silentium.LateShared({});
+  const $comparing = silentium.Late({});
   if (cloner === void 0) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }
@@ -168,7 +169,7 @@ function Memo($base) {
 }
 
 function MergeAccumulation($base, $reset) {
-  const accumulation = silentium.LateShared();
+  const accumulation = silentium.Late();
   const lastAccumulated = {};
   $base.then((nextValue) => {
     accumulation.use(
@@ -250,22 +251,21 @@ function Part($base, key) {
   );
 }
 
+const NotSet = Symbol("not-set");
 function Path($base, _keyed, def) {
   const $keyed = silentium.ActualMessage(_keyed);
-  const $def = silentium.ActualMessage(def);
-  return silentium.Message(function PathImpl(r) {
-    silentium.All($base, $keyed, $def).then(([base, keyed, d]) => {
-      const keys = keyed.split(".");
-      let value = base;
-      keys.forEach((key) => {
-        value = value[key];
-      });
-      if (value !== void 0 && value !== base) {
-        r(value);
-      } else if (d !== void 0) {
-        r(d);
-      }
+  const $def = silentium.ActualMessage(def ?? NotSet);
+  return silentium.Applied(silentium.All($base, $keyed, $def), ([base, keyed, d]) => {
+    const keys = keyed.split(".");
+    let value = base;
+    keys.forEach((key) => {
+      value = value[key];
     });
+    if (value !== void 0 && value !== base) {
+      return value;
+    } else if (d !== NotSet) {
+      return d;
+    }
   });
 }
 
@@ -419,14 +419,17 @@ function RegexpMatched(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
   });
 }
 
-function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = silentium.Of("")) {
-  return silentium.Message(function RegexpReplacedImpl(r) {
-    silentium.All(patternSrc, valueSrc, replaceValueSrc, flagsSrc).then(
-      ([pattern, value, replaceValue, flags]) => {
-        r(String(value).replace(new RegExp(pattern, flags), replaceValue));
-      }
-    );
-  });
+function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") {
+  const $value = silentium.ActualMessage(valueSrc);
+  const $pattern = silentium.ActualMessage(patternSrc);
+  const $replaceValue = silentium.ActualMessage(replaceValueSrc);
+  const $flags = silentium.ActualMessage(flagsSrc);
+  return silentium.Applied(
+    silentium.All($pattern, $value, $replaceValue, $flags),
+    ([pattern, value, replaceValue, flags]) => {
+      return String(value).replace(new RegExp(pattern, flags), replaceValue);
+    }
+  );
 }
 
 function Set(baseSrc, keySrc, valueSrc) {
@@ -515,7 +518,7 @@ var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 function Template(src = "", $places = silentium.Of({})) {
-  const $src = silentium.LateShared();
+  const $src = silentium.Late();
   if (typeof src === "string" || silentium.isMessage(src)) {
     $src.chain(silentium.ActualMessage(src));
   }

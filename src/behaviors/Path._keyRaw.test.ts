@@ -10,6 +10,8 @@ test("Path._keyRaw.test", () => {
   };
   const name = Path<string>(Of(record), "name");
   const g = vi.fn();
-  name.then(g);
+  name.then((v) => {
+    g(v);
+  });
   expect(g).toHaveBeenLastCalledWith("Peter");
 });
