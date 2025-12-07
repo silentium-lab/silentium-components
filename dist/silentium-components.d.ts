@@ -106,6 +106,12 @@ declare function PathExisted<R, T extends object | Array<any> = any, K extends s
 declare function Polling<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageRx<T>;
 
 /**
+ * Helps eliminate unwanted values
+ * that shouldn't exist in object fields
+ */
+declare function RecordTruncated(_record: MaybeMessage<Record<string, unknown>>, _badValues: MaybeMessage<unknown[]>): silentium.MessageRx<any>;
+
+/**
  * Helps to represent only last fresh value Of some source, refreshing controls by shotSrc
  * https://silentium-lab.github.io/silentium-components/#/behaviors/shot
  */
@@ -123,6 +129,15 @@ declare function Task<T>(baseSrc: MaybeMessage<T>, delay?: number): silentium.Me
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
 declare function Tick<T>($base: MessageType<T>): silentium.MessageRx<T>;
+
+/**
+ * Modify the object structure
+ * with the ability to create new fields based on
+ * existing ones in the object
+ */
+declare function Transformed<T extends Record<string, any>>(_base: MaybeMessage<T>, transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>): silentium.MessageRx<unknown>;
+
+declare function TransformedList<T extends any[]>(_base: MaybeMessage<T>, transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>): silentium.MessageRx<unknown[]>;
 
 /**
  * Logical AND over two messages
@@ -242,5 +257,5 @@ declare function RegexpReplaced(valueSrc: MaybeMessage<string>, patternSrc: Mayb
  */
 declare function Set<T extends Record<string, unknown>>(baseSrc: MessageType<T>, keySrc: MessageType<string>, valueSrc: MessageType<unknown>): silentium.MessageRx<T>;
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record$1 as Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record$1 as Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transformed, TransformedList };
 export type { Route };

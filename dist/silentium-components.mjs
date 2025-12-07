@@ -1,4 +1,4 @@
-import { ActualMessage, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, Empty, Nothing, ExecutorApplied, Of, isMessage, Rejections, isDestroyable } from 'silentium';
+import { ActualMessage, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, Empty, Nothing, Computed, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = ActualMessage(_condition);
@@ -281,6 +281,26 @@ function Polling($base, $trigger) {
   });
 }
 
+function RecordTruncated(_record, _badValues) {
+  const $record = ActualMessage(_record);
+  const $badValues = ActualMessage(_badValues);
+  const processRecord = (obj, badValues) => {
+    if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
+      return obj;
+    }
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (badValues.includes(value)) continue;
+      const processedValue = processRecord(value, badValues);
+      if (processedValue !== void 0 && !(typeof processedValue === "object" && processedValue !== null && !Array.isArray(processedValue) && Object.keys(processedValue).length === 0)) {
+        result[key] = processedValue;
+      }
+    }
+    return result;
+  };
+  return Computed(processRecord, $record, $badValues);
+}
+
 function Shot($target, $trigger) {
   return Message(function ShotImpl(r) {
     const targetSync = Primitive($target);
@@ -332,6 +352,61 @@ function Tick($base) {
       }
     });
   });
+}
+
+function HashTable($base) {
+  return Message(function HashTableImpl(r) {
+    const record = {};
+    $base.then(([key, value]) => {
+      record[key] = value;
+      r(record);
+    });
+  });
+}
+
+function Record(record) {
+  return Message(function RecordImpl(r) {
+    const keys = Object.keys(record);
+    keys.forEach((key) => {
+      record[key] = ActualMessage(record[key]);
+    });
+    All(...Object.values(record)).then((entries) => {
+      const record2 = {};
+      entries.forEach((entry, index) => {
+        record2[keys[index]] = entry;
+      });
+      r(record2);
+    });
+  });
+}
+
+function Transformed(_base, transformRules) {
+  const $base = ActualMessage(_base);
+  return Message((resolve) => {
+    $base.then((v) => {
+      const existedKeysMap = {};
+      const sourceObject = Object.fromEntries(
+        Object.entries(v).map((entry) => {
+          if (transformRules[entry[0]]) {
+            existedKeysMap[entry[0]] = 1;
+            return [entry[0], transformRules[entry[0]](v)];
+          }
+          return [entry[0], Of(entry[1])];
+        })
+      );
+      Object.keys(transformRules).forEach((key) => {
+        if (!existedKeysMap[key]) {
+          sourceObject[key] = transformRules[key](v);
+        }
+      });
+      const record = Once(Record(sourceObject));
+      record.then(resolve);
+    });
+  });
+}
+
+function TransformedList(_base, transformRules) {
+  return Map(ActualMessage(_base), (v) => Transformed(v, transformRules));
 }
 
 function And($one, $two) {
@@ -486,32 +561,6 @@ function Concatenated(sources, joinPartSrc = Of("")) {
   });
 }
 
-function HashTable($base) {
-  return Message(function HashTableImpl(r) {
-    const record = {};
-    $base.then(([key, value]) => {
-      record[key] = value;
-      r(record);
-    });
-  });
-}
-
-function Record(record) {
-  return Message(function RecordImpl(r) {
-    const keys = Object.keys(record);
-    keys.forEach((key) => {
-      record[key] = ActualMessage(record[key]);
-    });
-    All(...Object.values(record)).then((entries) => {
-      const record2 = {};
-      entries.forEach((entry, index) => {
-        record2[keys[index]] = entry;
-      });
-      r(record2);
-    });
-  });
-}
-
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -586,5 +635,5 @@ class TemplateImpl {
   }
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transformed, TransformedList };
 //# sourceMappingURL=silentium-components.mjs.map

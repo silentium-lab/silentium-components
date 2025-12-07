@@ -283,6 +283,26 @@ function Polling($base, $trigger) {
   });
 }
 
+function RecordTruncated(_record, _badValues) {
+  const $record = silentium.ActualMessage(_record);
+  const $badValues = silentium.ActualMessage(_badValues);
+  const processRecord = (obj, badValues) => {
+    if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
+      return obj;
+    }
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (badValues.includes(value)) continue;
+      const processedValue = processRecord(value, badValues);
+      if (processedValue !== void 0 && !(typeof processedValue === "object" && processedValue !== null && !Array.isArray(processedValue) && Object.keys(processedValue).length === 0)) {
+        result[key] = processedValue;
+      }
+    }
+    return result;
+  };
+  return silentium.Computed(processRecord, $record, $badValues);
+}
+
 function Shot($target, $trigger) {
   return silentium.Message(function ShotImpl(r) {
     const targetSync = silentium.Primitive($target);
@@ -334,6 +354,61 @@ function Tick($base) {
       }
     });
   });
+}
+
+function HashTable($base) {
+  return silentium.Message(function HashTableImpl(r) {
+    const record = {};
+    $base.then(([key, value]) => {
+      record[key] = value;
+      r(record);
+    });
+  });
+}
+
+function Record(record) {
+  return silentium.Message(function RecordImpl(r) {
+    const keys = Object.keys(record);
+    keys.forEach((key) => {
+      record[key] = silentium.ActualMessage(record[key]);
+    });
+    silentium.All(...Object.values(record)).then((entries) => {
+      const record2 = {};
+      entries.forEach((entry, index) => {
+        record2[keys[index]] = entry;
+      });
+      r(record2);
+    });
+  });
+}
+
+function Transformed(_base, transformRules) {
+  const $base = silentium.ActualMessage(_base);
+  return silentium.Message((resolve) => {
+    $base.then((v) => {
+      const existedKeysMap = {};
+      const sourceObject = Object.fromEntries(
+        Object.entries(v).map((entry) => {
+          if (transformRules[entry[0]]) {
+            existedKeysMap[entry[0]] = 1;
+            return [entry[0], transformRules[entry[0]](v)];
+          }
+          return [entry[0], silentium.Of(entry[1])];
+        })
+      );
+      Object.keys(transformRules).forEach((key) => {
+        if (!existedKeysMap[key]) {
+          sourceObject[key] = transformRules[key](v);
+        }
+      });
+      const record = silentium.Once(Record(sourceObject));
+      record.then(resolve);
+    });
+  });
+}
+
+function TransformedList(_base, transformRules) {
+  return silentium.Map(silentium.ActualMessage(_base), (v) => Transformed(v, transformRules));
 }
 
 function And($one, $two) {
@@ -488,32 +563,6 @@ function Concatenated(sources, joinPartSrc = silentium.Of("")) {
   });
 }
 
-function HashTable($base) {
-  return silentium.Message(function HashTableImpl(r) {
-    const record = {};
-    $base.then(([key, value]) => {
-      record[key] = value;
-      r(record);
-    });
-  });
-}
-
-function Record(record) {
-  return silentium.Message(function RecordImpl(r) {
-    const keys = Object.keys(record);
-    keys.forEach((key) => {
-      record[key] = silentium.ActualMessage(record[key]);
-    });
-    silentium.All(...Object.values(record)).then((entries) => {
-      const record2 = {};
-      entries.forEach((entry, index) => {
-        record2[keys[index]] = entry;
-      });
-      r(record2);
-    });
-  });
-}
-
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -613,6 +662,7 @@ exports.Path = Path;
 exports.PathExisted = PathExisted;
 exports.Polling = Polling;
 exports.Record = Record;
+exports.RecordTruncated = RecordTruncated;
 exports.RegexpMatch = RegexpMatch;
 exports.RegexpMatched = RegexpMatched;
 exports.RegexpReplaced = RegexpReplaced;
@@ -623,4 +673,6 @@ exports.Task = Task;
 exports.Template = Template;
 exports.Tick = Tick;
 exports.ToJson = ToJson;
+exports.Transformed = Transformed;
+exports.TransformedList = TransformedList;
 //# sourceMappingURL=silentium-components.cjs.map
