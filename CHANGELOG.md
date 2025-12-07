@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.95](https://github.com/silentium-lab/silentium-components/compare/v0.0.94...v0.0.95) (2025-12-07)
+
+
+### Features
+
+* **main:** record truncated transformed components ([541d446](https://github.com/silentium-lab/silentium-components/commit/541d4462760a9936e8081a4a9b3d98bdd1beffb0))
+
 ### [0.0.94](https://github.com/silentium-lab/silentium-components/compare/v0.0.93...v0.0.94) (2025-12-05)
 
 
