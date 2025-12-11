@@ -214,7 +214,7 @@ declare class TemplateImpl implements MessageType<string>, DestroyableType {
      * Ability to register variable
      * in concrete place Of template
      */
-    var(src: MessageType<string>): string;
+    var(src: MessageType<unknown>): string;
     catch(rejected: ConstructorType<[unknown]>): this;
     destroy(): this;
 }

@@ -86,7 +86,7 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
    * Ability to register variable
    * in concrete place Of template
    */
-  public var(src: MessageType<string>) {
+  public var(src: MessageType<unknown>) {
     const hash =
       Date.now().toString(36) + Math.random().toString(36).substring(2);
     const varName = `$var${hash}`;

@@ -70,4 +70,15 @@ describe("Template.test", () => {
       '<div class="greeting">Hello User</div>',
     );
   });
+
+  test("number variable", () => {
+    const t = Template();
+    t.template(`<div class="greeting">Hello ${t.var(Of(123))}</div>`);
+    const g = vi.fn();
+    t.then(g);
+
+    expect(g).toHaveBeenLastCalledWith(
+      '<div class="greeting">Hello User</div>',
+    );
+  });
 });
