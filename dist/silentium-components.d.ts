@@ -5,7 +5,7 @@ import { MaybeMessage, MessageType, ConstructorType, DestroyableType, MessageSou
  * Allows switching between left and right messages depending on condition
  * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
  */
-declare function Branch<Then, Else>(_condition: MaybeMessage<boolean>, _left: MaybeMessage<Then>, _right?: MaybeMessage<Else>): silentium.MessageRx<Then | Else>;
+declare function Branch<Then, Else>(_condition: MaybeMessage<boolean>, _left: MaybeMessage<Then>, _right?: MaybeMessage<Else>): silentium.MessageImpl<Then | Else>;
 
 /**
  * Depending on the $condition message,
@@ -27,13 +27,13 @@ declare function Constant<T>(permanent: T, $trigger: MessageType): MessageType<T
  * time runs out from $timeout; if $base manages to
  * respond before $timeout then the value from base will be returned
  */
-declare function Deadline<T>($base: MessageType<T>, _timeout: MaybeMessage<number>): silentium.MessageRx<T>;
+declare function Deadline<T>($base: MessageType<T>, _timeout: MaybeMessage<number>): silentium.MessageImpl<T>;
 
 /**
  * Defer one source after another, gives values Of baseSrc only when triggerSrc responds
  * https://silentium-lab.github.io/silentium-components/#/behaviors/deferred
  */
-declare function Deferred<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageRx<T>;
+declare function Deferred<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageImpl<T>;
 
 /**
  * Message separate from the base
@@ -55,20 +55,20 @@ declare function Dirty<T extends Record<string, unknown>>($base: MessageType<T>,
  * second message stops loading
  * https://silentium-lab.github.io/silentium-components/#/behaviors/loading
  */
-declare function Loading($start: MessageType<unknown>, $finish: MessageType<unknown>): silentium.MessageRx<boolean>;
+declare function Loading($start: MessageType<unknown>, $finish: MessageType<unknown>): silentium.MessageImpl<boolean>;
 
 /**
  * Allows locking messages
  * if a $lock message arrives
  * https://silentium-lab.github.io/silentium-components/#/behaviors/lock
  */
-declare function Lock<T>($base: MessageType<T>, $lock: MessageType<boolean>): silentium.MessageRx<T>;
+declare function Lock<T>($base: MessageType<T>, $lock: MessageType<boolean>): silentium.MessageImpl<T>;
 
 /**
  * Didn't respond if new value Of baseSrc equals to old value
  * https://silentium-lab.github.io/silentium-components/#/behaviors/memo
  */
-declare function Memo<T>($base: MessageType<T>): silentium.MessageRx<T>;
+declare function Memo<T>($base: MessageType<T>): silentium.MessageImpl<T>;
 
 /**
  * Есть объект и каждое новое его значение нужно мержить с прошлым
@@ -80,7 +80,7 @@ declare function MergeAccumulation<T extends object>($base: MessageType<T>, $res
  * Represents source what was changed at least once
  * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
  */
-declare function OnlyChanged<T>($base: MessageType<T>): silentium.MessageRx<T>;
+declare function OnlyChanged<T>($base: MessageType<T>): silentium.MessageImpl<T>;
 
 /**
  * Return source Of record path
@@ -103,80 +103,80 @@ declare function PathExisted<R, T extends object | Array<any> = any, K extends s
  * Active polling of $base message
  * synchronized with $trigger message
  */
-declare function Polling<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageRx<T>;
+declare function Polling<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageImpl<T>;
 
 /**
  * Helps eliminate unwanted values
  * that shouldn't exist in object fields
  */
-declare function RecordTruncated(_record: MaybeMessage<Record<string, unknown>>, _badValues: MaybeMessage<unknown[]>): silentium.MessageRx<any>;
+declare function RecordTruncated(_record: MaybeMessage<Record<string, unknown>>, _badValues: MaybeMessage<unknown[]>): silentium.MessageImpl<any>;
 
 /**
  * Helps to represent only last fresh value Of some source, refreshing controls by shotSrc
  * https://silentium-lab.github.io/silentium-components/#/behaviors/shot
  */
-declare function Shot<T>($target: MessageType<T>, $trigger: MessageType): silentium.MessageRx<T>;
+declare function Shot<T>($target: MessageType<T>, $trigger: MessageType): silentium.MessageImpl<T>;
 
 /**
  * Defer a message to the event loop
  * so that it executes once within
  * a certain timer firing interval
  */
-declare function Task<T>(baseSrc: MaybeMessage<T>, delay?: number): silentium.MessageRx<T>;
+declare function Task<T>(baseSrc: MaybeMessage<T>, delay?: number): silentium.MessageImpl<T>;
 
 /**
  * Accumulates the last value Of the source and returns one result once per tick
  * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
  */
-declare function Tick<T>($base: MessageType<T>): silentium.MessageRx<T>;
+declare function Tick<T>($base: MessageType<T>): silentium.MessageImpl<T>;
 
 /**
  * Modify the object structure
  * with the ability to create new fields based on
  * existing ones in the object
  */
-declare function Transformed<T extends Record<string, any>>(_base: MaybeMessage<T>, transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>): silentium.MessageRx<unknown>;
+declare function Transformed<T extends Record<string, any>>(_base: MaybeMessage<T>, transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>): silentium.MessageImpl<unknown>;
 
-declare function TransformedList<T extends any[]>(_base: MaybeMessage<T>, transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>): silentium.MessageRx<unknown[]>;
+declare function TransformedList<T extends any[]>(_base: MaybeMessage<T>, transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>): silentium.MessageImpl<unknown[]>;
 
 /**
  * Logical AND over two messages
  * https://silentium-lab.github.io/silentium-components/#/boolean/and
  */
-declare function And($one: MessageType<boolean>, $two: MessageType<boolean>): silentium.MessageRx<boolean>;
+declare function And($one: MessageType<boolean>, $two: MessageType<boolean>): silentium.MessageImpl<boolean>;
 
 /**
  * Convert Any source to boolean source
  * https://silentium-lab.github.io/silentium-components/#/boolean/bool
  */
-declare function Bool($base: MessageType): silentium.MessageRx<boolean>;
+declare function Bool($base: MessageType): silentium.MessageImpl<boolean>;
 
 /**
  * Logical negation of message
  * https://silentium-lab.github.io/silentium-components/#/boolean/not
  */
-declare function Not($base: MessageType<boolean>): silentium.MessageRx<boolean>;
+declare function Not($base: MessageType<boolean>): silentium.MessageImpl<boolean>;
 
 /**
  * Logical OR over two messages
  * https://silentium-lab.github.io/silentium-components/#/boolean/or
  */
-declare function Or($one: MessageType<boolean>, $two: MessageType<boolean>): silentium.MessageRx<boolean>;
+declare function Or($one: MessageType<boolean>, $two: MessageType<boolean>): silentium.MessageImpl<boolean>;
 
 /**
  * Represents object from json
  */
-declare function FromJson<T = Record<string, unknown>>($json: MessageType<string>): silentium.MessageRx<T>;
+declare function FromJson<T = Record<string, unknown>>($json: MessageType<string>): silentium.MessageImpl<T>;
 
 /**
  * Represents json from object
  */
-declare function ToJson($data: MessageType): silentium.MessageRx<string>;
+declare function ToJson($data: MessageType): silentium.MessageImpl<string>;
 
 /**
  * Represents the first element Of an array.
  */
-declare function First<T extends Array<unknown>>($base: MessageType<T>): silentium.MessageRx<T[0]>;
+declare function First<T extends Array<unknown>>($base: MessageType<T>): silentium.MessageImpl<T[0]>;
 
 interface Route<T> {
     pattern: string;
@@ -193,7 +193,7 @@ declare function Router<T = string>($url: MessageType<string>, routes: MaybeMess
  * Join sources Of strings to one source
  * https://silentium-lab.github.io/silentium-components/#/string/concatenated
  */
-declare function Concatenated(sources: MessageType<string>[], joinPartSrc?: MessageType<string>): silentium.MessageRx<string>;
+declare function Concatenated(sources: MessageType<string>[], joinPartSrc?: MessageType<string>): silentium.MessageImpl<string>;
 
 /**
  * Allows creating a string template with
@@ -224,38 +224,38 @@ declare class TemplateImpl implements MessageType<string>, DestroyableType {
  * of all previously received messages in the form of a structure
  * https://silentium-lab.github.io/silentium-components/#/structures/hash-table
  */
-declare function HashTable<T>($base: MessageType<[string, unknown]>): silentium.MessageRx<T>;
+declare function HashTable<T>($base: MessageType<[string, unknown]>): silentium.MessageImpl<T>;
 
 type UnWrap<T> = T extends MessageType<infer U> ? U : T;
 /**
  * Returns record Of data from record Of sources
  * https://silentium-lab.github.io/silentium-components/#/structures/record
  */
-declare function Record$1<T>(record: Record$1<string, T>): silentium.MessageRx<Record$1<string, UnWrap<T>>>;
+declare function Record$1<T>(record: Record$1<string, T>): silentium.MessageImpl<Record$1<string, UnWrap<T>>>;
 
 /**
  * First match Of regexp
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
  */
-declare function RegexpMatch(patternSrc: MaybeMessage<string>, valueSrc: MaybeMessage<string>, flagsSrc?: MaybeMessage<string>): silentium.MessageRx<string[]>;
+declare function RegexpMatch(patternSrc: MaybeMessage<string>, valueSrc: MaybeMessage<string>, flagsSrc?: MaybeMessage<string>): silentium.MessageImpl<string[]>;
 
 /**
  * Boolean source what checks what string matches pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-matched
  */
-declare function RegexpMatched(patternSrc: MaybeMessage<string>, valueSrc: MaybeMessage<string>, flagsSrc?: MaybeMessage<string>): silentium.MessageRx<boolean>;
+declare function RegexpMatched(patternSrc: MaybeMessage<string>, valueSrc: MaybeMessage<string>, flagsSrc?: MaybeMessage<string>): silentium.MessageImpl<boolean>;
 
 /**
  * Returns string replaced by regular expression pattern
  * https://silentium-lab.github.io/silentium-components/#/system/regexp-replaced
  */
-declare function RegexpReplaced(valueSrc: MaybeMessage<string>, patternSrc: MaybeMessage<string>, replaceValueSrc: MaybeMessage<string>, flagsSrc?: MaybeMessage<string>): silentium.MessageRx<string>;
+declare function RegexpReplaced(valueSrc: MaybeMessage<string>, patternSrc: MaybeMessage<string>, replaceValueSrc: MaybeMessage<string>, flagsSrc?: MaybeMessage<string>): silentium.MessageImpl<string>;
 
 /**
  * Ability to mutate some object, helpful when integrate to procedure systems
  * https://silentium-lab.github.io/silentium-components/#/system/set
  */
-declare function Set<T extends Record<string, unknown>>(baseSrc: MessageType<T>, keySrc: MessageType<string>, valueSrc: MessageType<unknown>): silentium.MessageRx<T>;
+declare function Set<T extends Record<string, unknown>>(baseSrc: MessageType<T>, keySrc: MessageType<string>, valueSrc: MessageType<unknown>): silentium.MessageImpl<T>;
 
 export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record$1 as Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transformed, TransformedList };
 export type { Route };

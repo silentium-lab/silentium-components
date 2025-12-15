@@ -5,16 +5,19 @@ var silentium = require('silentium');
 function Branch(_condition, _left, _right) {
   const $condition = silentium.ActualMessage(_condition);
   const $left = silentium.ActualMessage(_left);
-  const $right = _right && silentium.ActualMessage(_right);
+  const $right = silentium.ActualMessage(_right);
   return silentium.Message(function BranchImpl(r) {
     const left = silentium.Primitive($left);
     let right;
-    if ($right !== void 0) {
+    if (_right !== void 0) {
       right = silentium.Primitive($right);
     }
     $condition.then((v) => {
+      if (typeof v !== "boolean") {
+        throw new Error("Branch received not boolean value");
+      }
       let result = null;
-      if (v) {
+      if (v === true) {
         result = left.primitive();
       } else if (right) {
         result = right.primitive();

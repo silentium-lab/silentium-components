@@ -3,16 +3,19 @@ import { ActualMessage, Message, Primitive, DestroyContainer, ResetSilenceCache,
 function Branch(_condition, _left, _right) {
   const $condition = ActualMessage(_condition);
   const $left = ActualMessage(_left);
-  const $right = _right && ActualMessage(_right);
+  const $right = ActualMessage(_right);
   return Message(function BranchImpl(r) {
     const left = Primitive($left);
     let right;
-    if ($right !== void 0) {
+    if (_right !== void 0) {
       right = Primitive($right);
     }
     $condition.then((v) => {
+      if (typeof v !== "boolean") {
+        throw new Error("Branch received not boolean value");
+      }
       let result = null;
-      if (v) {
+      if (v === true) {
         result = left.primitive();
       } else if (right) {
         result = right.primitive();

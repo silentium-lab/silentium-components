@@ -1,6 +1,7 @@
 import { Of } from "silentium";
 import { describe, expect, test, vi } from "vitest";
 
+import { Branch } from "../behaviors";
 import { Record } from "../structures";
 import { Template } from "./Template";
 
@@ -77,8 +78,24 @@ describe("Template.test", () => {
     const g = vi.fn();
     t.then(g);
 
-    expect(g).toHaveBeenLastCalledWith(
-      '<div class="greeting">Hello User</div>',
+    expect(g).toHaveBeenLastCalledWith('<div class="greeting">Hello 123</div>');
+  });
+
+  test("empty string variable", () => {
+    const t = Template();
+    t.template(`<div class="greeting">Hello ${t.var(Of(""))}</div>`);
+    const g = vi.fn();
+    t.then(g);
+
+    expect(g).toHaveBeenLastCalledWith('<div class="greeting">Hello </div>');
+  });
+
+  test("Branched string variable", async () => {
+    const t = Template(
+      (t) =>
+        `<div class="greeting">Hello ${t.var(Branch(false, "true", ""))}</div>`,
     );
+
+    expect(await t).toBe('<div class="greeting">Hello </div>');
   });
 });
