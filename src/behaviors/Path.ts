@@ -16,9 +16,9 @@ export function Path<
   R,
   T extends object | Array<any> = any,
   K extends string = any,
->($base: MessageType<T>, _keyed: MaybeMessage<K>, def?: MaybeMessage<T>) {
+>($base: MessageType<T>, _keyed: MaybeMessage<K>, def?: MaybeMessage<R>) {
   const $keyed = ActualMessage(_keyed);
-  const $def = ActualMessage(def ?? NotSet);
+  const $def = ActualMessage((def as any) ?? NotSet);
   return Applied(All($base, $keyed, $def), ([base, keyed, d]) => {
     const keys = keyed.split(".");
     let value: unknown = base;

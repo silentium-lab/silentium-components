@@ -92,7 +92,7 @@ declare function Part<R, T extends object | Array<any> = any, K extends string =
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Path<R, T extends object | Array<any> = any, K extends string = any>($base: MessageType<T>, _keyed: MaybeMessage<K>, def?: MaybeMessage<T>): MessageType<R>;
+declare function Path<R, T extends object | Array<any> = any, K extends string = any>($base: MessageType<T>, _keyed: MaybeMessage<K>, def?: MaybeMessage<R>): MessageType<R>;
 
 /**
  * Path with separate empty message
