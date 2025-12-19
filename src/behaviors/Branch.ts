@@ -1,4 +1,10 @@
-import { ActualMessage, MaybeMessage, Message, MessageType, Primitive } from "silentium";
+import {
+  ActualMessage,
+  MaybeMessage,
+  Message,
+  MessageType,
+  Primitive,
+} from "silentium";
 
 /**
  * Allows switching between left and right messages depending on condition
