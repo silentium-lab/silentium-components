@@ -204,20 +204,29 @@ declare function Template(src?: MaybeMessage<string> | ((t: TemplateImpl) => str
 declare class TemplateImpl implements MessageType<string>, DestroyableType {
     private $src;
     private $places;
+    private escapeFn;
     private dc;
     private rejections;
     private vars;
-    constructor($src?: MessageType<string>, $places?: MessageType<Record<string, unknown>>);
+    constructor($src?: MessageType<string>, $places?: MessageType<Record<string, unknown>>, escapeFn?: typeof escaped);
     then(transport: ConstructorType<[string]>): this;
     template(value: string): void;
     /**
-     * Ability to register variable
-     * in concrete place Of template
+     * Register raw unsafe variable
      */
-    var(src: MessageType<unknown>): string;
+    raw(src: MessageType<unknown>): string;
+    /**
+     * Register variable what will be safe in HTML by default
+     * or with your custom escape logic
+     */
+    escaped(src: MessageType<string>): string;
     catch(rejected: ConstructorType<[unknown]>): this;
     destroy(): this;
 }
+/**
+ * String with html escaped
+ */
+declare function escaped(base: string): string;
 
 /**
  * By receiving a message with a key and value, collects a table
@@ -257,5 +266,5 @@ declare function RegexpReplaced(valueSrc: MaybeMessage<string>, patternSrc: Mayb
  */
 declare function Set<T extends Record<string, unknown>>(baseSrc: MessageType<T>, keySrc: MessageType<string>, valueSrc: MessageType<unknown>): silentium.MessageImpl<T>;
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record$1 as Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transformed, TransformedList };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record$1 as Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
 export type { Route };

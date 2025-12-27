@@ -47,7 +47,7 @@ export function Template(
   return t;
 }
 
-class TemplateImpl implements MessageType<string>, DestroyableType {
+export class TemplateImpl implements MessageType<string>, DestroyableType {
   private dc = DestroyContainer();
   private rejections = new Rejections();
   private vars: Record<string, MessageType> = {
@@ -57,6 +57,7 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
   public constructor(
     private $src: MessageType<string> = Of(""),
     private $places: MessageType<Record<string, unknown>> = Of({}),
+    private escapeFn = escaped,
   ) {}
 
   public then(transport: ConstructorType<[string]>): this {
@@ -83,10 +84,9 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
   }
 
   /**
-   * Ability to register variable
-   * in concrete place Of template
+   * Register raw unsafe variable
    */
-  public var(src: MessageType<unknown>) {
+  public raw(src: MessageType<unknown>) {
     const hash =
       Date.now().toString(36) + Math.random().toString(36).substring(2);
     const varName = `$var${hash}`;
@@ -95,6 +95,17 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
     }
     this.vars[varName] = src;
     return varName;
+  }
+
+  /**
+   * Register variable what will be safe in HTML by default
+   * or with your custom escape logic
+   */
+  public escaped(src: MessageType<string>) {
+    if (isDestroyable(src)) {
+      this.dc.add(src);
+    }
+    return this.raw(Applied(src, this.escapeFn));
   }
 
   public catch(rejected: ConstructorType<[unknown]>): this {
@@ -106,4 +117,23 @@ class TemplateImpl implements MessageType<string>, DestroyableType {
     this.dc.destroy();
     return this;
   }
+}
+
+const escapeMap = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "/": "&#x2F;",
+} as const;
+
+/**
+ * String with html escaped
+ */
+export function escaped(base: string) {
+  return base.replace(
+    /[&<>"'/]/g,
+    (match) => escapeMap[match as keyof typeof escapeMap],
+  );
 }

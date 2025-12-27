@@ -588,9 +588,10 @@ function Template(src = "", $places = silentium.Of({})) {
   return t;
 }
 class TemplateImpl {
-  constructor($src = silentium.Of(""), $places = silentium.Of({})) {
+  constructor($src = silentium.Of(""), $places = silentium.Of({}), escapeFn = escaped) {
     this.$src = $src;
     this.$places = $places;
+    this.escapeFn = escapeFn;
     __publicField(this, "dc", silentium.DestroyContainer());
     __publicField(this, "rejections", new silentium.Rejections());
     __publicField(this, "vars", {
@@ -618,10 +619,9 @@ class TemplateImpl {
     this.$src = silentium.Of(value);
   }
   /**
-   * Ability to register variable
-   * in concrete place Of template
+   * Register raw unsafe variable
    */
-  var(src) {
+  raw(src) {
     const hash = Date.now().toString(36) + Math.random().toString(36).substring(2);
     const varName = `$var${hash}`;
     if (silentium.isDestroyable(src)) {
@@ -629,6 +629,16 @@ class TemplateImpl {
     }
     this.vars[varName] = src;
     return varName;
+  }
+  /**
+   * Register variable what will be safe in HTML by default
+   * or with your custom escape logic
+   */
+  escaped(src) {
+    if (silentium.isDestroyable(src)) {
+      this.dc.add(src);
+    }
+    return this.raw(silentium.Applied(src, this.escapeFn));
   }
   catch(rejected) {
     this.rejections.catch(rejected);
@@ -638,6 +648,20 @@ class TemplateImpl {
     this.dc.destroy();
     return this;
   }
+}
+const escapeMap = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "/": "&#x2F;"
+};
+function escaped(base) {
+  return base.replace(
+    /[&<>"'/]/g,
+    (match) => escapeMap[match]
+  );
 }
 
 exports.And = And;
@@ -674,8 +698,10 @@ exports.Set = Set;
 exports.Shot = Shot;
 exports.Task = Task;
 exports.Template = Template;
+exports.TemplateImpl = TemplateImpl;
 exports.Tick = Tick;
 exports.ToJson = ToJson;
 exports.Transformed = Transformed;
 exports.TransformedList = TransformedList;
+exports.escaped = escaped;
 //# sourceMappingURL=silentium-components.cjs.map

@@ -586,9 +586,10 @@ function Template(src = "", $places = Of({})) {
   return t;
 }
 class TemplateImpl {
-  constructor($src = Of(""), $places = Of({})) {
+  constructor($src = Of(""), $places = Of({}), escapeFn = escaped) {
     this.$src = $src;
     this.$places = $places;
+    this.escapeFn = escapeFn;
     __publicField(this, "dc", DestroyContainer());
     __publicField(this, "rejections", new Rejections());
     __publicField(this, "vars", {
@@ -616,10 +617,9 @@ class TemplateImpl {
     this.$src = Of(value);
   }
   /**
-   * Ability to register variable
-   * in concrete place Of template
+   * Register raw unsafe variable
    */
-  var(src) {
+  raw(src) {
     const hash = Date.now().toString(36) + Math.random().toString(36).substring(2);
     const varName = `$var${hash}`;
     if (isDestroyable(src)) {
@@ -627,6 +627,16 @@ class TemplateImpl {
     }
     this.vars[varName] = src;
     return varName;
+  }
+  /**
+   * Register variable what will be safe in HTML by default
+   * or with your custom escape logic
+   */
+  escaped(src) {
+    if (isDestroyable(src)) {
+      this.dc.add(src);
+    }
+    return this.raw(Applied(src, this.escapeFn));
   }
   catch(rejected) {
     this.rejections.catch(rejected);
@@ -637,6 +647,20 @@ class TemplateImpl {
     return this;
   }
 }
+const escapeMap = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#x27;",
+  "/": "&#x2F;"
+};
+function escaped(base) {
+  return base.replace(
+    /[&<>"'/]/g,
+    (match) => escapeMap[match]
+  );
+}
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, Tick, ToJson, Transformed, TransformedList };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, PathExisted, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
 //# sourceMappingURL=silentium-components.mjs.map

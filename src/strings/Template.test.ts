@@ -41,7 +41,7 @@ describe("Template.test", () => {
   });
 
   test("with template as function", () => {
-    const tpl = Template((t) => `<h1>${t.var(Of("one value"))}</h1>`);
+    const tpl = Template((t) => `<h1>${t.raw(Of("one value"))}</h1>`);
     const g = vi.fn();
     tpl.then(g);
 
@@ -51,7 +51,7 @@ describe("Template.test", () => {
   test("with template as function with many vars", () => {
     const tpl = Template(
       (t) =>
-        `<h1>${t.var(Of("one"))}, ${t.var(Of("two"))}, ${t.var(Of("three"))}, ${t.var(Of("four"))}, ${t.var(Of("five"))}, ${t.var(Of("six"))}, ${t.var(Of("seven"))}, ${t.var(Of("eight"))}, ${t.var(Of("nine"))}, ${t.var(Of("ten"))}, ${t.var(Of("eleven"))}, ${t.var(Of("twelve"))}, ${t.var(Of("thirteen"))}, ${t.var(Of("fourteen"))}, ${t.var(Of("fifteen"))}, ${t.var(Of("seventeen"))}, ${t.var(Of("eighteen"))}, ${t.var(Of("nineteen"))}, ${t.var(Of("twenty"))}, ${t.var(Of("twenty one"))}, ${t.var(Of("twenty two"))}, ${t.var(Of("twenty three"))}, ${t.var(Of("twenty four"))}, ${t.var(Of("twenty five"))}, ${t.var(Of("twenty six"))}, ${t.var(Of("twenty seven"))}</h1>`,
+        `<h1>${t.raw(Of("one"))}, ${t.raw(Of("two"))}, ${t.raw(Of("three"))}, ${t.raw(Of("four"))}, ${t.raw(Of("five"))}, ${t.raw(Of("six"))}, ${t.raw(Of("seven"))}, ${t.raw(Of("eight"))}, ${t.raw(Of("nine"))}, ${t.raw(Of("ten"))}, ${t.raw(Of("eleven"))}, ${t.raw(Of("twelve"))}, ${t.raw(Of("thirteen"))}, ${t.raw(Of("fourteen"))}, ${t.raw(Of("fifteen"))}, ${t.raw(Of("seventeen"))}, ${t.raw(Of("eighteen"))}, ${t.raw(Of("nineteen"))}, ${t.raw(Of("twenty"))}, ${t.raw(Of("twenty one"))}, ${t.raw(Of("twenty two"))}, ${t.raw(Of("twenty three"))}, ${t.raw(Of("twenty four"))}, ${t.raw(Of("twenty five"))}, ${t.raw(Of("twenty six"))}, ${t.raw(Of("twenty seven"))}</h1>`,
     );
     const g = vi.fn();
     tpl.then(g);
@@ -63,7 +63,7 @@ describe("Template.test", () => {
 
   test("with places", () => {
     const t = Template();
-    t.template(`<div class="greeting">Hello ${t.var(Of("User"))}</div>`);
+    t.template(`<div class="greeting">Hello ${t.raw(Of("User"))}</div>`);
     const g = vi.fn();
     t.then(g);
 
@@ -74,7 +74,7 @@ describe("Template.test", () => {
 
   test("number variable", () => {
     const t = Template();
-    t.template(`<div class="greeting">Hello ${t.var(Of(123))}</div>`);
+    t.template(`<div class="greeting">Hello ${t.raw(Of(123))}</div>`);
     const g = vi.fn();
     t.then(g);
 
@@ -83,7 +83,7 @@ describe("Template.test", () => {
 
   test("empty string variable", () => {
     const t = Template();
-    t.template(`<div class="greeting">Hello ${t.var(Of(""))}</div>`);
+    t.template(`<div class="greeting">Hello ${t.raw(Of(""))}</div>`);
     const g = vi.fn();
     t.then(g);
 
@@ -93,9 +93,27 @@ describe("Template.test", () => {
   test("Branched string variable", async () => {
     const t = Template(
       (t) =>
-        `<div class="greeting">Hello ${t.var(Branch(false, "true", ""))}</div>`,
+        `<div class="greeting">Hello ${t.raw(Branch(false, "true", ""))}</div>`,
     );
 
     expect(await t).toBe('<div class="greeting">Hello </div>');
+  });
+
+  test("escaped method with no special characters", () => {
+    const tpl = Template((t) => `<div>${t.escaped(Of("Hello world"))}</div>`);
+    const g = vi.fn();
+    tpl.then(g);
+
+    expect(g).toHaveBeenLastCalledWith("<div>Hello world</div>");
+  });
+
+  test("escaped method with all escape characters", () => {
+    const tpl = Template((t) => `<div>${t.escaped(Of("&<>\"'/"))}</div>`);
+    const g = vi.fn();
+    tpl.then(g);
+
+    expect(g).toHaveBeenLastCalledWith(
+      `<div>&amp;&lt;&gt;&quot;&#x27;&#x2F;</div>`,
+    );
   });
 });
