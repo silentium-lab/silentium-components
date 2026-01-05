@@ -225,7 +225,7 @@ function OnlyChanged($base) {
   });
 }
 
-function Part($base, key) {
+function Part($base, key, defaultValue) {
   const $baseShared = silentium.Shared($base);
   const $keyedShared = silentium.Shared(silentium.ActualMessage(key));
   return silentium.MessageSource(
@@ -238,6 +238,8 @@ function Part($base, key) {
         });
         if (value !== void 0 && value !== base) {
           r(value);
+        } else if (defaultValue !== void 0) {
+          r(defaultValue);
         }
       });
     },
