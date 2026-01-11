@@ -35,4 +35,39 @@ describe("Part.test", () => {
     $name.then(gn);
     expect(gn).toHaveBeenLastCalledWith("Shmiter");
   });
+
+  test("defaultValue when key does not exist", () => {
+    const $record = Late({
+      name: "Peter",
+      surname: "Parker",
+    });
+    const $age = Part<number>($record, "age", 25);
+    const gn = vi.fn();
+    $age.then(gn);
+    expect(gn).toHaveBeenLastCalledWith(25);
+  });
+
+  test("defaultValue when value is undefined", () => {
+    const $record = Late({
+      name: "Peter",
+      surname: "Parker",
+      age: undefined,
+    });
+    const $age = Part<number>($record, "age", 25);
+    const gn = vi.fn();
+    $age.then(gn);
+    expect(gn).toHaveBeenLastCalledWith(25);
+  });
+
+  test("value returned when key exists and is not undefined", () => {
+    const $record = Late({
+      name: "Peter",
+      surname: "Parker",
+      age: 30,
+    });
+    const $age = Part<number>($record, "age", 25);
+    const gn = vi.fn();
+    $age.then(gn);
+    expect(gn).toHaveBeenLastCalledWith(30);
+  });
 });

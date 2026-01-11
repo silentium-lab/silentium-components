@@ -86,7 +86,7 @@ declare function OnlyChanged<T>($base: MessageType<T>): silentium.MessageImpl<T>
  * Return source Of record path
  * https://silentium-lab.github.io/silentium-components/#/behaviors/path
  */
-declare function Part<R, T extends object | Array<any> = any, K extends string = any>($base: MessageSourceType<T>, key: MaybeMessage<K>): MessageSourceType<R>;
+declare function Part<R, T extends object | Array<any> = any, K extends string = any>($base: MessageSourceType<T>, key: MaybeMessage<K>, defaultValue?: R): MessageSourceType<R>;
 
 /**
  * Return source Of record path

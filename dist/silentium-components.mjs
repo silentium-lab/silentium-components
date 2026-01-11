@@ -223,7 +223,7 @@ function OnlyChanged($base) {
   });
 }
 
-function Part($base, key) {
+function Part($base, key, defaultValue) {
   const $baseShared = Shared($base);
   const $keyedShared = Shared(ActualMessage(key));
   return MessageSource(
@@ -236,6 +236,8 @@ function Part($base, key) {
         });
         if (value !== void 0 && value !== base) {
           r(value);
+        } else if (defaultValue !== void 0) {
+          r(defaultValue);
         }
       });
     },

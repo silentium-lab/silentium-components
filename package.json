@@ -1,6 +1,6 @@
 {
   "name": "silentium-components",
-  "version": "0.0.100",
+  "version": "0.0.102",
   "description": "",
   "type": "module",
   "main": "dist/silentium-components.js",
@@ -62,6 +62,6 @@
     }
   },
   "dependencies": {
-    "silentium": "0.0.183"
+    "silentium": "0.0.190"
   }
 }
