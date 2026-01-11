@@ -81,6 +81,15 @@ describe("Template.test", () => {
     expect(g).toHaveBeenLastCalledWith('<div class="greeting">Hello 123</div>');
   });
 
+  test("number escaped variable", () => {
+    const t = Template();
+    t.template(`<div class="greeting">Hello ${t.escaped(Of(123))}</div>`);
+    const g = vi.fn();
+    t.then(g);
+
+    expect(g).toHaveBeenLastCalledWith('<div class="greeting">Hello 123</div>');
+  });
+
   test("empty string variable", () => {
     const t = Template();
     t.template(`<div class="greeting">Hello ${t.raw(Of(""))}</div>`);

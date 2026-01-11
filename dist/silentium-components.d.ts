@@ -219,7 +219,7 @@ declare class TemplateImpl implements MessageType<string>, DestroyableType {
      * Register variable what will be safe in HTML by default
      * or with your custom escape logic
      */
-    escaped(src: MessageType<string>): string;
+    escaped(src: MessageType<any>): string;
     catch(rejected: ConstructorType<[unknown]>): this;
     destroy(): this;
 }

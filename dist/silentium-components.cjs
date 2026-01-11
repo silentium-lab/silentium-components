@@ -660,6 +660,9 @@ const escapeMap = {
   "/": "&#x2F;"
 };
 function escaped(base) {
+  if (typeof base !== "string") {
+    base = String(base);
+  }
   return base.replace(
     /[&<>"'/]/g,
     (match) => escapeMap[match]

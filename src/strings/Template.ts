@@ -101,7 +101,7 @@ export class TemplateImpl implements MessageType<string>, DestroyableType {
    * Register variable what will be safe in HTML by default
    * or with your custom escape logic
    */
-  public escaped(src: MessageType<string>) {
+  public escaped(src: MessageType<any>) {
     if (isDestroyable(src)) {
       this.dc.add(src);
     }
@@ -132,6 +132,9 @@ const escapeMap = {
  * String with html escaped
  */
 export function escaped(base: string) {
+  if (typeof base !== "string") {
+    base = String(base);
+  }
   return base.replace(
     /[&<>"'/]/g,
     (match) => escapeMap[match as keyof typeof escapeMap],
