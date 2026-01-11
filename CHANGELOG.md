@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.103](https://github.com/silentium-lab/silentium-components/compare/v0.0.102...v0.0.103) (2026-01-11)
+
+
+### Bug Fixes
+
+* **main:** template number ([6b54d7c](https://github.com/silentium-lab/silentium-components/commit/6b54d7cdc129ce6ba0bf932c90a886181a46ecdc))
+
 ### [0.0.102](https://github.com/silentium-lab/silentium-components/compare/v0.0.101...v0.0.102) (2026-01-05)
 
 
