@@ -21,3 +21,26 @@ test("BranchLazy._main.test", () => {
 
   expect(g).toBeCalledWith("Else branch");
 });
+
+test("BranchLazy._main.test", async () => {
+  const pages = Late([1]);
+  const pagination = BranchLazy(
+    Applied(pages, (p) => p.length > 1),
+    () => Of("many"),
+    () => Of("hidden"),
+  );
+
+  expect(await pagination).toBe("hidden");
+
+  pages.use([1, 2, 3]);
+  expect(await pagination).toBe("many");
+
+  pages.use([1]);
+  expect(await pagination).toBe("hidden");
+
+  pages.use([1, 2, 3]);
+  expect(await pagination).toBe("many");
+
+  pages.use([]);
+  expect(await pagination).toBe("hidden");
+});
