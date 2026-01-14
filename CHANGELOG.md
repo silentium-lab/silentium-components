@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.104](https://github.com/silentium-lab/silentium-components/compare/v0.0.103...v0.0.104) (2026-01-14)
+
+
+### Bug Fixes
+
+* **main:** two words components renaming ([70bcbfb](https://github.com/silentium-lab/silentium-components/commit/70bcbfb55e5c9fd5db409bdd5d4312b6f872d5fd))
+
 ### [0.0.103](https://github.com/silentium-lab/silentium-components/compare/v0.0.102...v0.0.103) (2026-01-11)
 
 
