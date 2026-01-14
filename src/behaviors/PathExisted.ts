@@ -1,4 +1,4 @@
-import { ActualMessage, Empty, MaybeMessage, Nothing } from "silentium";
+import { Actual, Empty, MaybeMessage, Nothing } from "silentium";
 
 import { Path } from "../behaviors/Path";
 
@@ -10,7 +10,7 @@ export function PathExisted<
   T extends object | Array<any> = any,
   K extends string = any,
 >(_base: MaybeMessage<T>, _keyed: MaybeMessage<K>) {
-  const $base = ActualMessage(_base);
-  const $keyed = ActualMessage(_keyed);
-  return Empty(Path<R>($base, $keyed, Nothing));
+  const $base = Actual(_base);
+  const $keyed = Actual(_keyed);
+  return Empty(Path<R>($base, $keyed, Nothing as R));
 }

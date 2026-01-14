@@ -1,5 +1,5 @@
 import {
-  ActualMessage,
+  Actual,
   All,
   Applied,
   ConstructorType,
@@ -28,13 +28,10 @@ export function Template(
 ) {
   const $src = Late<string>();
   if (typeof src === "string" || isMessage(src)) {
-    $src.chain(ActualMessage(src));
+    $src.chain(Actual(src));
   }
 
-  const t = new TemplateImpl(
-    $src,
-    $places ? ActualMessage($places) : undefined,
-  );
+  const t = new TemplateImpl($src, $places ? Actual($places) : undefined);
 
   if (typeof src === "function") {
     $src.chain(

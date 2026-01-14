@@ -1,9 +1,4 @@
-import {
-  ActualMessage,
-  ExecutorApplied,
-  MaybeMessage,
-  Message,
-} from "silentium";
+import { Actual, ExecutorApplied, MaybeMessage, Message } from "silentium";
 
 /**
  * Defer a message to the event loop
@@ -11,7 +6,7 @@ import {
  * a certain timer firing interval
  */
 export function Task<T>(baseSrc: MaybeMessage<T>, delay: number = 0) {
-  const $base = ActualMessage(baseSrc);
+  const $base = Actual(baseSrc);
   return Message<T>(function TaskImpl(r) {
     let prevTimer: unknown | null = null;
     ExecutorApplied($base, (fn) => {

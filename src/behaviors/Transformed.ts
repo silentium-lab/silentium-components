@@ -1,5 +1,5 @@
 import {
-  ActualMessage,
+  Actual,
   ConstructorType,
   MaybeMessage,
   Message,
@@ -18,7 +18,7 @@ export function Transformed<T extends Record<string, any>>(
   _base: MaybeMessage<T>,
   transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>,
 ) {
-  const $base = ActualMessage(_base);
+  const $base = Actual(_base);
   return Message((resolve) => {
     $base.then((v) => {
       const existedKeysMap: Record<string, number> = {};

@@ -1,5 +1,5 @@
 import {
-  ActualMessage,
+  Actual,
   MaybeMessage,
   Message,
   MessageType,
@@ -15,9 +15,9 @@ export function Branch<Then, Else>(
   _left: MaybeMessage<Then>,
   _right?: MaybeMessage<Else>,
 ) {
-  const $condition = ActualMessage(_condition);
-  const $left = ActualMessage(_left);
-  const $right = ActualMessage(_right);
+  const $condition = Actual(_condition);
+  const $left = Actual(_left);
+  const $right = Actual(_right);
   return Message<Then | Else>(function BranchImpl(r) {
     const left = Primitive($left);
     let right: ReturnType<typeof Primitive<Else>>;

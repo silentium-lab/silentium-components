@@ -1,5 +1,5 @@
 import {
-  ActualMessage,
+  Actual,
   All,
   ConstructorType,
   DestroyableType,
@@ -27,7 +27,7 @@ export function Router<T = string>(
   routes: MaybeMessage<Route<T>[]>,
   $default: ConstructorType<[], MessageType<T>>,
 ): MessageType<T> & DestroyableType {
-  const $routes = ActualMessage(routes);
+  const $routes = Actual(routes);
   return Message<T>(function RouterImpl(r) {
     const dc = DestroyContainer();
     const destructor = () => {

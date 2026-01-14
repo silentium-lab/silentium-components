@@ -1,4 +1,4 @@
-import { ActualMessage, All, MaybeMessage, Message, Of } from "silentium";
+import { Actual, All, MaybeMessage, Message, Of } from "silentium";
 
 /**
  * Boolean source what checks what string matches pattern
@@ -9,9 +9,9 @@ export function RegexpMatched(
   valueSrc: MaybeMessage<string>,
   flagsSrc: MaybeMessage<string> = Of(""),
 ) {
-  const $pattern = ActualMessage(patternSrc);
-  const $value = ActualMessage(valueSrc);
-  const $flags = ActualMessage(flagsSrc);
+  const $pattern = Actual(patternSrc);
+  const $value = Actual(valueSrc);
+  const $flags = Actual(flagsSrc);
   return Message<boolean>(function RegexpMatchedImpl(r) {
     All($pattern, $value, $flags).then(([pattern, value, flags]) => {
       r(new RegExp(pattern, flags).test(value));

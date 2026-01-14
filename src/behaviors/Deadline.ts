@@ -1,5 +1,5 @@
 import {
-  ActualMessage,
+  Actual,
   Filtered,
   MaybeMessage,
   Message,
@@ -16,7 +16,7 @@ export function Deadline<T>(
   $base: MessageType<T>,
   _timeout: MaybeMessage<number>,
 ) {
-  const $timeout = ActualMessage(_timeout);
+  const $timeout = Actual(_timeout);
   return Message<T>(function DeadlineImpl(resolve, reject) {
     let timer: ReturnType<typeof setTimeout> | number = 0;
     const base = Shared($base);

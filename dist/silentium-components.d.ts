@@ -47,7 +47,7 @@ declare function Detached<T>($base: MessageType<T>): MessageType<T>;
  * returns new record, what will contain only fields what was changed
  * https://silentium-lab.github.io/silentium-components/#/behaviors/dirty
  */
-declare function Dirty<T extends Record<string, unknown>>($base: MessageType<T>, keep?: string[], exclude?: string[], cloner?: (v: T) => T): silentium.MessageSourceImpl<T>;
+declare function Dirty<T extends Record<string, unknown>>($base: MessageType<T>, keep?: string[], exclude?: string[], cloner?: (v: T) => T): silentium.SourceImpl<T>;
 
 /**
  * Representation Of loading process

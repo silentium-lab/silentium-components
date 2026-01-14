@@ -1,9 +1,9 @@
-import { ActualMessage, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, MessageSource, Applied, All, Empty, Nothing, Computed, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
+import { Actual, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, Source, Applied, All, Empty, Nothing, Computed, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
-  const $condition = ActualMessage(_condition);
-  const $left = ActualMessage(_left);
-  const $right = ActualMessage(_right);
+  const $condition = Actual(_condition);
+  const $left = Actual(_left);
+  const $right = Actual(_right);
   return Message(function BranchImpl(r) {
     const left = Primitive($left);
     let right;
@@ -60,7 +60,7 @@ function Constant(permanent, $trigger) {
 }
 
 function Deadline($base, _timeout) {
-  const $timeout = ActualMessage(_timeout);
+  const $timeout = Actual(_timeout);
   return Message(function DeadlineImpl(resolve, reject) {
     let timer = 0;
     const base = Shared($base);
@@ -111,7 +111,7 @@ function Dirty($base, keep = [], exclude = [], cloner) {
   if (cloner === void 0) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }
-  return MessageSource(
+  return Source(
     function DirtyImpl(r) {
       const $comparingClone = Applied($comparing, cloner);
       All($comparingClone, $base).then(([comparing, base]) => {
@@ -225,8 +225,8 @@ function OnlyChanged($base) {
 
 function Part($base, key, defaultValue) {
   const $baseShared = Shared($base);
-  const $keyedShared = Shared(ActualMessage(key));
-  return MessageSource(
+  const $keyedShared = Shared(Actual(key));
+  return Source(
     function PartImpl(r) {
       All($baseShared, $keyedShared).then(([base, keyed]) => {
         const keys = keyed.split(".");
@@ -256,8 +256,8 @@ function Part($base, key, defaultValue) {
 
 const NotSet = Symbol("not-set");
 function Path($base, _keyed, def) {
-  const $keyed = ActualMessage(_keyed);
-  const $def = ActualMessage(def ?? NotSet);
+  const $keyed = Actual(_keyed);
+  const $def = Actual(def ?? NotSet);
   return Applied(All($base, $keyed, $def), ([base, keyed, d]) => {
     const keys = keyed.split(".");
     let value = base;
@@ -273,8 +273,8 @@ function Path($base, _keyed, def) {
 }
 
 function PathExisted(_base, _keyed) {
-  const $base = ActualMessage(_base);
-  const $keyed = ActualMessage(_keyed);
+  const $base = Actual(_base);
+  const $keyed = Actual(_keyed);
   return Empty(Path($base, $keyed, Nothing));
 }
 
@@ -287,8 +287,8 @@ function Polling($base, $trigger) {
 }
 
 function RecordTruncated(_record, _badValues) {
-  const $record = ActualMessage(_record);
-  const $badValues = ActualMessage(_badValues);
+  const $record = Actual(_record);
+  const $badValues = Actual(_badValues);
   const processRecord = (obj, badValues) => {
     if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
       return obj;
@@ -320,7 +320,7 @@ function Shot($target, $trigger) {
 }
 
 function Task(baseSrc, delay = 0) {
-  const $base = ActualMessage(baseSrc);
+  const $base = Actual(baseSrc);
   return Message(function TaskImpl(r) {
     let prevTimer = null;
     ExecutorApplied($base, (fn) => {
@@ -373,7 +373,7 @@ function Record(record) {
   return Message(function RecordImpl(r) {
     const keys = Object.keys(record);
     keys.forEach((key) => {
-      record[key] = ActualMessage(record[key]);
+      record[key] = Actual(record[key]);
     });
     All(...Object.values(record)).then((entries) => {
       const record2 = {};
@@ -386,7 +386,7 @@ function Record(record) {
 }
 
 function Transformed(_base, transformRules) {
-  const $base = ActualMessage(_base);
+  const $base = Actual(_base);
   return Message((resolve) => {
     $base.then((v) => {
       const existedKeysMap = {};
@@ -411,7 +411,7 @@ function Transformed(_base, transformRules) {
 }
 
 function TransformedList(_base, transformRules) {
-  return Map(ActualMessage(_base), (v) => Transformed(v, transformRules));
+  return Map(Actual(_base), (v) => Transformed(v, transformRules));
 }
 
 function And($one, $two) {
@@ -475,9 +475,9 @@ function First($base) {
 }
 
 function RegexpMatch(patternSrc, valueSrc, flagsSrc = Of("")) {
-  const $pattern = ActualMessage(patternSrc);
-  const $value = ActualMessage(valueSrc);
-  const $flags = ActualMessage(flagsSrc);
+  const $pattern = Actual(patternSrc);
+  const $value = Actual(valueSrc);
+  const $flags = Actual(flagsSrc);
   return Message(function RegexpMatchImpl(r) {
     All($pattern, $value, $flags).then(([pattern, value, flags]) => {
       const result = new RegExp(pattern, flags).exec(value);
@@ -487,9 +487,9 @@ function RegexpMatch(patternSrc, valueSrc, flagsSrc = Of("")) {
 }
 
 function RegexpMatched(patternSrc, valueSrc, flagsSrc = Of("")) {
-  const $pattern = ActualMessage(patternSrc);
-  const $value = ActualMessage(valueSrc);
-  const $flags = ActualMessage(flagsSrc);
+  const $pattern = Actual(patternSrc);
+  const $value = Actual(valueSrc);
+  const $flags = Actual(flagsSrc);
   return Message(function RegexpMatchedImpl(r) {
     All($pattern, $value, $flags).then(([pattern, value, flags]) => {
       r(new RegExp(pattern, flags).test(value));
@@ -498,10 +498,10 @@ function RegexpMatched(patternSrc, valueSrc, flagsSrc = Of("")) {
 }
 
 function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") {
-  const $value = ActualMessage(valueSrc);
-  const $pattern = ActualMessage(patternSrc);
-  const $replaceValue = ActualMessage(replaceValueSrc);
-  const $flags = ActualMessage(flagsSrc);
+  const $value = Actual(valueSrc);
+  const $pattern = Actual(patternSrc);
+  const $replaceValue = Actual(replaceValueSrc);
+  const $flags = Actual(flagsSrc);
   return Applied(
     All($pattern, $value, $replaceValue, $flags),
     ([pattern, value, replaceValue, flags]) => {
@@ -511,9 +511,9 @@ function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") {
 }
 
 function Set(baseSrc, keySrc, valueSrc) {
-  const $base = ActualMessage(baseSrc);
-  const $key = ActualMessage(keySrc);
-  const $value = ActualMessage(valueSrc);
+  const $base = Actual(baseSrc);
+  const $key = Actual(keySrc);
+  const $value = Actual(valueSrc);
   return Message(function SetImpl(r) {
     All($base, $key, $value).then(([base, key, value]) => {
       base[key] = value;
@@ -523,7 +523,7 @@ function Set(baseSrc, keySrc, valueSrc) {
 }
 
 function Router($url, routes, $default) {
-  const $routes = ActualMessage(routes);
+  const $routes = Actual(routes);
   return Message(function RouterImpl(r) {
     const dc = DestroyContainer();
     const destructor = () => {
@@ -572,12 +572,9 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
 function Template(src = "", $places = Of({})) {
   const $src = Late();
   if (typeof src === "string" || isMessage(src)) {
-    $src.chain(ActualMessage(src));
+    $src.chain(Actual(src));
   }
-  const t = new TemplateImpl(
-    $src,
-    $places ? ActualMessage($places) : void 0
-  );
+  const t = new TemplateImpl($src, $places ? Actual($places) : void 0);
   if (typeof src === "function") {
     $src.chain(
       Message((r) => {

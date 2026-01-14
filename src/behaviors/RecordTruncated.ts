@@ -1,4 +1,4 @@
-import { ActualMessage, Computed, MaybeMessage } from "silentium";
+import { Actual, Computed, MaybeMessage } from "silentium";
 
 /**
  * Helps eliminate unwanted values
@@ -8,8 +8,8 @@ export function RecordTruncated(
   _record: MaybeMessage<Record<string, unknown>>,
   _badValues: MaybeMessage<unknown[]>,
 ) {
-  const $record = ActualMessage(_record);
-  const $badValues = ActualMessage(_badValues);
+  const $record = Actual(_record);
+  const $badValues = Actual(_badValues);
   const processRecord = (obj: any, badValues: unknown[]) => {
     if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
       return obj;

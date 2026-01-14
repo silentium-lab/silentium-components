@@ -3,9 +3,9 @@
 var silentium = require('silentium');
 
 function Branch(_condition, _left, _right) {
-  const $condition = silentium.ActualMessage(_condition);
-  const $left = silentium.ActualMessage(_left);
-  const $right = silentium.ActualMessage(_right);
+  const $condition = silentium.Actual(_condition);
+  const $left = silentium.Actual(_left);
+  const $right = silentium.Actual(_right);
   return silentium.Message(function BranchImpl(r) {
     const left = silentium.Primitive($left);
     let right;
@@ -62,7 +62,7 @@ function Constant(permanent, $trigger) {
 }
 
 function Deadline($base, _timeout) {
-  const $timeout = silentium.ActualMessage(_timeout);
+  const $timeout = silentium.Actual(_timeout);
   return silentium.Message(function DeadlineImpl(resolve, reject) {
     let timer = 0;
     const base = silentium.Shared($base);
@@ -113,7 +113,7 @@ function Dirty($base, keep = [], exclude = [], cloner) {
   if (cloner === void 0) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }
-  return silentium.MessageSource(
+  return silentium.Source(
     function DirtyImpl(r) {
       const $comparingClone = silentium.Applied($comparing, cloner);
       silentium.All($comparingClone, $base).then(([comparing, base]) => {
@@ -227,8 +227,8 @@ function OnlyChanged($base) {
 
 function Part($base, key, defaultValue) {
   const $baseShared = silentium.Shared($base);
-  const $keyedShared = silentium.Shared(silentium.ActualMessage(key));
-  return silentium.MessageSource(
+  const $keyedShared = silentium.Shared(silentium.Actual(key));
+  return silentium.Source(
     function PartImpl(r) {
       silentium.All($baseShared, $keyedShared).then(([base, keyed]) => {
         const keys = keyed.split(".");
@@ -258,8 +258,8 @@ function Part($base, key, defaultValue) {
 
 const NotSet = Symbol("not-set");
 function Path($base, _keyed, def) {
-  const $keyed = silentium.ActualMessage(_keyed);
-  const $def = silentium.ActualMessage(def ?? NotSet);
+  const $keyed = silentium.Actual(_keyed);
+  const $def = silentium.Actual(def ?? NotSet);
   return silentium.Applied(silentium.All($base, $keyed, $def), ([base, keyed, d]) => {
     const keys = keyed.split(".");
     let value = base;
@@ -275,8 +275,8 @@ function Path($base, _keyed, def) {
 }
 
 function PathExisted(_base, _keyed) {
-  const $base = silentium.ActualMessage(_base);
-  const $keyed = silentium.ActualMessage(_keyed);
+  const $base = silentium.Actual(_base);
+  const $keyed = silentium.Actual(_keyed);
   return silentium.Empty(Path($base, $keyed, silentium.Nothing));
 }
 
@@ -289,8 +289,8 @@ function Polling($base, $trigger) {
 }
 
 function RecordTruncated(_record, _badValues) {
-  const $record = silentium.ActualMessage(_record);
-  const $badValues = silentium.ActualMessage(_badValues);
+  const $record = silentium.Actual(_record);
+  const $badValues = silentium.Actual(_badValues);
   const processRecord = (obj, badValues) => {
     if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
       return obj;
@@ -322,7 +322,7 @@ function Shot($target, $trigger) {
 }
 
 function Task(baseSrc, delay = 0) {
-  const $base = silentium.ActualMessage(baseSrc);
+  const $base = silentium.Actual(baseSrc);
   return silentium.Message(function TaskImpl(r) {
     let prevTimer = null;
     silentium.ExecutorApplied($base, (fn) => {
@@ -375,7 +375,7 @@ function Record(record) {
   return silentium.Message(function RecordImpl(r) {
     const keys = Object.keys(record);
     keys.forEach((key) => {
-      record[key] = silentium.ActualMessage(record[key]);
+      record[key] = silentium.Actual(record[key]);
     });
     silentium.All(...Object.values(record)).then((entries) => {
       const record2 = {};
@@ -388,7 +388,7 @@ function Record(record) {
 }
 
 function Transformed(_base, transformRules) {
-  const $base = silentium.ActualMessage(_base);
+  const $base = silentium.Actual(_base);
   return silentium.Message((resolve) => {
     $base.then((v) => {
       const existedKeysMap = {};
@@ -413,7 +413,7 @@ function Transformed(_base, transformRules) {
 }
 
 function TransformedList(_base, transformRules) {
-  return silentium.Map(silentium.ActualMessage(_base), (v) => Transformed(v, transformRules));
+  return silentium.Map(silentium.Actual(_base), (v) => Transformed(v, transformRules));
 }
 
 function And($one, $two) {
@@ -477,9 +477,9 @@ function First($base) {
 }
 
 function RegexpMatch(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
-  const $pattern = silentium.ActualMessage(patternSrc);
-  const $value = silentium.ActualMessage(valueSrc);
-  const $flags = silentium.ActualMessage(flagsSrc);
+  const $pattern = silentium.Actual(patternSrc);
+  const $value = silentium.Actual(valueSrc);
+  const $flags = silentium.Actual(flagsSrc);
   return silentium.Message(function RegexpMatchImpl(r) {
     silentium.All($pattern, $value, $flags).then(([pattern, value, flags]) => {
       const result = new RegExp(pattern, flags).exec(value);
@@ -489,9 +489,9 @@ function RegexpMatch(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
 }
 
 function RegexpMatched(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
-  const $pattern = silentium.ActualMessage(patternSrc);
-  const $value = silentium.ActualMessage(valueSrc);
-  const $flags = silentium.ActualMessage(flagsSrc);
+  const $pattern = silentium.Actual(patternSrc);
+  const $value = silentium.Actual(valueSrc);
+  const $flags = silentium.Actual(flagsSrc);
   return silentium.Message(function RegexpMatchedImpl(r) {
     silentium.All($pattern, $value, $flags).then(([pattern, value, flags]) => {
       r(new RegExp(pattern, flags).test(value));
@@ -500,10 +500,10 @@ function RegexpMatched(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
 }
 
 function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") {
-  const $value = silentium.ActualMessage(valueSrc);
-  const $pattern = silentium.ActualMessage(patternSrc);
-  const $replaceValue = silentium.ActualMessage(replaceValueSrc);
-  const $flags = silentium.ActualMessage(flagsSrc);
+  const $value = silentium.Actual(valueSrc);
+  const $pattern = silentium.Actual(patternSrc);
+  const $replaceValue = silentium.Actual(replaceValueSrc);
+  const $flags = silentium.Actual(flagsSrc);
   return silentium.Applied(
     silentium.All($pattern, $value, $replaceValue, $flags),
     ([pattern, value, replaceValue, flags]) => {
@@ -513,9 +513,9 @@ function RegexpReplaced(valueSrc, patternSrc, replaceValueSrc, flagsSrc = "") {
 }
 
 function Set(baseSrc, keySrc, valueSrc) {
-  const $base = silentium.ActualMessage(baseSrc);
-  const $key = silentium.ActualMessage(keySrc);
-  const $value = silentium.ActualMessage(valueSrc);
+  const $base = silentium.Actual(baseSrc);
+  const $key = silentium.Actual(keySrc);
+  const $value = silentium.Actual(valueSrc);
   return silentium.Message(function SetImpl(r) {
     silentium.All($base, $key, $value).then(([base, key, value]) => {
       base[key] = value;
@@ -525,7 +525,7 @@ function Set(baseSrc, keySrc, valueSrc) {
 }
 
 function Router($url, routes, $default) {
-  const $routes = silentium.ActualMessage(routes);
+  const $routes = silentium.Actual(routes);
   return silentium.Message(function RouterImpl(r) {
     const dc = silentium.DestroyContainer();
     const destructor = () => {
@@ -574,12 +574,9 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
 function Template(src = "", $places = silentium.Of({})) {
   const $src = silentium.Late();
   if (typeof src === "string" || silentium.isMessage(src)) {
-    $src.chain(silentium.ActualMessage(src));
+    $src.chain(silentium.Actual(src));
   }
-  const t = new TemplateImpl(
-    $src,
-    $places ? silentium.ActualMessage($places) : void 0
-  );
+  const t = new TemplateImpl($src, $places ? silentium.Actual($places) : void 0);
   if (typeof src === "function") {
     $src.chain(
       silentium.Message((r) => {

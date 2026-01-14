@@ -1,4 +1,4 @@
-import { All, Applied, Late, MessageSource, MessageType } from "silentium";
+import { All, Applied, Late, MessageType, Source } from "silentium";
 
 /**
  * Takes source and remember it first value
@@ -15,7 +15,7 @@ export function Dirty<T extends Record<string, unknown>>(
   if (cloner === undefined) {
     cloner = (value) => JSON.parse(JSON.stringify(value));
   }
-  return MessageSource<T>(
+  return Source<T>(
     function DirtyImpl(r) {
       const $comparingClone = Applied($comparing, cloner);
       All($comparingClone, $base).then(([comparing, base]) => {

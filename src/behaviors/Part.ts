@@ -1,12 +1,12 @@
 import {
-  ActualMessage,
+  Actual,
   All,
   isFilled,
   MaybeMessage,
-  MessageSource,
   MessageSourceType,
   Primitive,
   Shared,
+  Source,
 } from "silentium";
 
 /**
@@ -23,8 +23,8 @@ export function Part<
   defaultValue?: R,
 ): MessageSourceType<R> {
   const $baseShared = Shared($base);
-  const $keyedShared = Shared(ActualMessage(key));
-  return MessageSource(
+  const $keyedShared = Shared(Actual(key));
+  return Source(
     function PartImpl(r) {
       All($baseShared, $keyedShared).then(([base, keyed]) => {
         const keys = keyed.split(".");

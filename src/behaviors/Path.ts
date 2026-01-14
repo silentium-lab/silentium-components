@@ -1,10 +1,4 @@
-import {
-  ActualMessage,
-  All,
-  Applied,
-  MaybeMessage,
-  MessageType,
-} from "silentium";
+import { Actual, All, Applied, MaybeMessage, MessageType } from "silentium";
 
 const NotSet = Symbol("not-set");
 
@@ -17,8 +11,8 @@ export function Path<
   T extends object | Array<any> = any,
   K extends string = any,
 >($base: MessageType<T>, _keyed: MaybeMessage<K>, def?: MaybeMessage<R>) {
-  const $keyed = ActualMessage(_keyed);
-  const $def = ActualMessage((def as any) ?? NotSet);
+  const $keyed = Actual(_keyed);
+  const $def = Actual((def as any) ?? NotSet);
   return Applied(All($base, $keyed, $def), ([base, keyed, d]) => {
     const keys = keyed.split(".");
     let value: unknown = base;

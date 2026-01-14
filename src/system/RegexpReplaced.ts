@@ -1,4 +1,4 @@
-import { ActualMessage, All, Applied, MaybeMessage } from "silentium";
+import { Actual, All, Applied, MaybeMessage } from "silentium";
 
 /**
  * Returns string replaced by regular expression pattern
@@ -10,10 +10,10 @@ export function RegexpReplaced(
   replaceValueSrc: MaybeMessage<string>,
   flagsSrc: MaybeMessage<string> = "",
 ) {
-  const $value = ActualMessage(valueSrc);
-  const $pattern = ActualMessage(patternSrc);
-  const $replaceValue = ActualMessage(replaceValueSrc);
-  const $flags = ActualMessage(flagsSrc);
+  const $value = Actual(valueSrc);
+  const $pattern = Actual(patternSrc);
+  const $replaceValue = Actual(replaceValueSrc);
+  const $flags = Actual(flagsSrc);
   return Applied(
     All($pattern, $value, $replaceValue, $flags),
     ([pattern, value, replaceValue, flags]) => {
