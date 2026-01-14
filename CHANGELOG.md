@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.105](https://github.com/silentium-lab/silentium-components/compare/v0.0.104...v0.0.105) (2026-01-14)
+
+
+### Features
+
+* **main:** no need in path existed component ([fb408bc](https://github.com/silentium-lab/silentium-components/commit/fb408bc8bfdf757f67adc763a23adea85887c294))
+
 ### [0.0.104](https://github.com/silentium-lab/silentium-components/compare/v0.0.103...v0.0.104) (2026-01-14)
 
 
