@@ -12,7 +12,6 @@ export * from "./MergeAccumulation";
 export * from "./OnlyChanged";
 export * from "./Part";
 export * from "./Path";
-export * from "./PathExisted";
 export * from "./Polling";
 export * from "./RecordTruncated";
 export * from "./Shot";
