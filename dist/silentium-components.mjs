@@ -1,4 +1,4 @@
-import { Actual, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, Source, Applied, All, Empty, Computed, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
+import { Actual, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, Source, Applied, All, Computed, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = Actual(_condition);
@@ -259,20 +259,18 @@ function Path(_base, _keyed, def) {
   const $base = Actual(_base);
   const $keyed = Actual(_keyed);
   const $def = Actual(def ?? NotSet);
-  return Empty(
-    Applied(All($base, $keyed, $def), ([base, keyed, d]) => {
-      const keys = keyed.split(".");
-      let value = base;
-      keys.forEach((key) => {
-        value = value[key];
-      });
-      if (value !== void 0 && value !== base) {
-        return value;
-      } else if (d !== NotSet) {
-        return d;
-      }
-    })
-  );
+  return Applied(All($base, $keyed, $def), ([base, keyed, d]) => {
+    const keys = keyed.split(".");
+    let value = base;
+    keys.forEach((key) => {
+      value = value[key];
+    });
+    if (value !== void 0 && value !== base) {
+      return value;
+    } else if (d !== NotSet) {
+      return d;
+    }
+  });
 }
 
 function Polling($base, $trigger) {

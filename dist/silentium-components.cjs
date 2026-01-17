@@ -261,20 +261,18 @@ function Path(_base, _keyed, def) {
   const $base = silentium.Actual(_base);
   const $keyed = silentium.Actual(_keyed);
   const $def = silentium.Actual(def ?? NotSet);
-  return silentium.Empty(
-    silentium.Applied(silentium.All($base, $keyed, $def), ([base, keyed, d]) => {
-      const keys = keyed.split(".");
-      let value = base;
-      keys.forEach((key) => {
-        value = value[key];
-      });
-      if (value !== void 0 && value !== base) {
-        return value;
-      } else if (d !== NotSet) {
-        return d;
-      }
-    })
-  );
+  return silentium.Applied(silentium.All($base, $keyed, $def), ([base, keyed, d]) => {
+    const keys = keyed.split(".");
+    let value = base;
+    keys.forEach((key) => {
+      value = value[key];
+    });
+    if (value !== void 0 && value !== base) {
+      return value;
+    } else if (d !== NotSet) {
+      return d;
+    }
+  });
 }
 
 function Polling($base, $trigger) {
