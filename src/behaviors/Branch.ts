@@ -8,7 +8,7 @@ import {
 
 /**
  * Allows switching between left and right messages depending on condition
- * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
+ * https://silentium.pw/article/branch/view
  */
 export function Branch<Then, Else>(
   _condition: MaybeMessage<boolean>,
