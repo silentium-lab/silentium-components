@@ -1,4 +1,9 @@
-import { Message, MessageType, ResetSilenceCache } from "silentium";
+import {
+  DestroyContainer,
+  Message,
+  MessageType,
+  ResetSilenceCache,
+} from "silentium";
 
 /**
  * Active polling of $base message
@@ -10,10 +15,12 @@ export function Polling<T>(
   $trigger: MessageType<unknown>,
 ) {
   return Message<T>(function PollingImpl(r, reject) {
+    const dc = DestroyContainer();
     $trigger
       .then(() => {
+        dc.destroy();
         r(ResetSilenceCache as T);
-        $base.then(r).catch(reject);
+        dc.add($base.then(r).catch(reject));
       })
       .catch(reject);
   });
