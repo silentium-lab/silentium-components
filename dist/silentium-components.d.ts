@@ -3,7 +3,7 @@ import { MaybeMessage, MessageType, ConstructorType, DestroyableType, MessageSou
 
 /**
  * Allows switching between left and right messages depending on condition
- * https://silentium-lab.github.io/silentium-components/#/behaviors/branch
+ * https://silentium.pw/article/branch/view
  */
 declare function Branch<Then, Else>(_condition: MaybeMessage<boolean>, _left: MaybeMessage<Then>, _right?: MaybeMessage<Else>): silentium.MessageImpl<Then | Else>;
 
@@ -97,6 +97,7 @@ declare function Path<R, T extends object | Array<any> = any, K extends string =
 /**
  * Active polling of $base message
  * synchronized with $trigger message
+ * can return same values
  */
 declare function Polling<T>($base: MessageType<T>, $trigger: MessageType<unknown>): silentium.MessageImpl<T>;
 

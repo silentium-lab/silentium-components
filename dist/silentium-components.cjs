@@ -276,10 +276,11 @@ function Path(_base, _keyed, def) {
 }
 
 function Polling($base, $trigger) {
-  return silentium.Message(function PollingImpl(r) {
+  return silentium.Message(function PollingImpl(r, reject) {
     $trigger.then(() => {
-      $base.then(r);
-    });
+      r(silentium.ResetSilenceCache);
+      $base.then(r).catch(reject);
+    }).catch(reject);
   });
 }
 
