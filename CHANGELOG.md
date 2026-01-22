@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.107](https://github.com/silentium-lab/silentium-components/compare/v0.0.106...v0.0.107) (2026-01-22)
+
+
+### Bug Fixes
+
+* **main:** branch component url ([e09835b](https://github.com/silentium-lab/silentium-components/commit/e09835bfa076139248e93c8e58b03b6ec25f737d))
+* **main:** polling repeats same value ([6db7e69](https://github.com/silentium-lab/silentium-components/commit/6db7e697432ef582b0a931ad99648e066d19c14e))
+
 ### [0.0.106](https://github.com/silentium-lab/silentium-components/compare/v0.0.105...v0.0.106) (2026-01-17)
 
 
