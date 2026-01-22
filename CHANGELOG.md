@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.108](https://github.com/silentium-lab/silentium-components/compare/v0.0.107...v0.0.108) (2026-01-22)
+
+
+### Bug Fixes
+
+* **main:** polling destruction ([a22aedc](https://github.com/silentium-lab/silentium-components/commit/a22aedc2e10aed03665070c5276f9228d95c5d1a))
+
 ### [0.0.107](https://github.com/silentium-lab/silentium-components/compare/v0.0.106...v0.0.107) (2026-01-22)
 
 
