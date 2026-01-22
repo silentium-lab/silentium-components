@@ -275,9 +275,11 @@ function Path(_base, _keyed, def) {
 
 function Polling($base, $trigger) {
   return Message(function PollingImpl(r, reject) {
+    const dc = DestroyContainer();
     $trigger.then(() => {
+      dc.destroy();
       r(ResetSilenceCache);
-      $base.then(r).catch(reject);
+      dc.add($base.then(r).catch(reject));
     }).catch(reject);
   });
 }
