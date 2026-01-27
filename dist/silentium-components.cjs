@@ -276,12 +276,12 @@ function Path(_base, _keyed, def) {
 }
 
 function Polling($base, $trigger) {
-  return silentium.Message(function PollingImpl(r, reject) {
+  return silentium.Message(function PollingImpl(resolve, reject) {
     const dc = silentium.DestroyContainer();
     $trigger.then(() => {
       dc.destroy();
-      r(silentium.ResetSilenceCache);
-      dc.add($base.then(r).catch(reject));
+      resolve(silentium.ResetSilenceCache);
+      dc.add($base.then(resolve).catch(reject));
     }).catch(reject);
   });
 }
@@ -304,19 +304,6 @@ function RecordTruncated(_record, _badValues) {
     return result;
   };
   return silentium.Computed(processRecord, $record, $badValues);
-}
-
-function Shot($target, $trigger) {
-  return silentium.Message(function ShotImpl(r) {
-    const targetSync = silentium.Primitive($target);
-    targetSync.primitive();
-    $trigger.then(() => {
-      const value = targetSync.primitive();
-      if (silentium.isFilled(value)) {
-        r(value);
-      }
-    });
-  });
 }
 
 function Task(baseSrc, delay = 0) {
@@ -694,7 +681,6 @@ exports.RegexpMatched = RegexpMatched;
 exports.RegexpReplaced = RegexpReplaced;
 exports.Router = Router;
 exports.Set = Set;
-exports.Shot = Shot;
 exports.Task = Task;
 exports.Template = Template;
 exports.TemplateImpl = TemplateImpl;

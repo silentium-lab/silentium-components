@@ -274,12 +274,12 @@ function Path(_base, _keyed, def) {
 }
 
 function Polling($base, $trigger) {
-  return Message(function PollingImpl(r, reject) {
+  return Message(function PollingImpl(resolve, reject) {
     const dc = DestroyContainer();
     $trigger.then(() => {
       dc.destroy();
-      r(ResetSilenceCache);
-      dc.add($base.then(r).catch(reject));
+      resolve(ResetSilenceCache);
+      dc.add($base.then(resolve).catch(reject));
     }).catch(reject);
   });
 }
@@ -302,19 +302,6 @@ function RecordTruncated(_record, _badValues) {
     return result;
   };
   return Computed(processRecord, $record, $badValues);
-}
-
-function Shot($target, $trigger) {
-  return Message(function ShotImpl(r) {
-    const targetSync = Primitive($target);
-    targetSync.primitive();
-    $trigger.then(() => {
-      const value = targetSync.primitive();
-      if (isFilled(value)) {
-        r(value);
-      }
-    });
-  });
 }
 
 function Task(baseSrc, delay = 0) {
@@ -662,5 +649,5 @@ function escaped(base) {
   );
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Shot, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
 //# sourceMappingURL=silentium-components.js.map
