@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.110](https://github.com/silentium-lab/silentium-components/compare/v0.0.109...v0.0.110) (2026-01-27)
+
+
+### Bug Fixes
+
+* **main:** remove shot component ([bbf2f30](https://github.com/silentium-lab/silentium-components/commit/bbf2f303708d5519d7fbb27f1315fc91a2283a68))
+
 ### [0.0.109](https://github.com/silentium-lab/silentium-components/compare/v0.0.108...v0.0.109) (2026-01-24)
 
 ### [0.0.108](https://github.com/silentium-lab/silentium-components/compare/v0.0.107...v0.0.108) (2026-01-22)
