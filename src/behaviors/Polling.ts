@@ -14,13 +14,13 @@ export function Polling<T>(
   $base: MessageType<T>,
   $trigger: MessageType<unknown>,
 ) {
-  return Message<T>(function PollingImpl(r, reject) {
+  return Message<T>(function PollingImpl(resolve, reject) {
     const dc = DestroyContainer();
     $trigger
       .then(() => {
         dc.destroy();
-        r(ResetSilenceCache as T);
-        dc.add($base.then(r).catch(reject));
+        resolve(ResetSilenceCache as T);
+        dc.add($base.then(resolve).catch(reject));
       })
       .catch(reject);
   });

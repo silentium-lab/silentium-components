@@ -11,7 +11,7 @@ import {
 
 /**
  * Return source Of record path
- * https://silentium-lab.github.io/silentium-components/#/behaviors/path
+ * @url https://silentium.pw/article/part/view
  */
 export function Part<
   R,

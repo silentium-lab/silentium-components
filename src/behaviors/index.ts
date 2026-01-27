@@ -14,7 +14,6 @@ export * from "./Part";
 export * from "./Path";
 export * from "./Polling";
 export * from "./RecordTruncated";
-export * from "./Shot";
 export * from "./Task";
 export * from "./Tick";
 export * from "./Transformed";

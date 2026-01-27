@@ -2,7 +2,7 @@ import { Message, MessageType } from "silentium";
 
 /**
  * Represents source what was changed at least once
- * https://silentium-lab.github.io/silentium-components/#/behaviors/only-changed
+ * @url https://silentium.pw/article/only-changed/view
  */
 export function OnlyChanged<T>($base: MessageType<T>) {
   return Message<T>(function OnlyChangedImpl(r) {

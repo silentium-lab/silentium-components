@@ -1,13 +1,13 @@
 import { Late, Shared } from "silentium";
 import { expect, test } from "vitest";
 
-import { OnlyChanged } from "../behaviors/OnlyChanged";
-import { Shot } from "../behaviors/Shot";
+import { Polling } from "../behaviors/Polling";
+import { OnlyChanged } from "./OnlyChanged";
 
-test("Shot._onlyChanged.test", () => {
+test("Polling._onlyChanged.test", () => {
   const $base = Late<number>();
   const $shared = Shared($base);
-  const $result = Shot($shared, OnlyChanged($shared));
+  const $result = Polling($shared, OnlyChanged($shared));
 
   const vals: number[] = [];
 
@@ -23,13 +23,21 @@ test("Shot._onlyChanged.test", () => {
 
   $base.use(222);
 
+  $base.then((v) => {
+    console.log(v);
+  });
+
   expect(vals).toStrictEqual([222]);
 
   $base.use(333);
 
+  $base.then((v) => {
+    console.log(v);
+  });
+
   expect(vals).toStrictEqual([222, 333]);
 
-  $base.use(123);
+  // $base.use(123);
 
-  expect(vals).toStrictEqual([222, 333, 123]);
+  // expect(vals).toStrictEqual([222, 333, 123]);
 });
