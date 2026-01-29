@@ -13,6 +13,8 @@ import { Record } from "../structures";
  * Modify the object structure
  * with the ability to create new fields based on
  * existing ones in the object
+ *
+ * @url https://silentium.pw/article/transformed/view
  */
 export function Transformed<T extends Record<string, any>>(
   _base: MaybeMessage<T>,
