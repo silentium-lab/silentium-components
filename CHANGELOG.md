@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.111](https://github.com/silentium-lab/silentium-components/compare/v0.0.110...v0.0.111) (2026-01-30)
+
+
+### Bug Fixes
+
+* **main:** links to docs ([f4a2c19](https://github.com/silentium-lab/silentium-components/commit/f4a2c19f21e39cbfbc67280dc56d6f73a677541d))
+* **main:** maybemessage in router ([96e2009](https://github.com/silentium-lab/silentium-components/commit/96e2009ac83b3af9ef24f235ca18e52e0ac41e33))
+
 ### [0.0.110](https://github.com/silentium-lab/silentium-components/compare/v0.0.109...v0.0.110) (2026-01-27)
 
 
