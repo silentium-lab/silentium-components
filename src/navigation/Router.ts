@@ -15,19 +15,21 @@ import { RegexpMatched } from "../system";
 export interface Route<T> {
   pattern: string;
   patternFlags?: string;
-  message: ConstructorType<[], MessageType<T>>;
+  message: ConstructorType<[], MaybeMessage<T>>;
 }
 
 /**
  * Router component what will return template if url matches pattern
- * https://silentium-lab.github.io/silentium-components/#/navigation/router
+ *
+ * @url https://silentium.pw/article/router/view
  */
 export function Router<T = string>(
-  $url: MessageType<string>,
+  _url: MaybeMessage<string>,
   routes: MaybeMessage<Route<T>[]>,
-  $default: ConstructorType<[], MessageType<T>>,
+  $default: ConstructorType<[], MaybeMessage<T>>,
 ): MessageType<T> & DestroyableType {
   const $routes = Actual(routes);
+  const $url = Actual(_url);
   return Message<T>(function RouterImpl(r) {
     const dc = DestroyContainer();
     const destructor = () => {
@@ -48,19 +50,18 @@ export function Router<T = string>(
         const index = matches.findIndex((v) => v === true);
 
         if (index === -1) {
-          const instance = $default();
+          const instance = Actual($default());
           dc.add(instance);
           instance.then(r);
         }
 
         if (index > -1) {
-          const instance = routes[index].message();
+          const instance = Actual(routes[index].message());
           dc.add(instance);
           instance.then(r);
         }
       });
     });
-
     return destructor;
   });
 }

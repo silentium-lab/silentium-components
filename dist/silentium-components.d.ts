@@ -111,12 +111,15 @@ declare function RecordTruncated(_record: MaybeMessage<Record<string, unknown>>,
  * Defer a message to the event loop
  * so that it executes once within
  * a certain timer firing interval
+ *
+ * @url https://silentium.pw/article/task/view
  */
 declare function Task<T>(baseSrc: MaybeMessage<T>, delay?: number): silentium.MessageImpl<T>;
 
 /**
  * Accumulates the last value Of the source and returns one result once per tick
- * https://silentium-lab.github.io/silentium-components/#/behaviors/tick
+ *
+ * @url https://silentium.pw/article/tick/view
  */
 declare function Tick<T>($base: MessageType<T>): silentium.MessageImpl<T>;
 
@@ -124,6 +127,8 @@ declare function Tick<T>($base: MessageType<T>): silentium.MessageImpl<T>;
  * Modify the object structure
  * with the ability to create new fields based on
  * existing ones in the object
+ *
+ * @url https://silentium.pw/article/transformed/view
  */
 declare function Transformed<T extends Record<string, any>>(_base: MaybeMessage<T>, transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>): silentium.MessageImpl<unknown>;
 
@@ -171,13 +176,14 @@ declare function First<T extends Array<unknown>>($base: MessageType<T>): silenti
 interface Route<T> {
     pattern: string;
     patternFlags?: string;
-    message: ConstructorType<[], MessageType<T>>;
+    message: ConstructorType<[], MaybeMessage<T>>;
 }
 /**
  * Router component what will return template if url matches pattern
- * https://silentium-lab.github.io/silentium-components/#/navigation/router
+ *
+ * @url https://silentium.pw/article/router/view
  */
-declare function Router<T = string>($url: MessageType<string>, routes: MaybeMessage<Route<T>[]>, $default: ConstructorType<[], MessageType<T>>): MessageType<T> & DestroyableType;
+declare function Router<T = string>(_url: MaybeMessage<string>, routes: MaybeMessage<Route<T>[]>, $default: ConstructorType<[], MaybeMessage<T>>): MessageType<T> & DestroyableType;
 
 /**
  * Join sources Of strings to one source

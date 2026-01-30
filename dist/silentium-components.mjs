@@ -507,8 +507,9 @@ function Set(baseSrc, keySrc, valueSrc) {
   });
 }
 
-function Router($url, routes, $default) {
+function Router(_url, routes, $default) {
   const $routes = Actual(routes);
+  const $url = Actual(_url);
   return Message(function RouterImpl(r) {
     const dc = DestroyContainer();
     const destructor = () => {
@@ -528,12 +529,12 @@ function Router($url, routes, $default) {
       $matches.then((matches) => {
         const index = matches.findIndex((v) => v === true);
         if (index === -1) {
-          const instance = $default();
+          const instance = Actual($default());
           dc.add(instance);
           instance.then(r);
         }
         if (index > -1) {
-          const instance = routes2[index].message();
+          const instance = Actual(routes2[index].message());
           dc.add(instance);
           instance.then(r);
         }
