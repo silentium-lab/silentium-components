@@ -21,6 +21,8 @@ import { Record } from "../structures";
  * Allows creating a string template with
  * variables inserted into it; when variables change,
  * the template value will change
+ *
+ * @url https://silentium.pw/article/template/view
  */
 export function Template(
   src: MaybeMessage<string> | ((t: TemplateImpl) => string) = "",
@@ -46,7 +48,7 @@ export function Template(
 
 export class TemplateImpl implements MessageType<string>, DestroyableType {
   private dc = DestroyContainer();
-  private rejections = new Rejections();
+  private rejections = Rejections();
   private vars: Record<string, MessageType> = {
     $TPL: Of("$TPL"),
   };

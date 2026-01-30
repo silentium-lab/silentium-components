@@ -51,7 +51,7 @@ describe("Router._main.test", () => {
     const $path = Late("/some/contacts");
     const $router = Router(
       $path,
-      Of([
+      [
         {
           pattern: "^/$",
           message: () => "page/home.html",
@@ -60,7 +60,7 @@ describe("Router._main.test", () => {
           pattern: "/some/contacts",
           message: () => "page/contacts.html",
         },
-      ]),
+      ],
       () => "page/404.html",
     );
 
