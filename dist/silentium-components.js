@@ -304,6 +304,20 @@ function RecordTruncated(_record, _badValues) {
   return Computed(processRecord, $record, $badValues);
 }
 
+function Switch(_base, options) {
+  const $base = Actual(_base);
+  return Message((resolve, reject) => {
+    const dc = DestroyContainer();
+    $base.then((v) => {
+      const msg = options.find((entry) => entry[0] === v);
+      if (msg) {
+        dc.add(msg[1].then(resolve).catch(reject));
+      }
+    }).catch(reject);
+    return dc.destructor;
+  });
+}
+
 function Task(baseSrc, delay = 0) {
   const $base = Actual(baseSrc);
   return Message(function TaskImpl(r) {
@@ -576,7 +590,7 @@ class TemplateImpl {
     this.$places = $places;
     this.escapeFn = escapeFn;
     __publicField(this, "dc", DestroyContainer());
-    __publicField(this, "rejections", new Rejections());
+    __publicField(this, "rejections", Rejections());
     __publicField(this, "vars", {
       $TPL: Of("$TPL")
     });
@@ -650,5 +664,5 @@ function escaped(base) {
   );
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
 //# sourceMappingURL=silentium-components.js.map

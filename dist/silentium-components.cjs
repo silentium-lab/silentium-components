@@ -306,6 +306,20 @@ function RecordTruncated(_record, _badValues) {
   return silentium.Computed(processRecord, $record, $badValues);
 }
 
+function Switch(_base, options) {
+  const $base = silentium.Actual(_base);
+  return silentium.Message((resolve, reject) => {
+    const dc = silentium.DestroyContainer();
+    $base.then((v) => {
+      const msg = options.find((entry) => entry[0] === v);
+      if (msg) {
+        dc.add(msg[1].then(resolve).catch(reject));
+      }
+    }).catch(reject);
+    return dc.destructor;
+  });
+}
+
 function Task(baseSrc, delay = 0) {
   const $base = silentium.Actual(baseSrc);
   return silentium.Message(function TaskImpl(r) {
@@ -578,7 +592,7 @@ class TemplateImpl {
     this.$places = $places;
     this.escapeFn = escapeFn;
     __publicField(this, "dc", silentium.DestroyContainer());
-    __publicField(this, "rejections", new silentium.Rejections());
+    __publicField(this, "rejections", silentium.Rejections());
     __publicField(this, "vars", {
       $TPL: silentium.Of("$TPL")
     });
@@ -682,6 +696,7 @@ exports.RegexpMatched = RegexpMatched;
 exports.RegexpReplaced = RegexpReplaced;
 exports.Router = Router;
 exports.Set = Set;
+exports.Switch = Switch;
 exports.Task = Task;
 exports.Template = Template;
 exports.TemplateImpl = TemplateImpl;
