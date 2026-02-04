@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.113](https://github.com/silentium-lab/silentium-components/compare/v0.0.112...v0.0.113) (2026-02-04)
+
+
+### Features
+
+* **main:** router functional condition ([b450fda](https://github.com/silentium-lab/silentium-components/commit/b450fda6c91786c78425d30e13ecb1bdf2110434))
+
 ### [0.0.112](https://github.com/silentium-lab/silentium-components/compare/v0.0.111...v0.0.112) (2026-02-02)
 
 
