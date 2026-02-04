@@ -533,11 +533,11 @@ function Router(_url, routes, $default) {
       destructor();
       const $matches = All(
         ...routes2.map(
-          (r2) => RegexpMatched(
+          (r2) => r2.pattern ? RegexpMatched(
             Of(r2.pattern),
             Of(url),
             r2.patternFlags ? Of(r2.patternFlags) : void 0
-          )
+          ) : r2?.condition?.(url)
         )
       );
       $matches.then((matches) => {

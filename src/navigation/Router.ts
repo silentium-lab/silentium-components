@@ -13,8 +13,9 @@ import {
 import { RegexpMatched } from "../system";
 
 export interface Route<T> {
-  pattern: string;
+  pattern?: string;
   patternFlags?: string;
+  condition?: (v: unknown) => boolean;
   message: ConstructorType<[], MaybeMessage<T>>;
 }
 
@@ -39,11 +40,13 @@ export function Router<T = string>(
       destructor();
       const $matches = All(
         ...routes.map((r) =>
-          RegexpMatched(
-            Of(r.pattern),
-            Of(url),
-            r.patternFlags ? Of(r.patternFlags) : undefined,
-          ),
+          r.pattern
+            ? RegexpMatched(
+                Of(r.pattern),
+                Of(url),
+                r.patternFlags ? Of(r.patternFlags) : undefined,
+              )
+            : r?.condition?.(url),
         ),
       );
       $matches.then((matches) => {

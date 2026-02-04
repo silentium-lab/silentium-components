@@ -179,8 +179,9 @@ declare function ToJson($data: MessageType): silentium.MessageImpl<string>;
 declare function First<T extends Array<unknown>>($base: MessageType<T>): silentium.MessageImpl<T[0]>;
 
 interface Route<T> {
-    pattern: string;
+    pattern?: string;
     patternFlags?: string;
+    condition?: (v: unknown) => boolean;
     message: ConstructorType<[], MaybeMessage<T>>;
 }
 /**

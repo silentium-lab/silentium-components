@@ -535,11 +535,11 @@ function Router(_url, routes, $default) {
       destructor();
       const $matches = silentium.All(
         ...routes2.map(
-          (r2) => RegexpMatched(
+          (r2) => r2.pattern ? RegexpMatched(
             silentium.Of(r2.pattern),
             silentium.Of(url),
             r2.patternFlags ? silentium.Of(r2.patternFlags) : void 0
-          )
+          ) : r2?.condition?.(url)
         )
       );
       $matches.then((matches) => {
