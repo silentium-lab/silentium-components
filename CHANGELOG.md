@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.114](https://github.com/silentium-lab/silentium-components/compare/v0.0.113...v0.0.114) (2026-02-26)
+
+
+### Features
+
+* **main:** switch can be multiple ([f2bfbff](https://github.com/silentium-lab/silentium-components/commit/f2bfbff86364fdc2b7bda5d59a59fefd861b7199))
+
 ### [0.0.113](https://github.com/silentium-lab/silentium-components/compare/v0.0.112...v0.0.113) (2026-02-04)
 
 
