@@ -311,7 +311,9 @@ function Switch(_base, options) {
   return silentium.Message((resolve, reject) => {
     const dc = silentium.DestroyContainer();
     $base.then((v) => {
-      const msg = options.find((entry) => entry[0] === v);
+      const msg = options.find(
+        (entry) => Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v
+      );
       if (msg) {
         dc.add(msg[1].then(resolve).catch(reject));
       }

@@ -110,7 +110,7 @@ declare function RecordTruncated(_record: MaybeMessage<Record<string, unknown>>,
 /**
  * Switch between many messages by known value
  */
-declare function Switch<T, K>(_base: MaybeMessage, options: [K, MessageType<T>][]): silentium.MessageImpl<T>;
+declare function Switch<T, K>(_base: MaybeMessage, options: [K | K[], MessageType<T>][]): silentium.MessageImpl<T>;
 
 /**
  * Defer a message to the event loop

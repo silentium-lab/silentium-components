@@ -1,4 +1,4 @@
-import { Late, Message, Void } from "silentium";
+import { Late, Message, Value, Void } from "silentium";
 import { describe, expect, test } from "vitest";
 
 import { Switch } from "./Switch";
@@ -28,7 +28,7 @@ describe("Switch.test", () => {
     ]);
     const data: string[] = [];
     src.then((v) => {
-      data.push(v);
+      data.push(v as string);
     });
 
     expect(data).toStrictEqual(["Option A"]);
@@ -69,7 +69,7 @@ describe("Switch.test", () => {
     ]);
     const data: string[] = [];
     src.then((v) => {
-      data.push(v);
+      data.push(v as string);
     });
 
     expect(data).toStrictEqual([]);
@@ -120,7 +120,7 @@ describe("Switch.test", () => {
     ]);
     const data: string[] = [];
     src.then((v) => {
-      data.push(v);
+      data.push(v as string);
     });
     src.destroy();
 
@@ -128,5 +128,35 @@ describe("Switch.test", () => {
 
     $trigger.use("b");
     expect(data).toStrictEqual(["Option A"]);
+  });
+
+  test("Switch.multipleVariants", () => {
+    const $trigger = Late("a");
+    const src = Value(
+      Switch($trigger, [
+        [
+          "a",
+          Message((resolve) => {
+            resolve("Option A");
+          }),
+        ],
+        [
+          ["b", "c"],
+          Message((resolve) => {
+            resolve("B or C");
+          }),
+        ],
+      ]),
+    );
+    expect(src.value).toBe("Option A");
+
+    $trigger.use("c");
+    expect(src.value).toBe("B or C");
+
+    $trigger.use("b");
+    expect(src.value).toBe("B or C");
+
+    $trigger.use("a");
+    expect(src.value).toBe("Option A");
   });
 });
