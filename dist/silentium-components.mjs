@@ -1,4 +1,4 @@
-import { Actual, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, Source, Applied, All, Computed, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
+import { Actual, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, Source, Applied, All, Computed, Value, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = Actual(_condition);
@@ -302,6 +302,42 @@ function RecordTruncated(_record, _badValues) {
     return result;
   };
   return Computed(processRecord, $record, $badValues);
+}
+
+function StateRecord(state$, values$, sequence) {
+  const dc = DestroyContainer();
+  let stateIndex = -1;
+  let latestState = null;
+  let result = {};
+  const sequence$ = Value(Actual(sequence));
+  return Message((resolve, reject) => {
+    dc.add(
+      state$.then((state) => {
+        if (state === sequence$.value?.[stateIndex + 1]) {
+          stateIndex += 1;
+          latestState = state;
+        } else {
+          stateIndex = -1;
+          latestState = null;
+          result = {};
+        }
+      }).catch(reject)
+    );
+    dc.add(
+      values$.then((value) => {
+        if (latestState !== null) {
+          result[latestState] = value;
+        }
+        if (stateIndex + 1 === sequence$.value?.length) {
+          resolve(result);
+          stateIndex = -1;
+          latestState = null;
+          result = {};
+        }
+      }).catch(reject)
+    );
+    return () => dc.destroy();
+  });
 }
 
 function Switch(_base, options) {
@@ -666,5 +702,5 @@ function escaped(base) {
   );
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, StateRecord, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
 //# sourceMappingURL=silentium-components.mjs.map

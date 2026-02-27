@@ -306,6 +306,42 @@ function RecordTruncated(_record, _badValues) {
   return silentium.Computed(processRecord, $record, $badValues);
 }
 
+function StateRecord(state$, values$, sequence) {
+  const dc = silentium.DestroyContainer();
+  let stateIndex = -1;
+  let latestState = null;
+  let result = {};
+  const sequence$ = silentium.Value(silentium.Actual(sequence));
+  return silentium.Message((resolve, reject) => {
+    dc.add(
+      state$.then((state) => {
+        if (state === sequence$.value?.[stateIndex + 1]) {
+          stateIndex += 1;
+          latestState = state;
+        } else {
+          stateIndex = -1;
+          latestState = null;
+          result = {};
+        }
+      }).catch(reject)
+    );
+    dc.add(
+      values$.then((value) => {
+        if (latestState !== null) {
+          result[latestState] = value;
+        }
+        if (stateIndex + 1 === sequence$.value?.length) {
+          resolve(result);
+          stateIndex = -1;
+          latestState = null;
+          result = {};
+        }
+      }).catch(reject)
+    );
+    return () => dc.destroy();
+  });
+}
+
 function Switch(_base, options) {
   const $base = silentium.Actual(_base);
   return silentium.Message((resolve, reject) => {
@@ -698,6 +734,7 @@ exports.RegexpMatched = RegexpMatched;
 exports.RegexpReplaced = RegexpReplaced;
 exports.Router = Router;
 exports.Set = Set;
+exports.StateRecord = StateRecord;
 exports.Switch = Switch;
 exports.Task = Task;
 exports.Template = Template;

@@ -107,6 +107,8 @@ declare function Polling<T>($base: MessageType<T>, $trigger: MessageType<unknown
  */
 declare function RecordTruncated(_record: MaybeMessage<Record<string, unknown>>, _badValues: MaybeMessage<unknown[]>): silentium.MessageImpl<any>;
 
+declare function StateRecord(state$: MessageType, values$: MessageType, sequence: MaybeMessage<unknown[]>): silentium.MessageImpl<unknown>;
+
 /**
  * Switch between many messages by known value
  */
@@ -270,5 +272,5 @@ declare function RegexpReplaced(valueSrc: MaybeMessage<string>, patternSrc: Mayb
  */
 declare function Set<T extends Record<string, unknown>>(baseSrc: MessageType<T>, keySrc: MessageType<string>, valueSrc: MessageType<unknown>): silentium.MessageImpl<T>;
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record$1 as Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record$1 as Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, StateRecord, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
 export type { Route };
