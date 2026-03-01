@@ -11,7 +11,7 @@ export function HashTable<T>($base: MessageType<[string, unknown]>) {
 
     $base.then(([key, value]) => {
       record[key] = value;
-      r(record as T);
+      r({ ...record } as T);
     });
   });
 }
