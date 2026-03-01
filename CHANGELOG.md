@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.116](https://github.com/silentium-lab/silentium-components/compare/v0.0.115...v0.0.116) (2026-03-01)
+
+
+### Bug Fixes
+
+* hash table spreads new recrods ([b44f3d2](https://github.com/silentium-lab/silentium-components/commit/b44f3d2eded0ac4bf2692166defc2d3973ae96f4))
+
 ### [0.0.115](https://github.com/silentium-lab/silentium-components/compare/v0.0.114...v0.0.115) (2026-02-27)
 
 
