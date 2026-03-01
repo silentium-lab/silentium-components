@@ -403,7 +403,7 @@ function HashTable($base) {
     const record = {};
     $base.then(([key, value]) => {
       record[key] = value;
-      r(record);
+      r({ ...record });
     });
   });
 }
