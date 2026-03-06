@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.117](https://github.com/silentium-lab/silentium-components/compare/v0.0.116...v0.0.117) (2026-03-06)
+
+
+### Bug Fixes
+
+* **main:** switch destructor ([fa58db6](https://github.com/silentium-lab/silentium-components/commit/fa58db6c32fdafcc17cd8defd0ea40e6c18bfa8d))
+
 ### [0.0.116](https://github.com/silentium-lab/silentium-components/compare/v0.0.115...v0.0.116) (2026-03-01)
 
 
