@@ -354,7 +354,7 @@ function Switch(_base, options) {
         dc.add(msg[1].then(resolve).catch(reject));
       }
     }).catch(reject);
-    return dc.destructor;
+    return dc.destructor();
   });
 }
 

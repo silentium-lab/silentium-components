@@ -26,6 +26,6 @@ export function Switch<T, K>(
         }
       })
       .catch(reject);
-    return dc.destructor;
+    return dc.destructor();
   });
 }
