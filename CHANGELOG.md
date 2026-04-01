@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.122](https://github.com/silentium-lab/silentium-components/compare/v0.0.121...v0.0.122) (2026-04-01)
+
+
+### Bug Fixes
+
+* return silence ([d21655b](https://github.com/silentium-lab/silentium-components/commit/d21655b40acd862abb98f1257c5cace986473887))
+
 ### [0.0.121](https://github.com/silentium-lab/silentium-components/compare/v0.0.120...v0.0.121) (2026-04-01)
 
 
