@@ -56,7 +56,6 @@ function Constant(permanent, $trigger) {
   return silentium.Message(function ConstantImpl(resolve, reject) {
     $trigger.catch(reject).then(() => {
       resolve(permanent);
-      resolve(silentium.ResetSilenceCache);
     });
   });
 }
