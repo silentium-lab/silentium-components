@@ -278,11 +278,15 @@ function Path(_base, _keyed, def) {
 function Polling($base, $trigger) {
   return silentium.Message(function PollingImpl(resolve, reject) {
     const dc = silentium.DestroyContainer();
-    $trigger.then(() => {
-      dc.destroy();
-      resolve(silentium.ResetSilenceCache);
-      dc.add($base.then(resolve).catch(reject));
-    }).catch(reject);
+    const pollingDc = silentium.DestroyContainer();
+    pollingDc.add(dc);
+    pollingDc.add(
+      $trigger.then(() => {
+        dc.destroy();
+        dc.add($base.then(resolve).catch(reject));
+      }).catch(reject)
+    );
+    return pollingDc.destructor();
   });
 }
 
@@ -346,14 +350,16 @@ function Switch(_base, options) {
   const $base = silentium.Actual(_base);
   return silentium.Message((resolve, reject) => {
     const dc = silentium.DestroyContainer();
-    $base.then((v) => {
-      const msg = options.find(
-        (entry) => Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v
-      );
-      if (msg) {
-        dc.add(msg[1].then(resolve).catch(reject));
-      }
-    }).catch(reject);
+    dc.add(
+      $base.then((v) => {
+        const msg = options.find(
+          (entry) => Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v
+        );
+        if (msg) {
+          dc.add(msg[1].then(resolve).catch(reject));
+        }
+      }).catch(reject)
+    );
     return dc.destructor();
   });
 }

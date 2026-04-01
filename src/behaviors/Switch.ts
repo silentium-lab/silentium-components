@@ -16,16 +16,20 @@ export function Switch<T, K>(
   const $base = Actual(_base);
   return Message<T>((resolve, reject) => {
     const dc = DestroyContainer();
-    $base
-      .then((v) => {
-        const msg = options.find((entry) =>
-          Array.isArray(entry[0]) ? entry[0].includes(v as K) : entry[0] === v,
-        );
-        if (msg) {
-          dc.add(msg[1].then(resolve).catch(reject));
-        }
-      })
-      .catch(reject);
+    dc.add(
+      $base
+        .then((v) => {
+          const msg = options.find((entry) =>
+            Array.isArray(entry[0])
+              ? entry[0].includes(v as K)
+              : entry[0] === v,
+          );
+          if (msg) {
+            dc.add(msg[1].then(resolve).catch(reject));
+          }
+        })
+        .catch(reject),
+    );
     return dc.destructor();
   });
 }

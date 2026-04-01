@@ -1,5 +1,5 @@
-import { Late, Message, Value, Void } from "silentium";
-import { describe, expect, test } from "vitest";
+import { Connected, Late, Message, Of, Value, Void } from "silentium";
+import { describe, expect, test, vi } from "vitest";
 
 import { Switch } from "./Switch";
 
@@ -158,5 +158,25 @@ describe("Switch.test", () => {
 
     $trigger.use("a");
     expect(src.value).toBe("Option A");
+  });
+
+  test("complex destructors", () => {
+    const value$ = Late(1);
+    const destructor = vi.fn();
+    const $m = Switch(value$, [
+      [1, Connected(Of(111), destructor)],
+      [2, Connected(Of(222), destructor)],
+    ]);
+
+    $m.then(Void());
+
+    expect(destructor).not.toBeCalled();
+
+    $m.destroy();
+
+    expect(destructor).toBeCalledTimes(1);
+
+    $m.destroy();
+    expect(destructor).toBeCalledTimes(1);
   });
 });

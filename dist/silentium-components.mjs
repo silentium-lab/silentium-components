@@ -276,11 +276,15 @@ function Path(_base, _keyed, def) {
 function Polling($base, $trigger) {
   return Message(function PollingImpl(resolve, reject) {
     const dc = DestroyContainer();
-    $trigger.then(() => {
-      dc.destroy();
-      resolve(ResetSilenceCache);
-      dc.add($base.then(resolve).catch(reject));
-    }).catch(reject);
+    const pollingDc = DestroyContainer();
+    pollingDc.add(dc);
+    pollingDc.add(
+      $trigger.then(() => {
+        dc.destroy();
+        dc.add($base.then(resolve).catch(reject));
+      }).catch(reject)
+    );
+    return pollingDc.destructor();
   });
 }
 
@@ -344,14 +348,16 @@ function Switch(_base, options) {
   const $base = Actual(_base);
   return Message((resolve, reject) => {
     const dc = DestroyContainer();
-    $base.then((v) => {
-      const msg = options.find(
-        (entry) => Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v
-      );
-      if (msg) {
-        dc.add(msg[1].then(resolve).catch(reject));
-      }
-    }).catch(reject);
+    dc.add(
+      $base.then((v) => {
+        const msg = options.find(
+          (entry) => Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v
+        );
+        if (msg) {
+          dc.add(msg[1].then(resolve).catch(reject));
+        }
+      }).catch(reject)
+    );
     return dc.destructor();
   });
 }

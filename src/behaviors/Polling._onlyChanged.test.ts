@@ -2,11 +2,12 @@ import { Late, Shared } from "silentium";
 import { expect, test } from "vitest";
 
 import { Polling } from "../behaviors/Polling";
+import { Memo } from "./Memo";
 import { OnlyChanged } from "./OnlyChanged";
 
 test("Polling._onlyChanged.test", () => {
   const $base = Late<number>();
-  const $shared = Shared($base);
+  const $shared = Memo(Shared($base));
   const $result = Polling($shared, OnlyChanged($shared));
 
   const vals: number[] = [];
@@ -22,10 +23,6 @@ test("Polling._onlyChanged.test", () => {
   expect(vals).toStrictEqual([]);
 
   $base.use(222);
-
-  $base.then((v) => {
-    console.log(v);
-  });
 
   expect(vals).toStrictEqual([222]);
 
