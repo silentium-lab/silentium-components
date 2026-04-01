@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.121](https://github.com/silentium-lab/silentium-components/compare/v0.0.120...v0.0.121) (2026-04-01)
+
+
+### Bug Fixes
+
+* **main:** resetSilenceCache not needed ([30b2b5c](https://github.com/silentium-lab/silentium-components/commit/30b2b5c812e9ef03b469faab7071ec5452bb531e))
+
 ### [0.0.120](https://github.com/silentium-lab/silentium-components/compare/v0.0.119...v0.0.120) (2026-04-01)
 
 
