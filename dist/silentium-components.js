@@ -1,4 +1,4 @@
-import { Actual, Message, Primitive, DestroyContainer, Shared, Filtered, isFilled, Late, Source, Applied, All, Computed, Value, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
+import { Actual, Message, Primitive, DestroyContainer, ResetSilenceCache, Shared, Filtered, isFilled, Late, Source, Applied, All, Computed, Value, ExecutorApplied, Of, Once, Map, isMessage, Rejections, isDestroyable } from 'silentium';
 
 function Branch(_condition, _left, _right) {
   const $condition = Actual(_condition);
@@ -54,6 +54,7 @@ function Constant(permanent, $trigger) {
   return Message(function ConstantImpl(resolve, reject) {
     $trigger.catch(reject).then(function constantSub() {
       resolve(permanent);
+      resolve(ResetSilenceCache);
     });
   });
 }
@@ -281,19 +282,11 @@ function Path(_base, _keyed, def) {
 function Polling($base, $trigger) {
   return Message(function PollingImpl(resolve, reject) {
     const dc = DestroyContainer();
-    const pollingDc = DestroyContainer();
-    pollingDc.add(dc);
-    pollingDc.add(
-      $trigger.then(function pollingTriggerSub() {
-        dc.destroy();
-        dc.add(
-          $base.then(function pollingBaseSub(v) {
-            resolve(v);
-          }).catch(reject)
-        );
-      }).catch(reject)
-    );
-    return pollingDc.destructor();
+    $trigger.then(function pollingTriggerSub() {
+      dc.destroy();
+      resolve(ResetSilenceCache);
+      dc.add($base.then(resolve).catch(reject));
+    }).catch(reject);
   });
 }
 

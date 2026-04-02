@@ -31,10 +31,11 @@ test("Polling.repeatedValue", () => {
     r(42);
   });
   const $polling = Polling($base, $trigger);
-  const $shared = Shared($polling);
 
   const subscriber = vi.fn();
-  $shared.then(subscriber);
+  $polling.then((v) => {
+    subscriber(v);
+  });
 
   expect(subscriber).toHaveBeenCalledTimes(1);
   expect(subscriber).toHaveBeenCalledWith(42);

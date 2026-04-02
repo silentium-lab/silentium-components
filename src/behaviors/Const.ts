@@ -1,4 +1,4 @@
-import { Message, MessageType } from "silentium";
+import { Message, MessageType, ResetSilenceCache } from "silentium";
 
 /**
  * Constant value that will be
@@ -12,6 +12,8 @@ export function Constant<T>(
   return Message<T>(function ConstantImpl(resolve, reject) {
     $trigger.catch(reject).then(function constantSub() {
       resolve(permanent);
+      // Do cache reset, it gives ability to send constant of same value many times
+      resolve(ResetSilenceCache as T);
     });
   });
 }

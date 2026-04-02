@@ -56,6 +56,7 @@ function Constant(permanent, $trigger) {
   return silentium.Message(function ConstantImpl(resolve, reject) {
     $trigger.catch(reject).then(function constantSub() {
       resolve(permanent);
+      resolve(silentium.ResetSilenceCache);
     });
   });
 }
@@ -283,19 +284,11 @@ function Path(_base, _keyed, def) {
 function Polling($base, $trigger) {
   return silentium.Message(function PollingImpl(resolve, reject) {
     const dc = silentium.DestroyContainer();
-    const pollingDc = silentium.DestroyContainer();
-    pollingDc.add(dc);
-    pollingDc.add(
-      $trigger.then(function pollingTriggerSub() {
-        dc.destroy();
-        dc.add(
-          $base.then(function pollingBaseSub(v) {
-            resolve(v);
-          }).catch(reject)
-        );
-      }).catch(reject)
-    );
-    return pollingDc.destructor();
+    $trigger.then(function pollingTriggerSub() {
+      dc.destroy();
+      resolve(silentium.ResetSilenceCache);
+      dc.add($base.then(resolve).catch(reject));
+    }).catch(reject);
   });
 }
 
