@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.123](https://github.com/silentium-lab/silentium-components/compare/v0.0.122...v0.0.123) (2026-04-02)
+
+
+### Bug Fixes
+
+* **main:** istrue function type fix ([2ca9b3c](https://github.com/silentium-lab/silentium-components/commit/2ca9b3c40613d6d76e4db9888210771b7150aa14))
+
 ### [0.0.122](https://github.com/silentium-lab/silentium-components/compare/v0.0.121...v0.0.122) (2026-04-01)
 
 
