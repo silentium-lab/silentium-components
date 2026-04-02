@@ -9,7 +9,10 @@ export function Concatenated(
   joinPartSrc: MessageType<string> = Of(""),
 ) {
   return Message<string>(function ConcatenatedImpl(r) {
-    All(joinPartSrc, ...sources).then(([joinPart, ...strings]) => {
+    All(joinPartSrc, ...sources).then(function concatenatedAllSub([
+      joinPart,
+      ...strings
+    ]) {
       r(strings.join(joinPart));
     });
   });

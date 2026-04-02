@@ -17,10 +17,10 @@ export function StateRecord(
   let latestState: string | null = null;
   let result: Record<string, unknown> = {};
   const sequence$ = Value(Actual(sequence));
-  return Message((resolve, reject) => {
+  return Message(function StateRecordImpl(resolve, reject) {
     dc.add(
       state$
-        .then((state) => {
+        .then(function stateRecordStateSub(state) {
           if (state === sequence$.value?.[stateIndex + 1]) {
             stateIndex += 1;
             latestState = state as string;
@@ -34,7 +34,7 @@ export function StateRecord(
     );
     dc.add(
       values$
-        .then((value) => {
+        .then(function stateRecordValuesSub(value) {
           if (latestState !== null) {
             result[latestState] = value;
           }
@@ -47,6 +47,8 @@ export function StateRecord(
         })
         .catch(reject),
     );
-    return () => dc.destroy();
+    return function StateRecordDestroy() {
+      dc.destroy();
+    };
   });
 }

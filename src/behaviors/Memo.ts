@@ -7,7 +7,7 @@ import { isFilled, Message, MessageType } from "silentium";
 export function Memo<T>($base: MessageType<T>) {
   return Message<T>(function MemoImpl(r) {
     let last: T | null = null;
-    $base.then((v) => {
+    $base.then(function memoBaseSub(v) {
       if (v !== last && isFilled(v)) {
         r(v);
         last = v;

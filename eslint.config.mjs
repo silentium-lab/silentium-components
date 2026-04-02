@@ -1,9 +1,11 @@
-import typescriptEslint from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
+
 import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
+import getifyPlugin from "@getify/eslint-plugin-proper-arrows";
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import unusedImports from "eslint-plugin-unused-imports";
@@ -30,6 +32,7 @@ export default [
       "@typescript-eslint": typescriptEslint,
       "simple-import-sort": simpleImportSort,
       "unused-imports": unusedImports,
+      "@getify/proper-arrows": getifyPlugin,
     },
     languageOptions: {
       parser: tsParser,
@@ -38,6 +41,8 @@ export default [
       },
     },
     rules: {
+      "func-names": "error",
+      "@getify/proper-arrows/name": "error",
       "require-await": ["error"],
       "@typescript-eslint/no-explicit-any": ["off"],
       "prettier.bracketSpacing": ["off"],

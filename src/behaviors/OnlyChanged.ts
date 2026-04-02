@@ -7,7 +7,7 @@ import { Message, MessageType } from "silentium";
 export function OnlyChanged<T>($base: MessageType<T>) {
   return Message<T>(function OnlyChangedImpl(r) {
     let first = false;
-    $base.then((v) => {
+    $base.then(function onlyChangedBaseSub(v) {
       if (first === false) {
         first = true;
       } else {

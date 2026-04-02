@@ -18,7 +18,7 @@ export function Dirty<T extends Record<string, unknown>>(
   return Source<T>(
     function DirtyImpl(r) {
       const $comparingClone = Applied($comparing, cloner);
-      All($comparingClone, $base).then(([comparing, base]) => {
+      All($comparingClone, $base).then(function dirtyAllSub([comparing, base]) {
         if (!comparing) {
           return;
         }

@@ -20,7 +20,7 @@ export function Deadline<T>(
   return Message<T>(function DeadlineImpl(resolve, reject) {
     let timer: ReturnType<typeof setTimeout> | number = 0;
     const base = Shared($base);
-    $timeout.then((timeout) => {
+    $timeout.then(function deadlineTimeoutSub(timeout) {
       if (timer) {
         clearTimeout(timer);
       }
@@ -37,7 +37,7 @@ export function Deadline<T>(
       const f = Filtered(base, () => !timeoutReached);
       f.then(resolve);
 
-      base.then(() => {
+      base.then(function deadlineBaseSub() {
         timeoutReached = true;
       });
     });

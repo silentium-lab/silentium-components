@@ -6,7 +6,7 @@ import { Message, MessageType } from "silentium";
  */
 export function Not($base: MessageType<boolean>) {
   return Message<boolean>(function NotImpl(r) {
-    $base.then((v) => {
+    $base.then(function notBaseSub(v) {
       r(!v);
     });
   });

@@ -13,7 +13,11 @@ export function RegexpMatched(
   const $value = Actual(valueSrc);
   const $flags = Actual(flagsSrc);
   return Message<boolean>(function RegexpMatchedImpl(r) {
-    All($pattern, $value, $flags).then(([pattern, value, flags]) => {
+    All($pattern, $value, $flags).then(function regexpMatchedAllSub([
+      pattern,
+      value,
+      flags,
+    ]) {
       r(new RegExp(pattern, flags).test(value));
     });
   });

@@ -6,7 +6,7 @@ import { All, Message, MessageType } from "silentium";
  */
 export function Or($one: MessageType<boolean>, $two: MessageType<boolean>) {
   return Message<boolean>(function OrImpl(r) {
-    All($one, $two).then(([one, two]) => {
+    All($one, $two).then(function orAllSub([one, two]) {
       r(!!(one || two));
     });
   });

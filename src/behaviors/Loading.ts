@@ -11,7 +11,11 @@ export function Loading(
   $finish: MessageType<unknown>,
 ) {
   return Message<boolean>(function LoadingImpl(r) {
-    $start.then(() => r(true));
-    $finish.then(() => r(false));
+    $start.then(function loadingStartSub() {
+      r(true);
+    });
+    $finish.then(function loadingFinishSub() {
+      r(false);
+    });
   });
 }

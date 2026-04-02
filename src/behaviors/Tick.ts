@@ -9,10 +9,9 @@ export function Tick<T>($base: MessageType<T>) {
   return Message<T>(function TickImpl(r) {
     let microtaskScheduled = false;
     let lastValue: T | null = null;
-
     const scheduleMicrotask = () => {
       microtaskScheduled = true;
-      queueMicrotask(() => {
+      queueMicrotask(function tickQueueMicrotask() {
         microtaskScheduled = false;
         if (lastValue !== null) {
           r(lastValue);
@@ -20,8 +19,7 @@ export function Tick<T>($base: MessageType<T>) {
         }
       });
     };
-
-    $base.then((v) => {
+    $base.then(function tickBaseSub(v) {
       lastValue = v;
       if (!microtaskScheduled) {
         scheduleMicrotask();

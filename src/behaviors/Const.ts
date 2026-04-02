@@ -10,7 +10,7 @@ export function Constant<T>(
   $trigger: MessageType,
 ): MessageType<T> {
   return Message<T>(function ConstantImpl(resolve, reject) {
-    $trigger.catch(reject).then(() => {
+    $trigger.catch(reject).then(function constantSub() {
       resolve(permanent);
     });
   });

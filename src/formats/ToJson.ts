@@ -5,7 +5,7 @@ import { Message, MessageType } from "silentium";
  */
 export function ToJson($data: MessageType) {
   return Message<string>(function ToJsonImpl(resolve, reject) {
-    $data.then((data: unknown) => {
+    $data.then(function toJsonSub(data: unknown) {
       try {
         resolve(JSON.stringify(data));
       } catch {

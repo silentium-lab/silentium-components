@@ -15,9 +15,15 @@ export function Polling<T>(
     pollingDc.add(dc);
     pollingDc.add(
       $trigger
-        .then(() => {
+        .then(function pollingTriggerSub() {
           dc.destroy();
-          dc.add($base.then(resolve).catch(reject));
+          dc.add(
+            $base
+              .then(function pollingBaseSub(v) {
+                resolve(v);
+              })
+              .catch(reject),
+          );
         })
         .catch(reject),
     );

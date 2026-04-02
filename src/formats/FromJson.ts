@@ -7,7 +7,7 @@ export function FromJson<T = Record<string, unknown>>(
   $json: MessageType<string>,
 ) {
   return Message<T>(function FromJsonImpl(resolve, reject) {
-    $json.then((json) => {
+    $json.then(function fromJsonSub(json) {
       try {
         resolve(JSON.parse(json));
       } catch (e) {

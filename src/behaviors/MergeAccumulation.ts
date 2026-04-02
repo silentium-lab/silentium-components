@@ -10,7 +10,7 @@ export function MergeAccumulation<T extends object>(
 ): MessageType<T> {
   const accumulation = Late<T>();
   const lastAccumulated = {};
-  $base.then((nextValue) => {
+  $base.then(function mergeAccumulationBaseSub(nextValue) {
     accumulation.use(
       mergeWith(lastAccumulated, nextValue, (value1: any, value2: any) => {
         if (Array.isArray(value1)) {
@@ -19,13 +19,11 @@ export function MergeAccumulation<T extends object>(
       }),
     );
   });
-
   if ($reset) {
-    $reset.then((resetValue) => {
+    $reset.then(function mergeAccumulationResetSub(resetValue) {
       accumulation.use(resetValue);
     });
   }
-
   return accumulation;
 }
 
@@ -43,7 +41,6 @@ function mergeWith<TObject, TSource>(
   if (source == null) {
     return target as TObject & TSource;
   }
-
   Object.keys(source).forEach((key) => {
     const srcValue = (source as any)[key];
     const objValue = (target as any)[key];
@@ -57,7 +54,6 @@ function mergeWith<TObject, TSource>(
       (target as any)[key] = srcValue;
     }
   });
-
   return target as TObject & TSource;
 }
 

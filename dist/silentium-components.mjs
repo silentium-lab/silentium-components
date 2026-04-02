@@ -10,7 +10,7 @@ function Branch(_condition, _left, _right) {
     if (_right !== void 0) {
       right = Primitive($right);
     }
-    $condition.then((v) => {
+    $condition.then(function branchSub(v) {
       if (typeof v !== "boolean") {
         throw new Error("Branch received not boolean value");
       }
@@ -33,7 +33,7 @@ function BranchLazy($condition, $left, $right) {
     const destructor = () => {
       dc.destroy();
     };
-    $condition.then((v) => {
+    $condition.then(function branchLazySub(v) {
       destructor();
       let instance;
       if (v) {
@@ -52,7 +52,7 @@ function BranchLazy($condition, $left, $right) {
 
 function Constant(permanent, $trigger) {
   return Message(function ConstantImpl(resolve, reject) {
-    $trigger.catch(reject).then(() => {
+    $trigger.catch(reject).then(function constantSub() {
       resolve(permanent);
     });
   });
@@ -63,7 +63,7 @@ function Deadline($base, _timeout) {
   return Message(function DeadlineImpl(resolve, reject) {
     let timer = 0;
     const base = Shared($base);
-    $timeout.then((timeout) => {
+    $timeout.then(function deadlineTimeoutSub(timeout) {
       if (timer) {
         clearTimeout(timer);
       }
@@ -77,7 +77,7 @@ function Deadline($base, _timeout) {
       }, timeout);
       const f = Filtered(base, () => !timeoutReached);
       f.then(resolve);
-      base.then(() => {
+      base.then(function deadlineBaseSub() {
         timeoutReached = true;
       });
     });
@@ -87,7 +87,7 @@ function Deadline($base, _timeout) {
 function Deferred($base, $trigger) {
   return Message(function DeferredImpl(r) {
     const base = Primitive($base);
-    $trigger.then(() => {
+    $trigger.then(function deferredTriggerSub() {
       const value = base.primitive();
       if (isFilled(value)) {
         r(value);
@@ -113,7 +113,7 @@ function Dirty($base, keep = [], exclude = [], cloner) {
   return Source(
     function DirtyImpl(r) {
       const $comparingClone = Applied($comparing, cloner);
-      All($comparingClone, $base).then(([comparing, base]) => {
+      All($comparingClone, $base).then(function dirtyAllSub([comparing, base]) {
         if (!comparing) {
           return;
         }
@@ -140,26 +140,32 @@ function Dirty($base, keep = [], exclude = [], cloner) {
 
 function Loading($start, $finish) {
   return Message(function LoadingImpl(r) {
-    $start.then(() => r(true));
-    $finish.then(() => r(false));
+    $start.then(function loadingStartSub() {
+      r(true);
+    });
+    $finish.then(function loadingFinishSub() {
+      r(false);
+    });
   });
 }
 
 function Lock($base, $lock) {
   return Message(function LockImpl(r) {
     let locked = false;
-    $lock.then((newLock) => {
+    $lock.then(function lockLockSub(newLock) {
       locked = newLock;
     });
     const i = Filtered($base, () => !locked);
-    i.then(r);
+    i.then(function lockBaseSub(v) {
+      r(v);
+    });
   });
 }
 
 function Memo($base) {
   return Message(function MemoImpl(r) {
     let last = null;
-    $base.then((v) => {
+    $base.then(function memoBaseSub(v) {
       if (v !== last && isFilled(v)) {
         r(v);
         last = v;
@@ -171,7 +177,7 @@ function Memo($base) {
 function MergeAccumulation($base, $reset) {
   const accumulation = Late();
   const lastAccumulated = {};
-  $base.then((nextValue) => {
+  $base.then(function mergeAccumulationBaseSub(nextValue) {
     accumulation.use(
       mergeWith(lastAccumulated, nextValue, (value1, value2) => {
         if (Array.isArray(value1)) {
@@ -181,7 +187,7 @@ function MergeAccumulation($base, $reset) {
     );
   });
   if ($reset) {
-    $reset.then((resetValue) => {
+    $reset.then(function mergeAccumulationResetSub(resetValue) {
       accumulation.use(resetValue);
     });
   }
@@ -212,7 +218,7 @@ function isObject(value) {
 function OnlyChanged($base) {
   return Message(function OnlyChangedImpl(r) {
     let first = false;
-    $base.then((v) => {
+    $base.then(function onlyChangedBaseSub(v) {
       if (first === false) {
         first = true;
       } else {
@@ -227,10 +233,10 @@ function Part($base, key, defaultValue) {
   const $keyedShared = Shared(Actual(key));
   return Source(
     function PartImpl(r) {
-      All($baseShared, $keyedShared).then(([base, keyed]) => {
+      All($baseShared, $keyedShared).then(function partAllSub([base, keyed]) {
         const keys = keyed.split(".");
         let value = base;
-        keys.forEach((key2) => {
+        keys.forEach(function partsAllKeysForEach(key2) {
           value = value[key2];
         });
         if (value !== void 0 && value !== base) {
@@ -240,7 +246,7 @@ function Part($base, key, defaultValue) {
         }
       });
     },
-    (value) => {
+    function PartSourceImpl(value) {
       const key2 = Primitive($keyedShared);
       if (isFilled(key2)) {
         const base = Primitive($base);
@@ -278,9 +284,13 @@ function Polling($base, $trigger) {
     const pollingDc = DestroyContainer();
     pollingDc.add(dc);
     pollingDc.add(
-      $trigger.then(() => {
+      $trigger.then(function pollingTriggerSub() {
         dc.destroy();
-        dc.add($base.then(resolve).catch(reject));
+        dc.add(
+          $base.then(function pollingBaseSub(v) {
+            resolve(v);
+          }).catch(reject)
+        );
       }).catch(reject)
     );
     return pollingDc.destructor();
@@ -313,9 +323,9 @@ function StateRecord(state$, values$, sequence) {
   let latestState = null;
   let result = {};
   const sequence$ = Value(Actual(sequence));
-  return Message((resolve, reject) => {
+  return Message(function StateRecordImpl(resolve, reject) {
     dc.add(
-      state$.then((state) => {
+      state$.then(function stateRecordStateSub(state) {
         if (state === sequence$.value?.[stateIndex + 1]) {
           stateIndex += 1;
           latestState = state;
@@ -327,7 +337,7 @@ function StateRecord(state$, values$, sequence) {
       }).catch(reject)
     );
     dc.add(
-      values$.then((value) => {
+      values$.then(function stateRecordValuesSub(value) {
         if (latestState !== null) {
           result[latestState] = value;
         }
@@ -339,19 +349,21 @@ function StateRecord(state$, values$, sequence) {
         }
       }).catch(reject)
     );
-    return () => dc.destroy();
+    return function StateRecordDestroy() {
+      dc.destroy();
+    };
   });
 }
 
 function Switch(_base, options) {
   const $base = Actual(_base);
-  return Message((resolve, reject) => {
+  return Message(function SwitchImpl(resolve, reject) {
     const dc = DestroyContainer();
     dc.add(
-      $base.then((v) => {
-        const msg = options.find(
-          (entry) => Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v
-        );
+      $base.then(function switchBaseSub(v) {
+        const msg = options.find(function switchBaseFind(entry) {
+          return Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v;
+        });
         if (msg) {
           dc.add(msg[1].then(resolve).catch(reject));
         }
@@ -384,7 +396,7 @@ function Tick($base) {
     let lastValue = null;
     const scheduleMicrotask = () => {
       microtaskScheduled = true;
-      queueMicrotask(() => {
+      queueMicrotask(function tickQueueMicrotask() {
         microtaskScheduled = false;
         if (lastValue !== null) {
           r(lastValue);
@@ -392,7 +404,7 @@ function Tick($base) {
         }
       });
     };
-    $base.then((v) => {
+    $base.then(function tickBaseSub(v) {
       lastValue = v;
       if (!microtaskScheduled) {
         scheduleMicrotask();
@@ -404,7 +416,7 @@ function Tick($base) {
 function HashTable($base) {
   return Message(function HashTableImpl(r) {
     const record = {};
-    $base.then(([key, value]) => {
+    $base.then(function hashTableBaseSub([key, value]) {
       record[key] = value;
       r({ ...record });
     });
@@ -414,12 +426,12 @@ function HashTable($base) {
 function Record(record) {
   return Message(function RecordImpl(r) {
     const keys = Object.keys(record);
-    keys.forEach((key) => {
+    keys.forEach(function recordKeys(key) {
       record[key] = Actual(record[key]);
     });
-    All(...Object.values(record)).then((entries) => {
+    All(...Object.values(record)).then(function recordAllSub(entries) {
       const record2 = {};
-      entries.forEach((entry, index) => {
+      entries.forEach(function recordAllForEach(entry, index) {
         record2[keys[index]] = entry;
       });
       r(record2);
@@ -429,11 +441,11 @@ function Record(record) {
 
 function Transformed(_base, transformRules) {
   const $base = Actual(_base);
-  return Message((resolve) => {
-    $base.then((v) => {
+  return Message(function TransformedImpl(resolve) {
+    $base.then(function transformedBaseSub(v) {
       const existedKeysMap = {};
       const sourceObject = Object.fromEntries(
-        Object.entries(v).map((entry) => {
+        Object.entries(v).map(function transformedBaseEntries(entry) {
           if (transformRules[entry[0]]) {
             existedKeysMap[entry[0]] = 1;
             return [entry[0], transformRules[entry[0]](v)];
@@ -441,7 +453,7 @@ function Transformed(_base, transformRules) {
           return [entry[0], Of(entry[1])];
         })
       );
-      Object.keys(transformRules).forEach((key) => {
+      Object.keys(transformRules).forEach(function transformedRulesKeys(key) {
         if (!existedKeysMap[key]) {
           sourceObject[key] = transformRules[key](v);
         }
@@ -458,7 +470,7 @@ function TransformedList(_base, transformRules) {
 
 function And($one, $two) {
   return Message(function AndImpl(r) {
-    All($one, $two).then(([one, two]) => {
+    All($one, $two).then(function andAllSub([one, two]) {
       r(!!(one && two));
     });
   });
@@ -472,7 +484,7 @@ function Bool($base) {
 
 function Not($base) {
   return Message(function NotImpl(r) {
-    $base.then((v) => {
+    $base.then(function notBaseSub(v) {
       r(!v);
     });
   });
@@ -480,7 +492,7 @@ function Not($base) {
 
 function Or($one, $two) {
   return Message(function OrImpl(r) {
-    All($one, $two).then(([one, two]) => {
+    All($one, $two).then(function orAllSub([one, two]) {
       r(!!(one || two));
     });
   });
@@ -488,7 +500,7 @@ function Or($one, $two) {
 
 function FromJson($json) {
   return Message(function FromJsonImpl(resolve, reject) {
-    $json.then((json) => {
+    $json.then(function fromJsonSub(json) {
       try {
         resolve(JSON.parse(json));
       } catch (e) {
@@ -500,7 +512,7 @@ function FromJson($json) {
 
 function ToJson($data) {
   return Message(function ToJsonImpl(resolve, reject) {
-    $data.then((data) => {
+    $data.then(function toJsonSub(data) {
       try {
         resolve(JSON.stringify(data));
       } catch {
@@ -521,7 +533,11 @@ function RegexpMatch(patternSrc, valueSrc, flagsSrc = Of("")) {
   const $value = Actual(valueSrc);
   const $flags = Actual(flagsSrc);
   return Message(function RegexpMatchImpl(r) {
-    All($pattern, $value, $flags).then(([pattern, value, flags]) => {
+    All($pattern, $value, $flags).then(function regexpMatchAllSub([
+      pattern,
+      value,
+      flags
+    ]) {
       const result = new RegExp(pattern, flags).exec(value);
       r(result ?? []);
     });
@@ -533,7 +549,11 @@ function RegexpMatched(patternSrc, valueSrc, flagsSrc = Of("")) {
   const $value = Actual(valueSrc);
   const $flags = Actual(flagsSrc);
   return Message(function RegexpMatchedImpl(r) {
-    All($pattern, $value, $flags).then(([pattern, value, flags]) => {
+    All($pattern, $value, $flags).then(function regexpMatchedAllSub([
+      pattern,
+      value,
+      flags
+    ]) {
       r(new RegExp(pattern, flags).test(value));
     });
   });
@@ -557,13 +577,14 @@ function Set(baseSrc, keySrc, valueSrc) {
   const $key = Actual(keySrc);
   const $value = Actual(valueSrc);
   return Message(function SetImpl(r) {
-    All($base, $key, $value).then(([base, key, value]) => {
+    All($base, $key, $value).then(function setAllSub([base, key, value]) {
       base[key] = value;
       r(base);
     });
   });
 }
 
+const isTrue = (v) => v === true;
 function Router(_url, routes, $default) {
   const $routes = Actual(routes);
   const $url = Actual(_url);
@@ -572,19 +593,19 @@ function Router(_url, routes, $default) {
     const destructor = () => {
       dc.destroy();
     };
-    All($routes, $url).then(([routes2, url]) => {
+    All($routes, $url).then(function routerAllSub([routes2, url]) {
       destructor();
       const $matches = All(
-        ...routes2.map(
-          (r2) => r2.pattern ? RegexpMatched(
+        ...routes2.map(function routerRoutesMap(r2) {
+          return r2.pattern ? RegexpMatched(
             Of(r2.pattern),
             Of(url),
             r2.patternFlags ? Of(r2.patternFlags) : void 0
-          ) : r2?.condition?.(url)
-        )
+          ) : r2?.condition?.(url);
+        })
       );
-      $matches.then((matches) => {
-        const index = matches.findIndex((v) => v === true);
+      $matches.then(function routerMatchesSub(matches) {
+        const index = matches.findIndex(isTrue);
         if (index === -1) {
           const instance = Actual($default());
           dc.add(instance);
@@ -603,7 +624,10 @@ function Router(_url, routes, $default) {
 
 function Concatenated(sources, joinPartSrc = Of("")) {
   return Message(function ConcatenatedImpl(r) {
-    All(joinPartSrc, ...sources).then(([joinPart, ...strings]) => {
+    All(joinPartSrc, ...sources).then(function concatenatedAllSub([
+      joinPart,
+      ...strings
+    ]) {
       r(strings.join(joinPart));
     });
   });

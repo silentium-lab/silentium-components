@@ -19,6 +19,8 @@ export interface Route<T> {
   message: ConstructorType<[], MaybeMessage<T>>;
 }
 
+const isTrue = (v) => v === true;
+
 /**
  * Router component what will return template if url matches pattern
  *
@@ -36,28 +38,26 @@ export function Router<T = string>(
     const destructor = () => {
       dc.destroy();
     };
-    All($routes, $url).then(([routes, url]) => {
+    All($routes, $url).then(function routerAllSub([routes, url]) {
       destructor();
       const $matches = All(
-        ...routes.map((r) =>
-          r.pattern
+        ...routes.map(function routerRoutesMap(r) {
+          return r.pattern
             ? RegexpMatched(
                 Of(r.pattern),
                 Of(url),
                 r.patternFlags ? Of(r.patternFlags) : undefined,
               )
-            : r?.condition?.(url),
-        ),
+            : r?.condition?.(url);
+        }),
       );
-      $matches.then((matches) => {
-        const index = matches.findIndex((v) => v === true);
-
+      $matches.then(function routerMatchesSub(matches) {
+        const index = matches.findIndex(isTrue);
         if (index === -1) {
           const instance = Actual($default());
           dc.add(instance);
           instance.then(r);
         }
-
         if (index > -1) {
           const instance = Actual(routes[index].message());
           dc.add(instance);

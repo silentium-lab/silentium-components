@@ -22,7 +22,7 @@ export function BranchLazy<Then, Else>(
     const destructor = () => {
       dc.destroy();
     };
-    $condition.then((v) => {
+    $condition.then(function branchLazySub(v) {
       destructor();
       let instance: MessageType<Then | Else> | undefined;
       if (v) {

@@ -13,7 +13,7 @@ export function Set<T extends Record<string, unknown>>(
   const $key = Actual(keySrc);
   const $value = Actual(valueSrc);
   return Message<T>(function SetImpl(r) {
-    All($base, $key, $value).then(([base, key, value]) => {
+    All($base, $key, $value).then(function setAllSub([base, key, value]) {
       (base as Record<string, unknown>)[key] = value;
       r(base);
     });

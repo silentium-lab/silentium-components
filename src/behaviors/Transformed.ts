@@ -21,11 +21,11 @@ export function Transformed<T extends Record<string, any>>(
   transformRules: Record<string, ConstructorType<[MaybeMessage<any>]>>,
 ) {
   const $base = Actual(_base);
-  return Message((resolve) => {
-    $base.then((v) => {
+  return Message(function TransformedImpl(resolve) {
+    $base.then(function transformedBaseSub(v) {
       const existedKeysMap: Record<string, number> = {};
       const sourceObject = Object.fromEntries(
-        Object.entries(v).map((entry) => {
+        Object.entries(v).map(function transformedBaseEntries(entry) {
           if (transformRules[entry[0]]) {
             existedKeysMap[entry[0]] = 1;
             return [entry[0], transformRules[entry[0]](v)];
@@ -34,8 +34,7 @@ export function Transformed<T extends Record<string, any>>(
           return [entry[0], Of(entry[1])];
         }),
       );
-
-      Object.keys(transformRules).forEach((key) => {
+      Object.keys(transformRules).forEach(function transformedRulesKeys(key) {
         if (!existedKeysMap[key]) {
           sourceObject[key] = transformRules[key](v);
         }

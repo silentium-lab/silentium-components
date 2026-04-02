@@ -9,12 +9,12 @@ type UnWrap<T> = T extends MessageType<infer U> ? U : T;
 export function Record<T>(record: Record<string, T>) {
   return Message<Record<string, UnWrap<T>>>(function RecordImpl(r) {
     const keys = Object.keys(record);
-    keys.forEach((key) => {
+    keys.forEach(function recordKeys(key) {
       record[key] = Actual(record[key]) as any;
     });
-    All(...(Object.values(record) as any)).then((entries) => {
+    All(...(Object.values(record) as any)).then(function recordAllSub(entries) {
       const record: Record<string, any> = {};
-      entries.forEach((entry, index) => {
+      entries.forEach(function recordAllForEach(entry, index) {
         record[keys[index]] = entry;
       });
       r(record);

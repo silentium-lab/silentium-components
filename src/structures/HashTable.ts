@@ -8,8 +8,7 @@ import { Message, MessageType } from "silentium";
 export function HashTable<T>($base: MessageType<[string, unknown]>) {
   return Message<T>(function HashTableImpl(r) {
     const record: Record<string, unknown> = {};
-
-    $base.then(([key, value]) => {
+    $base.then(function hashTableBaseSub([key, value]) {
       record[key] = value;
       r({ ...record } as T);
     });

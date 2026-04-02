@@ -8,10 +8,12 @@ import { Filtered, Message, MessageType } from "silentium";
 export function Lock<T>($base: MessageType<T>, $lock: MessageType<boolean>) {
   return Message<T>(function LockImpl(r) {
     let locked = false;
-    $lock.then((newLock) => {
+    $lock.then(function lockLockSub(newLock) {
       locked = newLock;
     });
     const i = Filtered($base, () => !locked);
-    i.then(r);
+    i.then(function lockBaseSub(v) {
+      r(v);
+    });
   });
 }

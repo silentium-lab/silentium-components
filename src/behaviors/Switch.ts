@@ -14,16 +14,16 @@ export function Switch<T, K>(
   options: [K | K[], MessageType<T>][],
 ) {
   const $base = Actual(_base);
-  return Message<T>((resolve, reject) => {
+  return Message<T>(function SwitchImpl(resolve, reject) {
     const dc = DestroyContainer();
     dc.add(
       $base
-        .then((v) => {
-          const msg = options.find((entry) =>
-            Array.isArray(entry[0])
+        .then(function switchBaseSub(v) {
+          const msg = options.find(function switchBaseFind(entry) {
+            return Array.isArray(entry[0])
               ? entry[0].includes(v as K)
-              : entry[0] === v,
-          );
+              : entry[0] === v;
+          });
           if (msg) {
             dc.add(msg[1].then(resolve).catch(reject));
           }

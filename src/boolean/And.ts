@@ -6,7 +6,7 @@ import { All, Message, MessageType } from "silentium";
  */
 export function And($one: MessageType<boolean>, $two: MessageType<boolean>) {
   return Message<boolean>(function AndImpl(r) {
-    All($one, $two).then(([one, two]) => {
+    All($one, $two).then(function andAllSub([one, two]) {
       r(!!(one && two));
     });
   });

@@ -24,7 +24,7 @@ export function Branch<Then, Else>(
     if (_right !== undefined) {
       right = Primitive($right as MessageType<Else>);
     }
-    $condition.then((v) => {
+    $condition.then(function branchSub(v) {
       if (typeof v !== "boolean") {
         throw new Error("Branch received not boolean value");
       }

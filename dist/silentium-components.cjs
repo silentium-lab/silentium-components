@@ -12,7 +12,7 @@ function Branch(_condition, _left, _right) {
     if (_right !== void 0) {
       right = silentium.Primitive($right);
     }
-    $condition.then((v) => {
+    $condition.then(function branchSub(v) {
       if (typeof v !== "boolean") {
         throw new Error("Branch received not boolean value");
       }
@@ -35,7 +35,7 @@ function BranchLazy($condition, $left, $right) {
     const destructor = () => {
       dc.destroy();
     };
-    $condition.then((v) => {
+    $condition.then(function branchLazySub(v) {
       destructor();
       let instance;
       if (v) {
@@ -54,7 +54,7 @@ function BranchLazy($condition, $left, $right) {
 
 function Constant(permanent, $trigger) {
   return silentium.Message(function ConstantImpl(resolve, reject) {
-    $trigger.catch(reject).then(() => {
+    $trigger.catch(reject).then(function constantSub() {
       resolve(permanent);
     });
   });
@@ -65,7 +65,7 @@ function Deadline($base, _timeout) {
   return silentium.Message(function DeadlineImpl(resolve, reject) {
     let timer = 0;
     const base = silentium.Shared($base);
-    $timeout.then((timeout) => {
+    $timeout.then(function deadlineTimeoutSub(timeout) {
       if (timer) {
         clearTimeout(timer);
       }
@@ -79,7 +79,7 @@ function Deadline($base, _timeout) {
       }, timeout);
       const f = silentium.Filtered(base, () => !timeoutReached);
       f.then(resolve);
-      base.then(() => {
+      base.then(function deadlineBaseSub() {
         timeoutReached = true;
       });
     });
@@ -89,7 +89,7 @@ function Deadline($base, _timeout) {
 function Deferred($base, $trigger) {
   return silentium.Message(function DeferredImpl(r) {
     const base = silentium.Primitive($base);
-    $trigger.then(() => {
+    $trigger.then(function deferredTriggerSub() {
       const value = base.primitive();
       if (silentium.isFilled(value)) {
         r(value);
@@ -115,7 +115,7 @@ function Dirty($base, keep = [], exclude = [], cloner) {
   return silentium.Source(
     function DirtyImpl(r) {
       const $comparingClone = silentium.Applied($comparing, cloner);
-      silentium.All($comparingClone, $base).then(([comparing, base]) => {
+      silentium.All($comparingClone, $base).then(function dirtyAllSub([comparing, base]) {
         if (!comparing) {
           return;
         }
@@ -142,26 +142,32 @@ function Dirty($base, keep = [], exclude = [], cloner) {
 
 function Loading($start, $finish) {
   return silentium.Message(function LoadingImpl(r) {
-    $start.then(() => r(true));
-    $finish.then(() => r(false));
+    $start.then(function loadingStartSub() {
+      r(true);
+    });
+    $finish.then(function loadingFinishSub() {
+      r(false);
+    });
   });
 }
 
 function Lock($base, $lock) {
   return silentium.Message(function LockImpl(r) {
     let locked = false;
-    $lock.then((newLock) => {
+    $lock.then(function lockLockSub(newLock) {
       locked = newLock;
     });
     const i = silentium.Filtered($base, () => !locked);
-    i.then(r);
+    i.then(function lockBaseSub(v) {
+      r(v);
+    });
   });
 }
 
 function Memo($base) {
   return silentium.Message(function MemoImpl(r) {
     let last = null;
-    $base.then((v) => {
+    $base.then(function memoBaseSub(v) {
       if (v !== last && silentium.isFilled(v)) {
         r(v);
         last = v;
@@ -173,7 +179,7 @@ function Memo($base) {
 function MergeAccumulation($base, $reset) {
   const accumulation = silentium.Late();
   const lastAccumulated = {};
-  $base.then((nextValue) => {
+  $base.then(function mergeAccumulationBaseSub(nextValue) {
     accumulation.use(
       mergeWith(lastAccumulated, nextValue, (value1, value2) => {
         if (Array.isArray(value1)) {
@@ -183,7 +189,7 @@ function MergeAccumulation($base, $reset) {
     );
   });
   if ($reset) {
-    $reset.then((resetValue) => {
+    $reset.then(function mergeAccumulationResetSub(resetValue) {
       accumulation.use(resetValue);
     });
   }
@@ -214,7 +220,7 @@ function isObject(value) {
 function OnlyChanged($base) {
   return silentium.Message(function OnlyChangedImpl(r) {
     let first = false;
-    $base.then((v) => {
+    $base.then(function onlyChangedBaseSub(v) {
       if (first === false) {
         first = true;
       } else {
@@ -229,10 +235,10 @@ function Part($base, key, defaultValue) {
   const $keyedShared = silentium.Shared(silentium.Actual(key));
   return silentium.Source(
     function PartImpl(r) {
-      silentium.All($baseShared, $keyedShared).then(([base, keyed]) => {
+      silentium.All($baseShared, $keyedShared).then(function partAllSub([base, keyed]) {
         const keys = keyed.split(".");
         let value = base;
-        keys.forEach((key2) => {
+        keys.forEach(function partsAllKeysForEach(key2) {
           value = value[key2];
         });
         if (value !== void 0 && value !== base) {
@@ -242,7 +248,7 @@ function Part($base, key, defaultValue) {
         }
       });
     },
-    (value) => {
+    function PartSourceImpl(value) {
       const key2 = silentium.Primitive($keyedShared);
       if (silentium.isFilled(key2)) {
         const base = silentium.Primitive($base);
@@ -280,9 +286,13 @@ function Polling($base, $trigger) {
     const pollingDc = silentium.DestroyContainer();
     pollingDc.add(dc);
     pollingDc.add(
-      $trigger.then(() => {
+      $trigger.then(function pollingTriggerSub() {
         dc.destroy();
-        dc.add($base.then(resolve).catch(reject));
+        dc.add(
+          $base.then(function pollingBaseSub(v) {
+            resolve(v);
+          }).catch(reject)
+        );
       }).catch(reject)
     );
     return pollingDc.destructor();
@@ -315,9 +325,9 @@ function StateRecord(state$, values$, sequence) {
   let latestState = null;
   let result = {};
   const sequence$ = silentium.Value(silentium.Actual(sequence));
-  return silentium.Message((resolve, reject) => {
+  return silentium.Message(function StateRecordImpl(resolve, reject) {
     dc.add(
-      state$.then((state) => {
+      state$.then(function stateRecordStateSub(state) {
         if (state === sequence$.value?.[stateIndex + 1]) {
           stateIndex += 1;
           latestState = state;
@@ -329,7 +339,7 @@ function StateRecord(state$, values$, sequence) {
       }).catch(reject)
     );
     dc.add(
-      values$.then((value) => {
+      values$.then(function stateRecordValuesSub(value) {
         if (latestState !== null) {
           result[latestState] = value;
         }
@@ -341,19 +351,21 @@ function StateRecord(state$, values$, sequence) {
         }
       }).catch(reject)
     );
-    return () => dc.destroy();
+    return function StateRecordDestroy() {
+      dc.destroy();
+    };
   });
 }
 
 function Switch(_base, options) {
   const $base = silentium.Actual(_base);
-  return silentium.Message((resolve, reject) => {
+  return silentium.Message(function SwitchImpl(resolve, reject) {
     const dc = silentium.DestroyContainer();
     dc.add(
-      $base.then((v) => {
-        const msg = options.find(
-          (entry) => Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v
-        );
+      $base.then(function switchBaseSub(v) {
+        const msg = options.find(function switchBaseFind(entry) {
+          return Array.isArray(entry[0]) ? entry[0].includes(v) : entry[0] === v;
+        });
         if (msg) {
           dc.add(msg[1].then(resolve).catch(reject));
         }
@@ -386,7 +398,7 @@ function Tick($base) {
     let lastValue = null;
     const scheduleMicrotask = () => {
       microtaskScheduled = true;
-      queueMicrotask(() => {
+      queueMicrotask(function tickQueueMicrotask() {
         microtaskScheduled = false;
         if (lastValue !== null) {
           r(lastValue);
@@ -394,7 +406,7 @@ function Tick($base) {
         }
       });
     };
-    $base.then((v) => {
+    $base.then(function tickBaseSub(v) {
       lastValue = v;
       if (!microtaskScheduled) {
         scheduleMicrotask();
@@ -406,7 +418,7 @@ function Tick($base) {
 function HashTable($base) {
   return silentium.Message(function HashTableImpl(r) {
     const record = {};
-    $base.then(([key, value]) => {
+    $base.then(function hashTableBaseSub([key, value]) {
       record[key] = value;
       r({ ...record });
     });
@@ -416,12 +428,12 @@ function HashTable($base) {
 function Record(record) {
   return silentium.Message(function RecordImpl(r) {
     const keys = Object.keys(record);
-    keys.forEach((key) => {
+    keys.forEach(function recordKeys(key) {
       record[key] = silentium.Actual(record[key]);
     });
-    silentium.All(...Object.values(record)).then((entries) => {
+    silentium.All(...Object.values(record)).then(function recordAllSub(entries) {
       const record2 = {};
-      entries.forEach((entry, index) => {
+      entries.forEach(function recordAllForEach(entry, index) {
         record2[keys[index]] = entry;
       });
       r(record2);
@@ -431,11 +443,11 @@ function Record(record) {
 
 function Transformed(_base, transformRules) {
   const $base = silentium.Actual(_base);
-  return silentium.Message((resolve) => {
-    $base.then((v) => {
+  return silentium.Message(function TransformedImpl(resolve) {
+    $base.then(function transformedBaseSub(v) {
       const existedKeysMap = {};
       const sourceObject = Object.fromEntries(
-        Object.entries(v).map((entry) => {
+        Object.entries(v).map(function transformedBaseEntries(entry) {
           if (transformRules[entry[0]]) {
             existedKeysMap[entry[0]] = 1;
             return [entry[0], transformRules[entry[0]](v)];
@@ -443,7 +455,7 @@ function Transformed(_base, transformRules) {
           return [entry[0], silentium.Of(entry[1])];
         })
       );
-      Object.keys(transformRules).forEach((key) => {
+      Object.keys(transformRules).forEach(function transformedRulesKeys(key) {
         if (!existedKeysMap[key]) {
           sourceObject[key] = transformRules[key](v);
         }
@@ -460,7 +472,7 @@ function TransformedList(_base, transformRules) {
 
 function And($one, $two) {
   return silentium.Message(function AndImpl(r) {
-    silentium.All($one, $two).then(([one, two]) => {
+    silentium.All($one, $two).then(function andAllSub([one, two]) {
       r(!!(one && two));
     });
   });
@@ -474,7 +486,7 @@ function Bool($base) {
 
 function Not($base) {
   return silentium.Message(function NotImpl(r) {
-    $base.then((v) => {
+    $base.then(function notBaseSub(v) {
       r(!v);
     });
   });
@@ -482,7 +494,7 @@ function Not($base) {
 
 function Or($one, $two) {
   return silentium.Message(function OrImpl(r) {
-    silentium.All($one, $two).then(([one, two]) => {
+    silentium.All($one, $two).then(function orAllSub([one, two]) {
       r(!!(one || two));
     });
   });
@@ -490,7 +502,7 @@ function Or($one, $two) {
 
 function FromJson($json) {
   return silentium.Message(function FromJsonImpl(resolve, reject) {
-    $json.then((json) => {
+    $json.then(function fromJsonSub(json) {
       try {
         resolve(JSON.parse(json));
       } catch (e) {
@@ -502,7 +514,7 @@ function FromJson($json) {
 
 function ToJson($data) {
   return silentium.Message(function ToJsonImpl(resolve, reject) {
-    $data.then((data) => {
+    $data.then(function toJsonSub(data) {
       try {
         resolve(JSON.stringify(data));
       } catch {
@@ -523,7 +535,11 @@ function RegexpMatch(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
   const $value = silentium.Actual(valueSrc);
   const $flags = silentium.Actual(flagsSrc);
   return silentium.Message(function RegexpMatchImpl(r) {
-    silentium.All($pattern, $value, $flags).then(([pattern, value, flags]) => {
+    silentium.All($pattern, $value, $flags).then(function regexpMatchAllSub([
+      pattern,
+      value,
+      flags
+    ]) {
       const result = new RegExp(pattern, flags).exec(value);
       r(result ?? []);
     });
@@ -535,7 +551,11 @@ function RegexpMatched(patternSrc, valueSrc, flagsSrc = silentium.Of("")) {
   const $value = silentium.Actual(valueSrc);
   const $flags = silentium.Actual(flagsSrc);
   return silentium.Message(function RegexpMatchedImpl(r) {
-    silentium.All($pattern, $value, $flags).then(([pattern, value, flags]) => {
+    silentium.All($pattern, $value, $flags).then(function regexpMatchedAllSub([
+      pattern,
+      value,
+      flags
+    ]) {
       r(new RegExp(pattern, flags).test(value));
     });
   });
@@ -559,13 +579,14 @@ function Set(baseSrc, keySrc, valueSrc) {
   const $key = silentium.Actual(keySrc);
   const $value = silentium.Actual(valueSrc);
   return silentium.Message(function SetImpl(r) {
-    silentium.All($base, $key, $value).then(([base, key, value]) => {
+    silentium.All($base, $key, $value).then(function setAllSub([base, key, value]) {
       base[key] = value;
       r(base);
     });
   });
 }
 
+const isTrue = (v) => v === true;
 function Router(_url, routes, $default) {
   const $routes = silentium.Actual(routes);
   const $url = silentium.Actual(_url);
@@ -574,19 +595,19 @@ function Router(_url, routes, $default) {
     const destructor = () => {
       dc.destroy();
     };
-    silentium.All($routes, $url).then(([routes2, url]) => {
+    silentium.All($routes, $url).then(function routerAllSub([routes2, url]) {
       destructor();
       const $matches = silentium.All(
-        ...routes2.map(
-          (r2) => r2.pattern ? RegexpMatched(
+        ...routes2.map(function routerRoutesMap(r2) {
+          return r2.pattern ? RegexpMatched(
             silentium.Of(r2.pattern),
             silentium.Of(url),
             r2.patternFlags ? silentium.Of(r2.patternFlags) : void 0
-          ) : r2?.condition?.(url)
-        )
+          ) : r2?.condition?.(url);
+        })
       );
-      $matches.then((matches) => {
-        const index = matches.findIndex((v) => v === true);
+      $matches.then(function routerMatchesSub(matches) {
+        const index = matches.findIndex(isTrue);
         if (index === -1) {
           const instance = silentium.Actual($default());
           dc.add(instance);
@@ -605,7 +626,10 @@ function Router(_url, routes, $default) {
 
 function Concatenated(sources, joinPartSrc = silentium.Of("")) {
   return silentium.Message(function ConcatenatedImpl(r) {
-    silentium.All(joinPartSrc, ...sources).then(([joinPart, ...strings]) => {
+    silentium.All(joinPartSrc, ...sources).then(function concatenatedAllSub([
+      joinPart,
+      ...strings
+    ]) {
       r(strings.join(joinPart));
     });
   });

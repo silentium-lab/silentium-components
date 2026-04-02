@@ -10,7 +10,7 @@ export function Deferred<T>(
 ) {
   return Message<T>(function DeferredImpl(r) {
     const base = Primitive($base);
-    $trigger.then(() => {
+    $trigger.then(function deferredTriggerSub() {
       const value = base.primitive();
       if (isFilled(value)) {
         r(value);

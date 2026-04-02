@@ -26,10 +26,10 @@ export function Part<
   const $keyedShared = Shared(Actual(key));
   return Source(
     function PartImpl(r) {
-      All($baseShared, $keyedShared).then(([base, keyed]) => {
+      All($baseShared, $keyedShared).then(function partAllSub([base, keyed]) {
         const keys = keyed.split(".");
         let value: unknown = base;
-        keys.forEach((key: string) => {
+        keys.forEach(function partsAllKeysForEach(key: string) {
           value = (value as Record<string, unknown>)[key];
         });
         if (value !== undefined && value !== base) {
@@ -39,7 +39,7 @@ export function Part<
         }
       });
     },
-    (value) => {
+    function PartSourceImpl(value) {
       const key = Primitive($keyedShared);
       if (isFilled(key)) {
         const base = Primitive($base);
