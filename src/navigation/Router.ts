@@ -19,7 +19,7 @@ export interface Route<T> {
   message: ConstructorType<[], MaybeMessage<T>>;
 }
 
-const isTrue = (v) => v === true;
+const isTrue = (v: unknown) => v === true;
 
 /**
  * Router component what will return template if url matches pattern
