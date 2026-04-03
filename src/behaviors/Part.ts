@@ -24,6 +24,8 @@ export function Part<
 ): MessageSourceType<R> {
   const $baseShared = Shared($base);
   const $keyedShared = Shared(Actual(key));
+  const keyPrimitive = Primitive($keyedShared);
+  const base = Primitive($baseShared);
   return Source(
     function PartImpl(r) {
       All($baseShared, $keyedShared).then(function partAllSub([base, keyed]) {
@@ -40,12 +42,10 @@ export function Part<
       });
     },
     function PartSourceImpl(value) {
-      const key = Primitive($keyedShared);
       if (isFilled(key)) {
-        const base = Primitive($base);
         $base.use({
           ...base.primitiveWithException(),
-          [key.primitiveWithException()]: value,
+          [keyPrimitive.primitiveWithException()]: value,
         } as T);
       }
     },

@@ -234,15 +234,17 @@ function OnlyChanged($base) {
 function Part($base, key, defaultValue) {
   const $baseShared = silentium.Shared($base);
   const $keyedShared = silentium.Shared(silentium.Actual(key));
+  const keyPrimitive = silentium.Primitive($keyedShared);
+  const base = silentium.Primitive($baseShared);
   return silentium.Source(
     function PartImpl(r) {
-      silentium.All($baseShared, $keyedShared).then(function partAllSub([base, keyed]) {
+      silentium.All($baseShared, $keyedShared).then(function partAllSub([base2, keyed]) {
         const keys = keyed.split(".");
-        let value = base;
+        let value = base2;
         keys.forEach(function partsAllKeysForEach(key2) {
           value = value[key2];
         });
-        if (value !== void 0 && value !== base) {
+        if (value !== void 0 && value !== base2) {
           r(value);
         } else if (defaultValue !== void 0) {
           r(defaultValue);
@@ -250,12 +252,10 @@ function Part($base, key, defaultValue) {
       });
     },
     function PartSourceImpl(value) {
-      const key2 = silentium.Primitive($keyedShared);
-      if (silentium.isFilled(key2)) {
-        const base = silentium.Primitive($base);
+      if (silentium.isFilled(key)) {
         $base.use({
           ...base.primitiveWithException(),
-          [key2.primitiveWithException()]: value
+          [keyPrimitive.primitiveWithException()]: value
         });
       }
     }

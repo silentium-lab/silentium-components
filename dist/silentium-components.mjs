@@ -232,15 +232,17 @@ function OnlyChanged($base) {
 function Part($base, key, defaultValue) {
   const $baseShared = Shared($base);
   const $keyedShared = Shared(Actual(key));
+  const keyPrimitive = Primitive($keyedShared);
+  const base = Primitive($baseShared);
   return Source(
     function PartImpl(r) {
-      All($baseShared, $keyedShared).then(function partAllSub([base, keyed]) {
+      All($baseShared, $keyedShared).then(function partAllSub([base2, keyed]) {
         const keys = keyed.split(".");
-        let value = base;
+        let value = base2;
         keys.forEach(function partsAllKeysForEach(key2) {
           value = value[key2];
         });
-        if (value !== void 0 && value !== base) {
+        if (value !== void 0 && value !== base2) {
           r(value);
         } else if (defaultValue !== void 0) {
           r(defaultValue);
@@ -248,12 +250,10 @@ function Part($base, key, defaultValue) {
       });
     },
     function PartSourceImpl(value) {
-      const key2 = Primitive($keyedShared);
-      if (isFilled(key2)) {
-        const base = Primitive($base);
+      if (isFilled(key)) {
         $base.use({
           ...base.primitiveWithException(),
-          [key2.primitiveWithException()]: value
+          [keyPrimitive.primitiveWithException()]: value
         });
       }
     }
