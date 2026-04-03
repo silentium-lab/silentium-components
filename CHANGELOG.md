@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.124](https://github.com/silentium-lab/silentium-components/compare/v0.0.123...v0.0.124) (2026-04-03)
+
+
+### Bug Fixes
+
+* **main:** part component primitive move out of source ([ae14dbc](https://github.com/silentium-lab/silentium-components/commit/ae14dbc73c94c0d3d4f1c3233e285d8fc4d803bd))
+
 ### [0.0.123](https://github.com/silentium-lab/silentium-components/compare/v0.0.122...v0.0.123) (2026-04-02)
 
 
