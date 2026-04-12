@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.126](https://github.com/silentium-lab/silentium-components/compare/v0.0.125...v0.0.126) (2026-04-12)
+
+
+### Bug Fixes
+
+* **main:** getter call ([966f3cc](https://github.com/silentium-lab/silentium-components/commit/966f3cc41018549a5525568c834078bd01728a96))
+
 ### [0.0.125](https://github.com/silentium-lab/silentium-components/compare/v0.0.124...v0.0.125) (2026-04-12)
 
 
