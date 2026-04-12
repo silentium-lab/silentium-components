@@ -149,7 +149,7 @@ function Getter(_base, _method, def) {
     function GetterImpl([base, method, d]) {
       const value = base[method];
       if (value !== void 0 && typeof value === "function") {
-        return value();
+        return value.call(base);
       } else if (d !== NotSet$1) {
         return d;
       }

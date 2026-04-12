@@ -15,7 +15,7 @@ export function Getter<R, T extends object = any, K extends string = any>(
     function GetterImpl([base, method, d]) {
       const value: any = base[method as unknown as keyof typeof base];
       if (value !== undefined && typeof value === "function") {
-        return value() as R;
+        return value.call(base) as R;
       } else if (d !== NotSet) {
         return d as R;
       }
