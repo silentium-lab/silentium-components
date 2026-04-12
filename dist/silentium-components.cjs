@@ -141,6 +141,24 @@ function Dirty($base, keep = [], exclude = [], cloner) {
   );
 }
 
+const NotSet$1 = Symbol("not-set");
+function Getter(_base, _method, def) {
+  const $base = silentium.Actual(_base);
+  const $method = silentium.Actual(_method);
+  const $def = silentium.Actual(def ?? NotSet$1);
+  return silentium.Applied(
+    silentium.All($base, $method, $def),
+    function GetterImpl([base, method, d]) {
+      const value = base[method];
+      if (value !== void 0 && typeof value === "function") {
+        return value();
+      } else if (d !== NotSet$1) {
+        return d;
+      }
+    }
+  );
+}
+
 function Loading($start, $finish) {
   return silentium.Message(function LoadingImpl(r) {
     $start.then(function loadingStartSub() {
@@ -738,6 +756,7 @@ exports.Detached = Detached;
 exports.Dirty = Dirty;
 exports.First = First;
 exports.FromJson = FromJson;
+exports.Getter = Getter;
 exports.HashTable = HashTable;
 exports.Loading = Loading;
 exports.Lock = Lock;

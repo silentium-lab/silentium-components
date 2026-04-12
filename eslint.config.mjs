@@ -67,5 +67,11 @@ export default [
       ],
     },
   },
+  {
+    files: ["**/*.test.ts"],
+    rules: {
+      "@getify/proper-arrows/name": "off",
+    },
+  },
   eslintPluginPrettierRecommended,
 ];

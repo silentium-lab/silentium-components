@@ -49,6 +49,8 @@ declare function Detached<T>($base: MessageType<T>): MessageType<T>;
  */
 declare function Dirty<T extends Record<string, unknown>>($base: MessageType<T>, keep?: string[], exclude?: string[], cloner?: (v: T) => T): silentium.SourceImpl<T>;
 
+declare function Getter<R, T extends object = any, K extends string = any>(_base: MaybeMessage<T>, _method: MaybeMessage<K>, def?: MaybeMessage<R>): MessageType<R>;
+
 /**
  * Representation Of loading process
  * first message begins loading
@@ -272,5 +274,5 @@ declare function RegexpReplaced(valueSrc: MaybeMessage<string>, patternSrc: Mayb
  */
 declare function Set<T extends Record<string, unknown>>(baseSrc: MessageType<T>, keySrc: MessageType<string>, valueSrc: MessageType<unknown>): silentium.MessageImpl<T>;
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record$1 as Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, StateRecord, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, Getter, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record$1 as Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, StateRecord, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
 export type { Route };

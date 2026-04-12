@@ -139,6 +139,24 @@ function Dirty($base, keep = [], exclude = [], cloner) {
   );
 }
 
+const NotSet$1 = Symbol("not-set");
+function Getter(_base, _method, def) {
+  const $base = Actual(_base);
+  const $method = Actual(_method);
+  const $def = Actual(def ?? NotSet$1);
+  return Applied(
+    All($base, $method, $def),
+    function GetterImpl([base, method, d]) {
+      const value = base[method];
+      if (value !== void 0 && typeof value === "function") {
+        return value();
+      } else if (d !== NotSet$1) {
+        return d;
+      }
+    }
+  );
+}
+
 function Loading($start, $finish) {
   return Message(function LoadingImpl(r) {
     $start.then(function loadingStartSub() {
@@ -724,5 +742,5 @@ function escaped(base) {
   );
 }
 
-export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, StateRecord, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
+export { And, Bool, Branch, BranchLazy, Concatenated, Constant, Deadline, Deferred, Detached, Dirty, First, FromJson, Getter, HashTable, Loading, Lock, Memo, MergeAccumulation, Not, OnlyChanged, Or, Part, Path, Polling, Record, RecordTruncated, RegexpMatch, RegexpMatched, RegexpReplaced, Router, Set, StateRecord, Switch, Task, Template, TemplateImpl, Tick, ToJson, Transformed, TransformedList, escaped };
 //# sourceMappingURL=silentium-components.mjs.map

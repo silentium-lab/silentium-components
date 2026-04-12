@@ -5,6 +5,7 @@ export * from "./Deadline";
 export * from "./Deferred";
 export * from "./Detached";
 export * from "./Dirty";
+export * from "./Getter";
 export * from "./Loading";
 export * from "./Lock";
 export * from "./Memo";
